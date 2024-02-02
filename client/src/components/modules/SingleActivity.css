@@ -18,7 +18,7 @@
     font-weight: 600;
   }
   
-  .Activity-storyContent {
+  .Activity-information {
     font-size: 40px;
     margin: var(--s) 0 0;
   }
@@ -28,7 +28,7 @@
     border-top: 1px solid var(--darkgrey);
   }
   
-  .Activity-commentBody {
+  .Activity-user-signed-up {
     margin: 0 0 var(--s);
   }
   
