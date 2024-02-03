@@ -10,6 +10,7 @@
 
 .NavBar-linkContainer {
   margin-left: var(--l);
+  display: flex;
 }
 
 .NavBar-link,
@@ -32,7 +33,9 @@
 }
 
 .NavBar-logo {
+  height: 80px;
   background-repeat: no-repeat;
+  visibility: visible;
   background-size: cover;
   background-position: center;
   background-image: url("../../public/logo.png");
