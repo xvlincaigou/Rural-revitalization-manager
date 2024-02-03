@@ -1,6 +1,6 @@
 .NavBar-container {
   padding: var(--s) var(--m);
-  background-color: var(--primary);
+  background-color: var(--thupurple);
 }
 
 .NavBar-title {
@@ -29,4 +29,11 @@
 
 .NavBar-link + .NavBar-link {
   margin-left: var(--m);
+}
+
+.NavBar-logo {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-image: url("../../public/logo.png");
 }

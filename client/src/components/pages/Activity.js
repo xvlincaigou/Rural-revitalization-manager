@@ -18,7 +18,7 @@ const Activity = (props) => {
         latest_register_time="2024/2/2"
         information="这是一个测试"
         number_of_people_signed_up={4}
-        users_signed_up={["user1", "user2", "user3", "user4"]}
+        users_signed_up={["许霖", "赵畅", "关世开", "刘明轩"]}
         average_score={100}
         />
     );
