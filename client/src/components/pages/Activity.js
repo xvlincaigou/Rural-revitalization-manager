@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { get } from "../../utilities";
 
 import "../../utilities.css";
-import "./Activity.css";
-import "../modules/SingleActivity.js";
 import SingleActivity from "../modules/SingleActivity.js";
 
 //To simple users, I think that the score, download and remark functions of the activity should be put in the homepage rather than in the activity page.
@@ -14,8 +12,8 @@ const Activity = (props) => {
     return (
         <SingleActivity 
         name="建院外包开发"
-        held_time="2024/2/2"
-        latest_register_time="2024/2/2"
+        held_time="2024/02/02"
+        latest_register_time="2024/02/02"
         information="这是一个测试"
         number_of_people_signed_up={4}
         users_signed_up={["许霖", "赵畅", "关世开", "刘明轩"]}

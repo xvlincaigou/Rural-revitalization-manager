@@ -109,7 +109,7 @@ const Chatbook = (props) => {
   };
 
   if (!props.userId) {
-    return <div>Log in before using Chatbook</div>;
+    return <div>登录以发帖</div>;
   }
   return (
     <>

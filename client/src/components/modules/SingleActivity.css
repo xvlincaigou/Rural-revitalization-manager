@@ -4,24 +4,21 @@
   margin-top: var(--m);
 }
 
-.Activity-container:first-of-type {
-  margin-top: var(--l);
-}
-
-.Activity-story,
-.Activity-commentSection {
-  padding: var(--m) var(--l);
-}
-
-.Activity-storyUser {
-  font-size: 20px;
-  font-weight: 600;
-}
-
 .Activity-held-time {
   font-size: 25px;
   margin: var(--m) var(--m) 0 var(--m);
+}
+
+.Activity-held-time-color1 {
   color: blue;
+}
+
+.Activity-held-time-color2 {
+  color: yellow;
+}
+
+.Activity-held-time-color3{
+    color: red;
 }
 
 .Activity-Content {
@@ -38,4 +35,25 @@
 
 .Activity-infoBody {
   margin: var(--m) var(--m) var(--m) var(--m);
+}
+
+.Activity-button {
+  margin: 0 var(--m) var(--m) var(--m);
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
+  text-align: center;
+  text-decoration: none;
+  color: #ffffff;
+  background-color: #9beb9b;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.05s ease;
+  height: 10px;
+  width: 100px;
+}
+
+.Activity-button:active {
+  background-color: red;
 }

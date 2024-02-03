@@ -5,13 +5,8 @@ import "../../utilities.css";
 import "./SingleActivity.css";
 
 // TODO:
-// The register button of the activity
-// Check the import is right or not for the new files.@xvlincaigou 2024/2/2
-// Add a button to sign up for this activity
-// Rid the unnecessary CSS of activity and single activity
-// Change the color of the time
+// Add a button to sign up for this activity and cancel sign up for it
 // How to modify the score of the activity
-// Is state needed?
 
 //To simple users, I think that the score, download and remark functions of the activity should be put in the homepage rather than in the activity page.
 //To activity managers, I think that the functions of the activity should not be put in the activity page.
@@ -28,14 +23,31 @@ import "./SingleActivity.css";
  * @param {number} number_of_people_signed_up for the activity
  * @param {string[]} users_signed_up for the activity
  * @param {number} average_score of the activity
- * @param {number} state of the activity: 0 for 已举办，1 for 报名已截止，2 for 报名中
  */
 
 const SingleActivity = (props) => {
+    
+    //0: you can register for it, 1: you can't register for it and the activity has not been held, 2: the activity has been held.
+    const currentDateTime = new Date();
+    const heldTime = new Date(props.held_time);
+    const latestRegisterTime = new Date(props.latest_register_time);
+    let held_time, button;
+    if (latestRegisterTime > currentDateTime) {
+        held_time = <div className="Activity-held-time Activity-held-time-color1">{props.held_time}</div>;
+        button = <div className="Activity-button" disabled>报名</div>;
+    } else if (heldTime > currentDateTime) {
+        held_time = <div className="Activity-held-time Activity-held-time-color2">{props.held_time}</div>
+        button = <div className="Activity-button" disabled>报名</div>;
+    } else {
+        held_time = <div className="Activity-held-time Activity-held-time-color3">{props.held_time}</div>
+        button = <div className="Activity-button" disabled>报名</div>;
+    }
+
     return (
         <div className="Activity-container">
-            <div className="Activity-held-time">{props.held_time}</div>
+            {held_time}
             <div className="Activity-Content">{props.name}</div>
+            {button}
             <div className="Activity-infoSection">
                 <div className="Activity-infoBody">报名截止时间{" | " + props.latest_register_time}</div>
                 <div className="Activity-infoBody">活动信息{" | " + props.information}</div>
@@ -44,7 +56,7 @@ const SingleActivity = (props) => {
                 <div className="Activity-infoBody">
                     <span>已报名的用户 | </span>
                     {props.users_signed_up.map((user) => (
-                        <span className="Activity-user-signed-up">{user + "  "}</span>
+                        <span>{user + "  "}</span>
                     ))}
                 </div>
             </div>
