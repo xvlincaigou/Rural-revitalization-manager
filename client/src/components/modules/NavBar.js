@@ -1,8 +1,9 @@
 import React from "react";
 import { Link } from "@reach/router";
-import GoogleLogin, { GoogleLogout } from "react-google-login";
+
 
 import "./NavBar.css";
+import LogIn from "./LogIn.js";
 
 // This identifies your web application to Google's authentication service
 const GOOGLE_CLIENT_ID = "395785444978-7b9v7l0ap2h3308528vu1ddnt3rqftjc.apps.googleusercontent.com";
@@ -29,7 +30,11 @@ const NavBar = (props) => {
         <Link to="/activity/" className="NavBar-link">
           活动
         </Link>
-        {props.userId ? (
+        <Link to="/register/" className="NavBar-link">
+          注册
+        </Link>
+        {<LogIn />
+        /*props.userId ? (
           <GoogleLogout
             clientId={GOOGLE_CLIENT_ID}
             buttonText="Logout"
@@ -45,7 +50,7 @@ const NavBar = (props) => {
             onFailure={(err) => console.log(err)}
             className="NavBar-link NavBar-login"
           />
-        )}
+        )*/}
       </div>
     </nav>
   );

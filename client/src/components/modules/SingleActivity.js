@@ -6,16 +6,8 @@ import "./SingleActivity.css";
 import "./ActivityRegisterButton.js";
 import ActivityRegisterButton from "./ActivityRegisterButton.js";
 
-// TODO:
-// Add a button to sign up for this activity and cancel sign up for it
-// How to modify the score of the activity
-
-//To simple users, I think that the score, download and remark functions of the activity should be put in the homepage rather than in the activity page.
-//To activity managers, I think that the functions of the activity should not be put in the activity page.
-//So, in the "my home" page, we should put "activities I have registered" and "activities I manage"
-
 /**
- * Activity is a component that renders an activity.
+ * SingleActivity is a component that renders an activity.
  *
  * Proptypes
  * @param {string} name of the activity
@@ -33,7 +25,7 @@ const SingleActivity = (props) => {
     const currentDateTime = new Date();
     const heldTime = new Date(props.held_time);
     const latestRegisterTime = new Date(props.latest_register_time);
-    let button = <div className="Activity-button" disabled>报名</div>, held_time;
+    let button = <button className="Activity-button">报名</button>, held_time;
     if (latestRegisterTime > currentDateTime) {
         held_time = <div className="Activity-held-time Activity-held-time-color1">{props.held_time}</div>;
         button = <ActivityRegisterButton />;
