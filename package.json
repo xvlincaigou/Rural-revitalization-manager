@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@reach/router": "^1.3.4",
+    "bcryptjs": "^2.4.3",
     "connect-ensure-login": "^0.1.1",
     "core-js": "^3.8.1",
     "express": "^4.17.1",

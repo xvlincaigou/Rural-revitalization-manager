@@ -1,2 +1,2 @@
 # Rural-revitalization-manager  
-Welcome to branch *backend*.
+欢迎来到*backend*分支。
