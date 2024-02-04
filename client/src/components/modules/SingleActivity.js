@@ -3,6 +3,8 @@ import { get } from "../../utilities";
 
 import "../../utilities.css";
 import "./SingleActivity.css";
+import "./ActivityRegisterButton.js";
+import ActivityRegisterButton from "./ActivityRegisterButton.js";
 
 // TODO:
 // Add a button to sign up for this activity and cancel sign up for it
@@ -31,18 +33,16 @@ const SingleActivity = (props) => {
     const currentDateTime = new Date();
     const heldTime = new Date(props.held_time);
     const latestRegisterTime = new Date(props.latest_register_time);
-    let held_time, button;
+    let button = <div className="Activity-button" disabled>报名</div>, held_time;
     if (latestRegisterTime > currentDateTime) {
         held_time = <div className="Activity-held-time Activity-held-time-color1">{props.held_time}</div>;
-        button = <div className="Activity-button" disabled>报名</div>;
+        button = <ActivityRegisterButton />;
     } else if (heldTime > currentDateTime) {
         held_time = <div className="Activity-held-time Activity-held-time-color2">{props.held_time}</div>
-        button = <div className="Activity-button" disabled>报名</div>;
     } else {
         held_time = <div className="Activity-held-time Activity-held-time-color3">{props.held_time}</div>
-        button = <div className="Activity-button" disabled>报名</div>;
     }
-
+    
     return (
         <div className="Activity-container">
             {held_time}
