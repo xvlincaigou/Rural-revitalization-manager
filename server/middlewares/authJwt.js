@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config.js");
 // const db = require("../models");
-const User = require("../models/user-WIP.js"); // 调试用
+const User = require("../models/user.js"); // 调试用
 // const Role = db.role;
 
 verifyToken = (req, res, next) => {

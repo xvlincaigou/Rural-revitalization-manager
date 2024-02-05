@@ -12,7 +12,7 @@ const express = require("express");
 // import models so we can interact with the database
 const Story = require("./models/story");
 const Comment = require("./models/comment");
-const User = require("./models/user-legacy");
+const User = require("./models/user");
 const Message = require("./models/message");
 
 // import authentication library
