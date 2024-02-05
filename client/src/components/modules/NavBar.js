@@ -1,15 +1,32 @@
 import React from "react";
 import { Link } from "@reach/router";
-import GoogleLogin, { GoogleLogout } from "react-google-login";
+
 
 import "./NavBar.css";
-
-// This identifies your web application to Google's authentication service
-const GOOGLE_CLIENT_ID = "395785444978-7b9v7l0ap2h3308528vu1ddnt3rqftjc.apps.googleusercontent.com";
 
 /**
  * The navigation bar at the top of all pages. Takes no props.
  */
+
+/*props.userId ? (
+          <GoogleLogout
+            clientId={GOOGLE_CLIENT_ID}
+            buttonText="Logout"
+            onLogoutSuccess={props.handleLogout}
+            onFailure={(err) => console.log(err)}
+            className="NavBar-link NavBar-login"
+          />
+        ) : (
+          <GoogleLogin
+            clientId={GOOGLE_CLIENT_ID}
+            buttonText="Login"
+            onSuccess={props.handleLogin}
+            onFailure={(err) => console.log(err)}
+            className="NavBar-link NavBar-login"
+          />
+        )
+*/
+
 const NavBar = (props) => {
   return (
     <nav className="NavBar-container">
@@ -29,23 +46,9 @@ const NavBar = (props) => {
         <Link to="/activity/" className="NavBar-link">
           活动
         </Link>
-        {props.userId ? (
-          <GoogleLogout
-            clientId={GOOGLE_CLIENT_ID}
-            buttonText="Logout"
-            onLogoutSuccess={props.handleLogout}
-            onFailure={(err) => console.log(err)}
-            className="NavBar-link NavBar-login"
-          />
-        ) : (
-          <GoogleLogin
-            clientId={GOOGLE_CLIENT_ID}
-            buttonText="Login"
-            onSuccess={props.handleLogin}
-            onFailure={(err) => console.log(err)}
-            className="NavBar-link NavBar-login"
-          />
-        )}
+        <Link to="/register/" className="NavBar-link">
+          注册/登录
+        </Link>
       </div>
     </nav>
   );
