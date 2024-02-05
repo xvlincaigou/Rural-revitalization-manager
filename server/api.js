@@ -60,6 +60,8 @@ router.post("/comment", jwt.verifyToken, (req, res) => {
 
 router.post("/login", auth.login);
 router.post("/logout", auth.logout);
+router.post("/register", auth.register);
+
 router.get("/whoami", (req, res) => {
   if (!req.user) {
     // not logged in
