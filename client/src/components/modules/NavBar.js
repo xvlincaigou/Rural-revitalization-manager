@@ -8,25 +8,6 @@ import "./NavBar.css";
  * The navigation bar at the top of all pages. Takes no props.
  */
 
-/*props.userId ? (
-          <GoogleLogout
-            clientId={GOOGLE_CLIENT_ID}
-            buttonText="Logout"
-            onLogoutSuccess={props.handleLogout}
-            onFailure={(err) => console.log(err)}
-            className="NavBar-link NavBar-login"
-          />
-        ) : (
-          <GoogleLogin
-            clientId={GOOGLE_CLIENT_ID}
-            buttonText="Login"
-            onSuccess={props.handleLogin}
-            onFailure={(err) => console.log(err)}
-            className="NavBar-link NavBar-login"
-          />
-        )
-*/
-
 const NavBar = (props) => {
   return (
     <nav className="NavBar-container">
@@ -36,10 +17,11 @@ const NavBar = (props) => {
           主页
         </Link>
         {props.userId && (
-          <Link to={`/profile/${props.userId}`} className="NavBar-link">
+          <Link to={`/profile/${props.useId}`} className="NavBar-link">
             我的
           </Link>
-        )}
+        )
+        }
         <Link to="/chat/" className="NavBar-link">
           发帖
         </Link>

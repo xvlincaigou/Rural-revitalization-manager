@@ -43,8 +43,16 @@ const Register = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setStep(true);
-        // TODO: Implement registration logic here
+        const newMan ={
+            username: username,
+            email: mail,
+            phoneNumber: phone,
+            idNumber: identificationCard,
+            password: password,
+        }
+        post("/api/register", newMan).then(() => {
+            setStep(true);
+        });
     };
 
     const handleLogin = (event) => {
