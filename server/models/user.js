@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
     email: String, // 电子邮箱
     phoneNumber: String, // 手机号
     idNumber: String, // 身份证号-暂定
+    password: String, // 密码
     role: { // 用户角色
         type: Number,
         default: 0  // 默认情况下，用户被认为是普通用户
