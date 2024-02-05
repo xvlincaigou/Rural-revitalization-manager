@@ -5,6 +5,7 @@
     justify-content: center;
     height: 100%;
     background-color: #fff;
+    margin-bottom: 10px;
   }
   
   .Register form {
@@ -33,3 +34,9 @@
     color: #fff;
     cursor: pointer;
   }
+
+.warning-message {
+    color: red;
+    font-size: 20px;
+    margin-top: 5px;
+}

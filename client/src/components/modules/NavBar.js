@@ -3,11 +3,30 @@ import { Link } from "@reach/router";
 
 
 import "./NavBar.css";
-import LogIn from "./LogIn.js";
 
 /**
  * The navigation bar at the top of all pages. Takes no props.
  */
+
+/*props.userId ? (
+          <GoogleLogout
+            clientId={GOOGLE_CLIENT_ID}
+            buttonText="Logout"
+            onLogoutSuccess={props.handleLogout}
+            onFailure={(err) => console.log(err)}
+            className="NavBar-link NavBar-login"
+          />
+        ) : (
+          <GoogleLogin
+            clientId={GOOGLE_CLIENT_ID}
+            buttonText="Login"
+            onSuccess={props.handleLogin}
+            onFailure={(err) => console.log(err)}
+            className="NavBar-link NavBar-login"
+          />
+        )
+*/
+
 const NavBar = (props) => {
   return (
     <nav className="NavBar-container">
@@ -28,26 +47,8 @@ const NavBar = (props) => {
           活动
         </Link>
         <Link to="/register/" className="NavBar-link">
-          注册
+          注册/登录
         </Link>
-        {<LogIn />
-        /*props.userId ? (
-          <GoogleLogout
-            clientId={GOOGLE_CLIENT_ID}
-            buttonText="Logout"
-            onLogoutSuccess={props.handleLogout}
-            onFailure={(err) => console.log(err)}
-            className="NavBar-link NavBar-login"
-          />
-        ) : (
-          <GoogleLogin
-            clientId={GOOGLE_CLIENT_ID}
-            buttonText="Login"
-            onSuccess={props.handleLogin}
-            onFailure={(err) => console.log(err)}
-            className="NavBar-link NavBar-login"
-          />
-        )*/}
       </div>
     </nav>
   );
