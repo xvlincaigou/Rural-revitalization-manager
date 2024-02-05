@@ -25,7 +25,7 @@ exports.signup = (req, res) => {
             // 构建一个包含重复字段的数组
             const duplicateFields = [];
             if (existingUser.username === req.body.username) {
-                duplicateFields.push('用户名');
+                duplicateFields.push('姓名');
             }
             if (existingUser.email === req.body.email) {
                 duplicateFields.push('电子邮件');
