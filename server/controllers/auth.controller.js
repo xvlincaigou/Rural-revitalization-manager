@@ -1,12 +1,13 @@
 const config = require("../config/auth.config");
 // const db = require("../models");
-const User = require("../models/user-WIP.js"); // 调试用
+const User = require("../models/user.js"); // 调试用
 // const Role = db.role;
 
+// var session = require("express-session"); // library that stores info about each connected user
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
-exports.signup = (req, res) => {
+exports.register = (req, res) => {
     // 使用 $or 查询多个字段是否唯一
     // TO-DO: 需要与前端沟通变量名称及类型
     User.findOne({
@@ -72,9 +73,9 @@ exports.signup = (req, res) => {
 
 
 
-exports.signin = (req, res) => {
+exports.login = (req, res) => {
     User.findOne({
-        username: req.body.username,
+        email: req.body.email,
     })
         .exec((err, user) => {
             if (err) {
@@ -92,7 +93,7 @@ exports.signin = (req, res) => {
             );
 
             if (!passwordIsValid) {
-                return res.status(401).send({ message: "Invalid Password!" });
+                return res.status(401).send({ message: "密码错误！" });
             }
 
             const token = jwt.sign({ id: user.id },
@@ -104,21 +105,47 @@ exports.signin = (req, res) => {
                 });
 
             req.session.token = token;
+            req.session.user = user;
 
             res.status(200).send({
+                /*
                 id: user._id,
                 username: user.username,
                 email: user.email,
                 role: user.role,
+                */
+                user
             });
         });
 };
 
-exports.signout = async (req, res) => {
+exports.logout = async (req, res) => {
     try {
         req.session = null;
-        return res.status(200).send({ message: "您已成功登出。" });
+        req.session.user = null;
+        const userSocket = socketManager.getSocketFromUserID(req.user._id);
+        if (userSocket) {
+            // delete user's socket if they logged out
+            socketManager.removeUser(req.user, userSocket);
+        }
+        res.send({});
     } catch (err) {
         this.next(err);
     }
 };
+
+exports.populateCurrentUser = (req, res, next) => {
+    // simply populate "req.user" for convenience
+    req.user = req.session.user;
+    next();
+}
+
+/*
+exports.ensureLoggedIn = (req, res, next) => {
+    if (!req.user) {
+        return res.status(401).send({ err: "没有登陆。" });
+    }
+
+    next();
+}
+*/

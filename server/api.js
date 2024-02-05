@@ -12,11 +12,14 @@ const express = require("express");
 // import models so we can interact with the database
 const Story = require("./models/story");
 const Comment = require("./models/comment");
-const User = require("./models/user");
+const User = require("./models/user-legacy");
 const Message = require("./models/message");
 
 // import authentication library
-const auth = require("./auth");
+const auth = require("./controllers/auth.controller");
+
+// 导入jwt认证模块
+const jwt = require("./middlewares/authJwt")
 
 // api endpoints: all these paths will be prefixed with "/api/"
 const router = express.Router();
@@ -28,7 +31,7 @@ router.get("/stories", (req, res) => {
   Story.find({}).then((stories) => res.send(stories));
 });
 
-router.post("/story", auth.ensureLoggedIn, (req, res) => {
+router.post("/story", jwt.verifyToken, (req, res) => {
   const newStory = new Story({
     creator_id: req.user._id,
     creator_name: req.user.name,
@@ -44,7 +47,7 @@ router.get("/comment", (req, res) => {
   });
 });
 
-router.post("/comment", auth.ensureLoggedIn, (req, res) => {
+router.post("/comment", jwt.verifyToken, (req, res) => {
   const newComment = new Comment({
     creator_id: req.user._id,
     creator_name: req.user.name,
@@ -97,7 +100,7 @@ router.get("/chat", (req, res) => {
   Message.find(query).then((messages) => res.send(messages));
 });
 
-router.post("/message", auth.ensureLoggedIn, (req, res) => {
+router.post("/message", jwt.verifyToken, (req, res) => {
   console.log(`Received a chat message from ${req.user.name}: ${req.body.content}`);
 
   // insert this message into the database
