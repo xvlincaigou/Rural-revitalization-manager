@@ -5,9 +5,6 @@ import { Link } from "@reach/router";
 import "./NavBar.css";
 import LogIn from "./LogIn.js";
 
-// This identifies your web application to Google's authentication service
-const GOOGLE_CLIENT_ID = "395785444978-7b9v7l0ap2h3308528vu1ddnt3rqftjc.apps.googleusercontent.com";
-
 /**
  * The navigation bar at the top of all pages. Takes no props.
  */
