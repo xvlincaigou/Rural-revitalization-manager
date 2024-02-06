@@ -14,6 +14,7 @@ const Story = require("./models/story");
 const Comment = require("./models/comment");
 const User = require("./models/user");
 const Message = require("./models/message");
+const Activity = require("./models/activity");
 
 // import authentication library
 const auth = require("./auth");
@@ -22,6 +23,33 @@ const auth = require("./auth");
 const router = express.Router();
 
 const socketManager = require("./server-socket");
+
+router.get("/activities", async (req, res) => {
+  // get all activities and sort by date
+  try {
+    const activities = await Activity.find().sort({date: -1});
+    res.send(activities)
+  } catch {
+    res.status(404);
+    res.send({ error: "No activities" });
+  }
+})
+
+router.post("/activity", async (req, res) => {
+  // post a new activity
+  try {
+    const newActivity = new Activity({
+      activity_id: req.body.activity_id,
+      activity_name: req.body.activity_name,
+      activity_date: req.body.activity_date,
+    });
+
+    newActivity.save().then((activity) => res.send(activity));
+  } catch {
+    res.status(404);
+    res.send({ error: "No activity" });
+  }
+})
 
 router.get("/stories", (req, res) => {
   // empty selector means get all documents
