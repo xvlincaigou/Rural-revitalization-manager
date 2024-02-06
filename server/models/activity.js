@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 const ActivitySchema = new mongoose.Schema({
     activity_id: String,
     activity_name: String,
-    activity_date: String,
+    activity_date: Date,
+    participants: [String]
 });
 
 // compile model from schema

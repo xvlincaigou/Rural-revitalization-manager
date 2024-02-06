@@ -23,13 +23,14 @@ const auth = require("./auth");
 const router = express.Router();
 
 const socketManager = require("./server-socket");
+const message = require("./models/message");
 
 router.get("/activities", async (req, res) => {
   // get all activities and sort by date
   try {
     const activities = await Activity.find().sort({date: -1});
     res.send(activities)
-  } catch {
+  } catch(err) {
     res.status(404);
     res.send({ error: "No activities" });
   }
@@ -37,17 +38,76 @@ router.get("/activities", async (req, res) => {
 
 router.post("/activity", async (req, res) => {
   // post a new activity
-  try {
+  try{
     const newActivity = new Activity({
       activity_id: req.body.activity_id,
       activity_name: req.body.activity_name,
       activity_date: req.body.activity_date,
     });
 
-    newActivity.save().then((activity) => res.send(activity));
-  } catch {
+    await newActivity.save().then((activity) => res.send(activity));
+  }catch(err){
     res.status(404);
     res.send({ error: "No activity" });
+  }
+})
+
+router.post("/subscribe", async (req, res) => {
+  try{
+    const {uid, actid} = req.body;
+    const activity = await Activity.findOne({activity_id: actid});
+    const user = await User.findOne({google_id: uid});
+    if(activity){
+      activity.participants.push(uid);
+      await activity.save();
+      res.status(200).json({message: "User added successfully"});
+    }else{
+      res.status(404).json({message: "Cannot find the activity"});
+    }
+    if(user){
+      user.activities.push(actid);
+      await user.save();
+      res.status(200).json({message: "Activity recorded successfully"});
+    }else{
+      res.status(404).json({message: "Cannot find the user"});
+    }
+  }catch(err){
+    res.status(400).json({message: err.message});
+  }
+})
+
+router.post("/unsubscribe", async (req, res) => {
+  try {
+    const {uid, actid} = req.body;
+    const activity = await Activity.findOne({activity_id: actid});
+    const user = await User.findOne({google_id: uid});
+    if(activity){
+      const index = activity.participants.indexOf(uid);
+      if(index !== -1){
+        activity.participants.splice(index, 1);
+        await activity.save();
+        res.status(200).json({message: "User deleted successfully"});
+      }else{
+        res.status(404).json({message: "User not added"});
+      }
+    }else{
+      res.status(404).json({message: "Cannot find the activity"});
+    }
+    if(user){
+      const index = user.activities.indexOf(actid);
+      if(index !== -1){
+        user.activities.splice(index, 1);
+        await user.save();
+        res.status(200).json({message: "Activity deleted successfully"});
+      }else{
+        res.status(404).json({message: "Activity not recorded"});
+      }
+    }else{
+      res.status(404).json({message: "Cannot find the user"});
+    }
+    await user.save();
+  }catch(err){
+    res.status(400).json({message: err.message});
   }
 })
 
