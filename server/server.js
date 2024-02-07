@@ -35,7 +35,7 @@ const socketManager = require("./server-socket");
 // Server configuration below
 // TODO change connection URL after setting up your own database
 const encodedPassword = encodeURIComponent("r%-BBPB:^s.MH8afU4Qq");
-const mongoConnectionURL = `mongodb://test:${encodedPassword}@ydmsk.xyz:54321/`; // 测试用
+const mongoConnectionURL = `mongodb://test:${encodedPassword}@ydmsk.xyz:12345/`; // 测试用
 // TODO change database name to the name you chose
 const databaseName = "Test";
 
