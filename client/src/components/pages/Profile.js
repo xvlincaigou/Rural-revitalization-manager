@@ -6,17 +6,12 @@ import "../../utilities.css";
 import "./Profile.css";
 
 const Profile = (props) => {
-  const [catHappiness, setCatHappiness] = useState(0);
   const [user, setUser] = useState();
 
   useEffect(() => {
     document.title = "Profile Page";
-    get(`/api/user`, { userid: props.userId }).then((userObj) => setUser(userObj));
+    setUser("许霖") //get(`/api/user`, { userid: props.userId }).then((userObj) => setUser(userObj));
   }, []);
-
-  const incrementCatHappiness = () => {
-    setCatHappiness(catHappiness + 1);
-  };
 
   if (!user) {
     return <div> Loading! </div>;
@@ -25,11 +20,12 @@ const Profile = (props) => {
     <>
       <div
         className="Profile-avatarContainer"
-        onClick={() => {
-          incrementCatHappiness();
-        }}
       >
         <div className="Profile-avatar" />
+         <div className="Profile-subContainer u-textCenter">
+          <h4 className="Profile-subTitle">我参加的活动数</h4>
+          <CatHappiness catHappiness={0} />
+        </div>
       </div>
       <h1 className="Profile-name u-textCenter">{user.name}</h1>
       <hr className="Profile-linejj" />
@@ -40,11 +36,7 @@ const Profile = (props) => {
             I am really allergic to cats i don't know why i have a catbook
           </div>
         </div>
-        <div className="Profile-subContainer u-textCenter">
-          <h4 className="Profile-subTitle">Cat Happiness</h4>
-          <CatHappiness catHappiness={catHappiness} />
-        </div>
-        <div className="Profile-subContainer u-textCenter">
+       <div className="Profile-subContainer u-textCenter">
           <h4 className="Profile-subTitle">My Favorite Type of Cat</h4>
           <div id="favorite-cat">corgi</div>
         </div>

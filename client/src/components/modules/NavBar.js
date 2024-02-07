@@ -16,12 +16,9 @@ const NavBar = (props) => {
         <Link to="/" className="NavBar-link">
           主页
         </Link>
-        {props.userId && (
-          <Link to={`/profile/${props.useId}`} className="NavBar-link">
+          <Link to={"/profile/"} className="NavBar-link">
             我的
           </Link>
-        )
-        }
         <Link to="/chat/" className="NavBar-link">
           发帖
         </Link>

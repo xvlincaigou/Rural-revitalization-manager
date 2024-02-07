@@ -45,6 +45,7 @@ const App = () => {
     post("/api/logout");
   };
 
+  //In order to test the front end, i changed profile.:w
   // required method: whatever is returned defines what
   // shows up on screen
   return (
@@ -55,7 +56,7 @@ const App = () => {
       <div className="App-container">
         <Router>
           <Feed path="/" userId={userId} />
-          <Profile path="/profile/:userId" />
+          <Profile path="/profile/" />
           <Chatbook path="/chat/" userId={userId} />
           <Activity path="/activity/"/>
           <Register path="/register/" />
