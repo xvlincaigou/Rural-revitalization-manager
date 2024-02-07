@@ -8,8 +8,10 @@ var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
 exports.register = (req, res) => {
+    // TODO: 注册码核验
+
     // 使用 $or 查询多个字段是否唯一
-    // TO-DO: 需要与前端沟通变量名称及类型
+    // TODO: 需要与前端沟通变量名称及类型
     User.findOne({
         $or: [
             { username: req.body.username },
@@ -47,7 +49,7 @@ exports.register = (req, res) => {
             username: req.body.username,
             email: req.body.email,
             phoneNumber: req.body.phoneNumber,
-            idNumber: req.body.idNumber, // TO-DO: 沟通敏感信息安全性问题
+            idNumber: req.body.idNumber, // TODO: 沟通敏感信息安全性问题
             password: bcrypt.hashSync(req.body.password, 8),
         });
 
@@ -86,7 +88,7 @@ exports.login = (req, res) => {
             if (!user) {
                 return res.status(404).send({ message: "没有找到用户！" });
             }
-            // TO-DO:2FA
+            // TODO:2FA
             var passwordIsValid = bcrypt.compareSync(
                 req.body.password,
                 user.password
@@ -101,7 +103,7 @@ exports.login = (req, res) => {
                 {
                     algorithm: 'HS256',
                     allowInsecureKeySizes: true,
-                    expiresIn: 86400, // TO-DO: 决定令牌有效期
+                    expiresIn: 86400, // TODO: 决定令牌有效期
                 });
 
             req.session.token = token;
