@@ -27,17 +27,17 @@ const mongoose = require("mongoose"); // library to connect to MongoDB
 const path = require("path"); // provide utilities for working with file and directory paths
 
 const api = require("./api");
-const auth = require("./auth");
+const auth = require("./controllers/auth.controller");
 
 // socket stuff
 const socketManager = require("./server-socket");
 
 // Server configuration below
 // TODO change connection URL after setting up your own database
-const mongoConnectionURL =
-  "mongodb+srv://kenchoi:03CXHjMYM7xUYNh6@cluster0.xbb74.mongodb.net/?retryWrites=true&w=majority";
+const encodedPassword = encodeURIComponent("r%-BBPB:^s.MH8afU4Qq");
+const mongoConnectionURL = `mongodb://test:${encodedPassword}@ydmsk.xyz:54321/`; // 测试用
 // TODO change database name to the name you chose
-const databaseName = "Cluster0";
+const databaseName = "Test";
 
 // connect to mongodb
 mongoose
@@ -60,7 +60,7 @@ app.use(bodyParser.json());
 // set up a session, which will persist login data across requests
 app.use(
   session({
-    secret: "session-secret",
+    secret: "FvU]#kg?2Un+>o>Cff1g",
     resave: false,
     saveUninitialized: false,
   })

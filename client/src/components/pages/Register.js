@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 
 import './Register.css';
 
+import { get, post } from "../../utilities";
+
 const Register = () => {
     //注册部分
     const [username, setUsername] = useState('');

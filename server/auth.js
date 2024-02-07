@@ -1,5 +1,7 @@
+// controllers/auth.controller.js将在将来替代本文件
+// 需要将现有的认证方法迁移到新的认证方法
 const { OAuth2Client } = require("google-auth-library");
-const User = require("./models/user");
+const User = require("./models/user-legacy");
 const socketManager = require("./server-socket");
 
 // create a new OAuth client used to verify google sign-in
