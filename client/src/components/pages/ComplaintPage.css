@@ -1,0 +1,68 @@
+.ComplaintPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    width: 100%;
+  }
+  
+  .ComplaintPage form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #fff;
+  }
+  
+  .ComplaintPage form textarea {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    resize: vertical;
+    width: 100%;
+    height: 300px;
+    font-size: 24px;
+  }
+  
+  .ComplaintPage form button {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: var(--thupurple);
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .complaint-box {
+    padding: 20px;
+    margin-bottom: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+  }
+  
+  .reply-section {
+    margin-bottom: 20px;
+  }
+  
+  .reply-name {
+    margin: 0;
+    color: #007BFF;
+  }
+  
+  .reply-time,
+  .complaint-time {
+    color: #888;
+    font-size: 14px;
+  }
+  
+  .reply-message {
+    line-height: 1.6;
+  }
+  
+  .complaint-content {
+    margin: 0;
+    color: #333;
+  }

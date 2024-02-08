@@ -25,6 +25,9 @@ const NavBar = (props) => {
         <Link to="/activity/" className="NavBar-link">
           活动
         </Link>
+        <Link to="/complaint/" className="NavBar-link">
+          投诉
+        </Link>
         <Link to="/register/" className="NavBar-link">
           注册/登录
         </Link>

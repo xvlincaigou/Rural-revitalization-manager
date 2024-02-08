@@ -7,6 +7,7 @@ import Profile from "./pages/Profile.js";
 import Chatbook from "./pages/Chatbook.js";
 import Activity from "./pages/Activity.js";
 import Register from "./pages/Register.js";
+import ComplaintPage from "./pages/ComplaintPage.js";
 
 import { socket } from "../client-socket.js";
 
@@ -60,6 +61,7 @@ const App = () => {
           <Chatbook path="/chat/" userId={userId} />
           <Activity path="/activity/"/>
           <Register path="/register/" />
+          <ComplaintPage path="/complaint/" />
           <NotFound default />
         </Router>
       </div>
