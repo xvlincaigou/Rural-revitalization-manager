@@ -1,0 +1,112 @@
+.Profile-avatarContainer {
+  padding: 0 35%;
+}
+
+.Profile-avatar {
+  /* make it responsive */
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+  display: block;
+  /* div height to be the same as width*/
+  padding-top: 100%;
+
+  /* make it a circle */
+  border-radius: 50%;
+
+  /* Centering on image`s center*/
+  background-position-y: center;
+  background-position-x: center;
+  background-repeat: no-repeat;
+
+  /* it makes the clue thing, takes smaller dimension to fill div */
+  background-size: cover;
+
+  /* it is optional, for making this div centered in parent*/
+  margin: 0 auto;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("../../public/logo1.png");
+}
+
+.Profile-name {
+  font-size: 40px;
+  font-weight: 300;
+}
+
+.Profile-line {
+  border-color: var(--grey);
+}
+
+.Profile-subContainer {
+  flex-grow: 1;
+  flex-basis: 0;
+}
+
+.Profile-subContainer + .Profile-subContainer {
+  margin-left: var(--m);
+}
+
+.Profile-subTitle {
+  font-weight: 300;
+  font-size: 24px;
+  margin: var(--m) var(--s);
+}
+
+.Activity-container {
+  border: var(--darkgrey) 1px solid;
+  border-radius: var(--xs);
+  margin-top: var(--m);
+}
+
+.Activity-held-time {
+  font-size: 25px;
+  margin: var(--m) var(--m) 0 var(--m);
+}
+
+.Activity-held-time-color1 {
+  color: blue;
+}
+
+.Activity-held-time-color2 {
+  color: yellow;
+}
+
+.Activity-held-time-color3{
+    color: red;
+}
+
+.Activity-Content {
+  font-size: 50px;
+  margin: var(--xs) 0 var(--m) var(--m);
+  color: black;
+}
+
+.Activity-infoSection {
+  background-color: var(--grey);
+  border-top: 1px solid var(--darkgrey);
+  border-bottom: 1px solid var(--darkgrey);
+}
+
+.Activity-infoBody {
+  margin: var(--m) var(--m) var(--m) var(--m);
+}
+
+.Activity-button {
+  display: flex;
+  padding: 15px 20px;
+  font-size: 20px;
+  line-height: 10px;
+  align-items: center;
+  text-decoration: none;
+  color: #ffffff;
+  background-color: gray;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: var(--xs) var(--m) var(--xs) var(--m);
+  height: 10px;
+  width: 100px;
+}
