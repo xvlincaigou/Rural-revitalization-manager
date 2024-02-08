@@ -2,10 +2,8 @@ import React from "react";
 import "./CatHappiness.css";
 
 /**
- * Component that renders cat happiness
- *
  * Proptypes
- * @param {int} catHappiness is how happy your cat is
+ * @param {int} catHappiness 
  */
 const CatHappiness = (props) => {
   return (
