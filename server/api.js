@@ -11,7 +11,7 @@ const express = require("express");
 
 // import models so we can interact with the database
 const Story = require("./models/story");
-const {ActivityComment, UserComment, StoryComment} = require("./models/comment");
+const Comment = require("./models/comment");
 const User = require("./models/user");
 const Complaint = require("./models/complaint");
 const Activity = require("./models/activity");
@@ -28,7 +28,7 @@ const router = express.Router();
 const socketManager = require("./server-socket");
 const complaint = require("./models/complaint");
 
-router.get("/activities", async (req, res) => {
+router.get("/activity", async (req, res) => {
   // get all activities and sort by date
   try{
     const activities = await Activity.find().sort({start_time: -1});
@@ -62,7 +62,7 @@ router.post("/activity", async (req, res) => {
   }
 });
 
-router.post("/activities/subscribe", async (req, res) => {
+router.post("/activity/subscribe", async (req, res) => {
   try{
     const {uid, aid} = req.body;
     const activity = await Activity.findOne({_id: aid});
@@ -86,7 +86,7 @@ router.post("/activities/subscribe", async (req, res) => {
   }
 });
 
-router.post("/activities/unsubscribe", async (req, res) => {
+router.post("/activity/unsubscribe", async (req, res) => {
   try{
     const {uid, aid} = req.body;
     const activity = await Activity.findOne({_id: aid});
@@ -136,7 +136,7 @@ router.post("/complaint", async (req, res) => {
   }
 });
 
-router.get("/complaints", async (req, res) => {
+router.get("/complaint", async (req, res) => {
   // get all complaints that are not responsed and sort by date
   try{
     const not_responsed = await Complaint.find({responsed: 0}).sort({timestamp: 1});
@@ -163,7 +163,7 @@ router.post("/story", jwt.verifyToken, (req, res) => {
 });
 
 router.get("/comment", (req, res) => {
-  Comment.find({ parent: req.query.parent }).then((comments) => {
+  Comment.find({ parent: req.query.object }).then((comments) => {
     res.send(comments);
   });
 });
@@ -172,7 +172,7 @@ router.post("/comment", jwt.verifyToken, (req, res) => {
   const newComment = new Comment({
     creator_id: req.user._id,
     creator_name: req.user.name,
-    parent: req.body.parent,
+    object: req.body.object,
     content: req.body.content,
   });
 
