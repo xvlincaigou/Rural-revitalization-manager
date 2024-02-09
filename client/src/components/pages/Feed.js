@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from "react";
 import Card from "../modules/Card.js";
 import { NewStory } from "../modules/NewPostInput.js";
+import "./Feed.css";
 
 import { get } from "../../utilities";
 
 const Feed = (props) => {
   const [stories, setStories] = useState([]);
+
+  //lines 14 - 24 are new @xvlincaigou 2024/2/9
+  const [appData, setAppData] = useState({});
+
+  const DefaultAppData = {
+    activityCount: 0,
+    postCount: 0,
+    userCount: 0,
+    complaint: 1,
+    complaintReply: 1,
+  };
 
   // called when the "Feed" component "mounts", i.e.
   // when it shows up on screen
@@ -15,7 +27,14 @@ const Feed = (props) => {
       let reversedStoryObjs = storyObjs.reverse();
       setStories(reversedStoryObjs);
     });
+
+    //new @xvlincaigou 2024/2/9
+    setAppData(DefaultAppData);
   }, []);
+
+  //new @xvlincaigou 2024/2/9
+  const complaintReplyRate = (appData.complaintReply / appData.complaint) * 100;
+  const formattedRate = complaintReplyRate.toFixed(2) + "%";
 
   // this gets called when the user pushes "Submit", so their
   // post gets added to the screen right away
@@ -39,10 +58,31 @@ const Feed = (props) => {
   } else {
     storiesList = <div>No stories!</div>;
   }
+
   return (
     <>
       {props.userId && <NewStory addNewStory={addNewStory} />}
-      {storiesList}
+      {/*storiesList*/}
+
+      <div className="Feed-subContainer u-textCenter">
+        <h4>{"活动总数"}</h4>
+        <div className="Feed-content">{appData.activityCount}</ div>
+      </div>
+
+      <div className="Feed-subContainer u-textCenter">
+        <h4>{"帖子总数"}</h4>
+        <div className="Feed-content">{appData.postCount}</div>
+      </div>
+
+      <div className="Feed-subContainer u-textCenter">
+        <h4>{"用户总数"}</h4>
+        <div className="Feed-content">{appData.userCount}</div>
+      </div>
+
+      <div className="Feed-subContainer u-textCenter">
+        <h4>{"投诉回复率"}</h4>
+        <div className="Feed-content">{formattedRate}</div>
+      </div>
     </>
   );
 };

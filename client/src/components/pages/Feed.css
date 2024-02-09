@@ -1,0 +1,25 @@
+.Feed-subContainer {
+    color: var(--thupurple);
+    flex-grow: 1;
+    flex-basis: 0;
+  }
+  
+  .Feed-subContainer + .Feed-subContainer {
+    margin-left: var(--m);
+  }
+  
+  .Feed-content {
+    border: var(--darkgrey) 1px solid;
+    border-radius: var(--xs);
+    margin-top: var(--m);
+    padding: var(--m);
+    background-color: #f9f9f9;
+    font-family: Arial, sans-serif; 
+    color: var(--thupurple); 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); 
+    height: 80px;
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
