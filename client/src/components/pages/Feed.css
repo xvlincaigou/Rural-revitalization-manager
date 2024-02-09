@@ -17,9 +17,36 @@
     font-family: Arial, sans-serif; 
     color: var(--thupurple); 
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); 
-    height: 80px;
-    font-size: 30px;
+    height: 14vh;
+    font-size: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .link-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    background-color: #fff;
+    align-items: center;
+    font-size: 16px;
+    justify-content: center;
+    margin-top: var(--l);
+    background-color: #f9f9f9;
+    font-family: Arial, sans-serif; 
+    color: var(--thupurple); 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); 
+    margin-left: var(--m);
+  }
+  
+  .link-item {
+    text-decoration: none;
+    color: #007BFF;
+    margin-bottom: 10px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .link-item:hover {
+    color: #0056b3;
   }

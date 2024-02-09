@@ -12,22 +12,24 @@ const Profile = (props) => {
   const xulinuser = {
     name: "许霖",
     activity: [
-      {name:"打扫410B",
-      held_time:"2024/02/09",
-      latest_register_time:"2024/02/09",
-      information:"这是一个测试",
-      number_of_people_signed_up:4,
-      users_signed_up:["许霖", "葛冠辰", "关世开", "刘明轩"],
-      average_score:100
-      },
       {
-        name:"建院外包开发",
-        held_time:"2024/02/02",
-        latest_register_time:"2024/02/02",
+        name:"打扫410B",
+        held_time:"2024/02/09",
+        latest_register_time:"2024/02/09",
         information:"这是一个测试",
         number_of_people_signed_up:4,
-        users_signed_up:["许霖", "赵畅", "关世开", "刘明轩"],
+        users_signed_up:["许霖", "葛冠辰", "关世开", "刘明轩"],
         average_score:100
+    }
+      , 
+      {
+        name:"建院外包开发",
+            held_time:"2024/02/02",
+            latest_register_time:"2024/02/02",
+            information:"这是一个测试",
+            number_of_people_signed_up:4,
+            users_signed_up:["许霖", "赵畅", "关世开", "刘明轩"],
+            average_score:100
       }
     ]
   };
@@ -40,6 +42,19 @@ const Profile = (props) => {
   if (!user) {
     return <div> Loading! </div>;
   }
+  
+  let registerActivities = user.activity.map((activity) => (
+      <SingleActivity
+        name={activity.name}
+        held_time={activity.held_time}
+        latest_register_time={activity.latest_register_time}
+        information={activity.information}
+        number_of_people_signed_up={activity.number_of_people_signed_up}
+        users_signed_up={activity.users_signed_up}
+        average_score={activity.average_score}
+      />
+  ));
+
   return (
     <>
       <div
@@ -56,7 +71,7 @@ const Profile = (props) => {
       <div className="u-flex">
         <div className="Profile-subContainer u-textCenter">
           <h4 className="Profile-subTitle">我报名的活动</h4>
-          <SingleActivity props={user.activity[1]} />
+          {registerActivities}
         </div>
        <div className="Profile-subContainer u-textCenter">
           <h4 className="Profile-subTitle">我管理的活动</h4>
