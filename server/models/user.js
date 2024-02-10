@@ -5,9 +5,9 @@ const mongoose = require("mongoose");
 // 登陆安全保护：
 const UserSchema = new mongoose.Schema({
     name: String, // 姓名
-    email: String, // 电子邮箱
-    phoneNumber: String, // 手机号
-    idNumber: String, // 身份证号-暂定
+    u_id: String, // 电子邮箱
+    phone_number: String, // 手机号
+    id_number: String, // 身份证号-暂定
     password: String, // 密码
     role: { // 用户角色
         type: Number,
@@ -15,11 +15,17 @@ const UserSchema = new mongoose.Schema({
         /*
         角色代号与用户角色对应关系：
         0 <-> regularUser      <-> 普通用户
-        1 <-> eventManager     <-> 活动管理员
-        2 <-> executiveManager <-> 常务管理员
-        3 <-> sysAdmin         <-> 系统管理员
+        1 <-> executiveManager <-> 常务管理员
+        2 <-> sysAdmin         <-> 系统管理员
         */
     },
+    activities: [String], // contains activity _id
+    previous_score: [Number],  
+    comment_received: [String], // contains comment _id
+    tags: [{
+        tag: String,
+        visibility: Number
+    }],
     /*
     用户保护功能：有待讨论
     isAccountFrozen: {
@@ -31,4 +37,7 @@ const UserSchema = new mongoose.Schema({
 // 注册码应在用户进行注册时核验
 
 // compile model from schema
-module.exports = mongoose.model("user", UserSchema);
+module.exports = {
+    User: mongoose.model("user", UserSchema),
+    Admin: mongoose.model("admin", UserSchema)
+};
