@@ -30,6 +30,10 @@ const Feed = (props) => {
 
     //new @xvlincaigou 2024/2/9
     setAppData(DefaultAppData);
+    //new @xvlincaigou 2024/2/10
+    /*get("/api/appData").then((appData) => {
+      setAppData(appData);
+    });*/
   }, []);
 
   //new @xvlincaigou 2024/2/9

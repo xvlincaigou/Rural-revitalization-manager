@@ -17,7 +17,6 @@
     font-family: Arial, sans-serif; 
     color: var(--thupurple); 
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); 
-    height: 14vh;
     font-size: 34px;
     display: flex;
     align-items: center;

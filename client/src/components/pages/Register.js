@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 
 import './Register.css';
 
 import { get, post } from "../../utilities";
 
 const Register = () => {
+
+    useEffect(() => {
+        document.title = "Register";
+      }, []);
+
     //注册部分
     const [username, setUsername] = useState('');
     const [mail, setMail] = useState('');
@@ -60,6 +65,16 @@ const Register = () => {
     const handleLogin = (event) => {
         event.preventDefault();
         // 在这里处理登录逻辑
+        // 如何把信息传导到app.js呢？
+        /**
+         * post("/api/login", { email, password }).then((user) => {
+         *     if (user) {
+         *        props.userId(user._id);
+         *        //跳转到主页面  
+         *    } else {
+         *       setWarning(true);
+         *   }
+         */
         console.log(`Logging in with email: ${email} and password: ${password}`);
     };
 

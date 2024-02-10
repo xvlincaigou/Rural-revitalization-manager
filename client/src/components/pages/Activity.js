@@ -5,6 +5,11 @@ import "../../utilities.css";
 import SingleActivity from "../modules/SingleActivity.js";
 
 const Activity = (props) => {
+
+    useEffect(() => {
+        document.title = "Activity";
+    }, []);
+
     return (
         <div>
         <SingleActivity
