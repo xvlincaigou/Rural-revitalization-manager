@@ -12,7 +12,7 @@ const express = require("express");
 // import models so we can interact with the database
 const Story = require("./models/story");
 const {ActivityComment, MemberComment} = require("./models/comment");
-const User = require("./models/user");
+const {User, Admin} = require("./models/user");
 const Complaint = require("./models/complaint");
 const Activity = require("./models/activity");
 const ActivityRegistration = require("./models/registration");
@@ -27,7 +27,6 @@ const jwt = require("./middlewares/authJwt")
 const router = express.Router();
 
 const socketManager = require("./server-socket");
-const complaint = require("./models/complaint");
 
 router.get("/activity", auth.ensureLoggedIn, async (req, res) => {
   // get all activities and sort by date
@@ -298,115 +297,172 @@ router.post("/activity/update", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
+router.post("/activity/create", auth.ensureLoggedIn, async (req, res) => {
+  try {
+    const {name, location, date, capacity, supervisors} = req.body;
 
-router.get("/stories", (req, res) => {
-  // empty selector means get all documents
-  Story.find({}).then((stories) => res.send(stories));
-});
+    // Create a new activity object
+    const newActivity = new Activity({//这里待完成！undo，需要确定activity数据库格式
+      name: name,
+      location: location,
+      date: date,
+      capacity: capacity,
+      supervisors: supervisors
+    });
 
-router.post("/story", jwt.verifyToken, (req, res) => {
-  const newStory = new Story({
-    creator_id: req.user._id,
-    creator_name: req.user.name,
-    content: req.body.content,
-  });
-
-  newStory.save().then((story) => res.send(story));
-});
-
-router.get("/comment", (req, res) => {
-  Comment.find({ parent: req.query.object }).then((comments) => {
-    res.send(comments);
-  });
-});
-
-router.post("/comment", jwt.verifyToken, (req, res) => {
-  const newComment = new Comment({
-    creator_id: req.user._id,
-    creator_name: req.user.name,
-    object_id: req.body.object_id,
-    content: req.body.content,
-  });
-
-  newComment.save().then((comment) => res.send(comment));
-});
-
-router.post("/login", auth.login);
-router.post("/logout", auth.logout);
-router.post("/register", auth.register);
-
-router.get("/whoami", (req, res) => {
-  if (!req.user) {
-    // not logged in
-    return res.send({});
+    // Save the new activity to the database
+    await newActivity.save();
+    return res.status(200).json({ message: "成功创建活动" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
-
-  res.send(req.user);
 });
 
-router.get("/user", (req, res) => {
-  User.findById(req.query.userid).then((user) => {
-    res.send(user);
-  });
-});
+router.post("/activity/delete", auth.ensureLoggedIn, async (req, res) => {
+  try {
+    const activity_id = req.body.activity_id;
 
-router.post("/initsocket", (req, res) => {
-  // do nothing if user not logged in
-  if (req.user)
-    socketManager.addUser(req.user, socketManager.getSocketFromSocketID(req.body.socketid));
-  res.send({});
-});
-
-router.get("/chat", (req, res) => {
-  let query;
-  if (req.query.recipient_id === "ALL_CHAT") {
-    // get any message sent by anybody to ALL_CHAT
-    query = { "recipient._id": "ALL_CHAT" };
-  } else {
-    // get messages that are from me->you OR you->me
-    query = {
-      $or: [
-        { "sender._id": req.user._id, "recipient._id": req.query.recipient_id },
-        { "sender._id": req.query.recipient_id, "recipient._id": req.user._id },
-      ],
-    };
-  }
-
-  Message.find(query).then((messages) => res.send(messages));
-});
-
-router.post("/message", jwt.verifyToken, (req, res) => {
-  console.log(`Received a chat message from ${req.user.name}: ${req.body.content}`);
-
-  // insert this message into the database
-  const message = new Message({
-    recipient: req.body.recipient,
-    sender: {
-      _id: req.user._id,
-      name: req.user.name,
-    },
-    content: req.body.content,
-  });
-  message.save();
-
-  if (req.body.recipient._id == "ALL_CHAT") {
-    socketManager.getIo().emit("message", message);
-  } else {
-    socketManager.getSocketFromUserID(req.user._id).emit("message", message);
-    if (req.user._id !== req.body.recipient._id) {
-      socketManager.getSocketFromUserID(req.body.recipient._id).emit("message", message);
+    // Check if the activity exists
+    const activity = await Activity.findById(activity_id);
+    if (!activity) {
+      return res.status(404).json({ message: "没有找到活动" });
     }
+
+    // Delete the activity
+    await Activity.findByIdAndDelete(activity_id);
+    return res.status(200).json({ message: "成功删除活动" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 });
 
-router.get("/activeUsers", (req, res) => {
-  res.send({ activeUsers: socketManager.getAllConnectedUsers() });
+router.post("/user/tags", auth.ensureLoggedIn, async (req, res) => {
+  try {
+    const { u_id, tag, visibility, action } = req.body;
+    let message;
+    let tagbag = { tag, visibility };
+    // 找到用户
+    const user = await User.findById(u_id);
+    if (!user) {
+      return res.status(404).json({ message: "未找到用户" });
+    }
+
+    // 执行添加或删除标签操作
+    if (action === "add") {
+      user.tags.push(tagbag);
+      message = "成功添加标签";
+    } else if (action === "remove") {
+      const index = user.tags.indexOf(tag);
+      if (index !== -1) {
+        user.tags.splice(index, 1);
+        message = "成功删除标签";
+      } else {
+        return res.status(404).json({ message: "未找到此标签" });
+      }
+    } else {
+      return res.status(400).json({ message: "非法操作" });
+    }
+
+    // 保存更新后的用户信息
+    await user.save();
+    res.status(200).json({ message: message });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 });
 
-// anything else falls to this "not found" case
-router.all("*", (req, res) => {
-  console.log(`API route not found: ${req.method} ${req.url}`);
-  res.status(404).send({ msg: "API route not found" });
+router.post("/tag/visibility", auth.ensureLoggedIn, async (req, res) => {
+  try {
+    const { user_id, tag, visibility } = req.body;
+
+    // 找到用户
+    const user = await User.findOne(user_id);
+    if (!user) {
+      return res.status(404).json({ message: "未找到用户" });
+    }
+
+    // 查找标签在用户模型中的索引
+    const tagIndex = user.tags.findIndex(entry => entry[0] === tag);
+
+    // 如果标签不存在于用户模型中，则添加新的标签及可见性信息
+    if (tagIndex === -1) {
+      user.tags.push({tag, visibility});
+    } else {
+      // 更新标签的可见性
+      user.tags[tagIndex].visibility = visibility;
+    }
+
+    // 保存更新后的用户信息
+    await user.save();
+
+    res.status(200).json({ message: "成功更新标签可见性" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 });
+
+router.post("/activity/admin", auth.ensureLoggedIn, async (req, res) => {
+  try {
+    const { activity_id, admin_email, action } = req.body;
+
+    // 查找活动
+    const activity = await Activity.findById(activity_id);
+    if (!activity) {
+      return res.status(404).json({ message: "未找到活动" });
+    }
+
+    // 根据操作执行添加或删除活动管理员的操作
+    if (action === "add") {
+      // 添加活动管理员
+      activity.supervisors.push(admin_email);
+    } else if (action === "remove") {
+      // 删除活动管理员
+      const index = activity.supervisors.indexOf(admin_email);
+      if (index !== -1) {
+        activity.supervisors.splice(index, 1);
+      } else {
+        return res.status(404).json({ message: "未找到管理员" });
+      }
+    } else {
+      return res.status(400).json({ message: "非法操作" });
+    }
+
+    // 保存更新后的活动信息
+    await activity.save();
+    res.status(200).json({ message: "成功更新管理员信息" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+router.post("/admin", auth.ensureLoggedIn, async (req, res) => {
+  try {
+    const { admin_email, action } = req.body;
+
+    // 查找常务管理员
+    const adminUser = await Admin.findOne({ u_id: admin_email });
+    if (!adminUser) {
+      return res.status(404).json({ message: "未找到常务管理员" });
+    }
+
+    // 根据操作执行添加或删除常务管理员的操作
+    if (action === "add") {
+      // 添加常务管理员角色
+      adminUser.role = 1; // 常務
+      await adminUser.save();
+      res.status(200).json({ message: "成功添加常务管理员" });
+    } else if (action === "remove") {
+      // 删除常务管理员角色
+      adminUser.role = 0;
+      await adminUser.save();
+      res.status(200).json({ message: "成功删除常务管理员" });
+    } else {
+      res.status(400).json({ message: "非法操作" });
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+// undo：启用或禁用用户等：需要在数据库方面进行改动支持，在user里添加一个是否封禁的属性。
 
 module.exports = router;

@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema({
     previous_score: [Number],  
     comment_received: [String], // contains comment _id
     tags: [{
-        content: String,
+        tag: String,
         visibility: Number
     }],
     /*
@@ -37,4 +37,7 @@ const UserSchema = new mongoose.Schema({
 // 注册码应在用户进行注册时核验
 
 // compile model from schema
-module.exports = mongoose.model("user", UserSchema);
+module.exports = {
+    User: mongoose.model("user", UserSchema),
+    Admin: mongoose.model("admin", UserSchema)
+};
