@@ -18,13 +18,13 @@ const Activity = require("./models/activity");
 const ActivityRegistration = require("./models/registration");
 
 // import authentication library
-const auth = require("./controllers/auth.controller");
+const auth = require("./middlewares/authJwt");
 
 // api endpoints: all these paths will be prefixed with "/api/"
 const router = express.Router();
 const socketManager = require("./server-socket");
 
-router.get("/activity", auth.ensureLoggedIn, async (req, res) => {
+router.get("/activity", auth.verifyToken, async (req, res) => {
   // get all activities and sort by date
   try{
     const activities = await Activity.find().sort({start_time: -1});
@@ -35,19 +35,15 @@ router.get("/activity", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/activity", auth.ensureLoggedIn, async (req, res) => {
+router.post("/activity", auth.verifyToken, async (req, res) => {
   // post a new activity
   try{
-    const {name, location, date, capacity, candidates,
-           members, comments, supervisors} = req.body;
+    const {name, location, date, capacity, supervisors} = req.body;
     const newActivity = new Activity({
       name: name,
       location: location,
       date: date,
       capacity: capacity,
-      candidates: candidates,
-      members: members,
-      comments: comments,
       supervisors: supervisors
     });
 
@@ -58,7 +54,7 @@ router.post("/activity", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/activity/subscribe", auth.ensureLoggedIn, async (req, res) => {
+router.post("/activity/subscribe", auth.verifyToken, async (req, res) => {
   try{
     const {uid, aid} = req.body;
     const activity = await Activity.findOne({_id: aid});
@@ -82,7 +78,7 @@ router.post("/activity/subscribe", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/activity/unsubscribe", auth.ensureLoggedIn, async (req, res) => {
+router.post("/activity/unsubscribe", auth.verifyToken, async (req, res) => {
   try{
     const {uid, aid} = req.body;
     const activity = await Activity.findOne({_id: aid});
@@ -116,12 +112,11 @@ router.post("/activity/unsubscribe", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/complaint", auth.ensureLoggedIn, async (req, res) => {
+router.post("/complaint", auth.verifyToken, async (req, res) => {
   try{
-    const {sender, timestamp, content} = req.body;
+    const {sender, content} = req.body;
     const newComplaint = new Complaint({
       sender: sender,
-      timestamp: timestamp,
       content: content
     });
 
@@ -132,10 +127,10 @@ router.post("/complaint", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.get("/complaint", auth.ensureLoggedIn, async (req, res) => {
+router.get("/complaint", auth.verifyToken, async (req, res) => {
   // get all complaints that are not responsed and sort by date
   try{
-    const not_responsed = await Complaint.find({responsed: 0}).sort({timestamp: 1});
+    const not_responsed = await Complaint.find({responsed: 0}).sort({"sender.timestamp": 1});
     res.send(not_responsed);
     res.status(200).json({message: "Complaints sent"});
   }catch(err){
@@ -143,7 +138,7 @@ router.get("/complaint", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/activity/comment", auth.ensureLoggedIn, async (req, res) => {
+router.post("/activity/comment", auth.verifyToken, async (req, res) => {
   try {
     const {creator, send_date, rating, comment} = req.body;
 
@@ -163,7 +158,7 @@ router.post("/activity/comment", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/member/comment", auth.ensureLoggedIn, async (req, res) => {
+router.post("/member/comment", auth.verifyToken, async (req, res) => {
   try {
     const {creator, send_date, rating, comment} = req.body;
 
@@ -184,7 +179,7 @@ router.post("/member/comment", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/activity/register", auth.ensureLoggedIn, async (req, res) => {
+router.post("/activity/register", auth.verifyToken, async (req, res) => {
   try {
     const { email, activity_id } = req.body;
 
@@ -212,7 +207,7 @@ router.post("/activity/register", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.get("/activity/registrants", auth.ensureLoggedIn, async (req, res) => {
+router.get("/activity/registrants", auth.verifyToken, async (req, res) => {
   try {
     const { u_id } = req.query;
 
@@ -241,7 +236,7 @@ router.get("/activity/registrants", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/activity/approve", auth.ensureLoggedIn, async (req, res) => {
+router.post("/activity/approve", auth.verifyToken, async (req, res) => {
   try {
     const { u_id, accept } = req.body;
     const activity_id = req.body.activity_id;
@@ -271,7 +266,7 @@ router.post("/activity/approve", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/activity/update", auth.ensureLoggedIn, async (req, res) => {
+router.post("/activity/update", auth.verifyToken, async (req, res) => {
   try {
     const { activity_id, updatedInfo } = req.body;//这里待完成！undo，需要按格式修改updateinfo
 
@@ -293,7 +288,7 @@ router.post("/activity/update", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/activity/create", auth.ensureLoggedIn, async (req, res) => {
+router.post("/activity/create", auth.verifyToken, async (req, res) => {
   try {
     const {name, location, date, capacity, supervisors} = req.body;
 
@@ -314,7 +309,7 @@ router.post("/activity/create", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/activity/delete", auth.ensureLoggedIn, async (req, res) => {
+router.post("/activity/delete", auth.verifyToken, async (req, res) => {
   try {
     const activity_id = req.body.activity_id;
 
@@ -332,7 +327,7 @@ router.post("/activity/delete", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/user/tags", auth.ensureLoggedIn, async (req, res) => {
+router.post("/user/tags", auth.verifyToken, async (req, res) => {
   try {
     const { u_id, tag, visibility, action } = req.body;
     let message;
@@ -367,7 +362,7 @@ router.post("/user/tags", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/tag/visibility", auth.ensureLoggedIn, async (req, res) => {
+router.post("/tag/visibility", auth.verifyToken, async (req, res) => {
   try {
     const { user_id, tag, visibility } = req.body;
 
@@ -397,7 +392,7 @@ router.post("/tag/visibility", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/activity/admin", auth.ensureLoggedIn, async (req, res) => {
+router.post("/activity/admin", auth.verifyToken, async (req, res) => {
   try {
     const { activity_id, admin_email, action } = req.body;
 
@@ -431,7 +426,7 @@ router.post("/activity/admin", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/admin", auth.ensureLoggedIn, async (req, res) => {
+router.post("/admin", auth.verifyToken, async (req, res) => {
   try {
     const { admin_email, action } = req.body;
 

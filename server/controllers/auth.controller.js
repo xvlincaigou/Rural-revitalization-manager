@@ -142,7 +142,7 @@ exports.populateCurrentUser = (req, res, next) => {
     next();
 }
 
-/*
+
 exports.ensureLoggedIn = (req, res, next) => {
     if (!req.user) {
         return res.status(401).send({ err: "没有登陆。" });
@@ -150,4 +150,3 @@ exports.ensureLoggedIn = (req, res, next) => {
 
     next();
 }
-*/

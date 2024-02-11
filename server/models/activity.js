@@ -13,7 +13,11 @@ const ActivitySchema = new mongoose.Schema({
     candidates: [String],  // Here contains u_id
     members: [String],
     comments: [String],
-    supervisors: [String]
+    supervisors: [String],
+    score: {
+        type: Number,
+        default: 0
+    }
 });
 
 // compile model from schema
