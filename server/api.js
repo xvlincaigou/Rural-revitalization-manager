@@ -11,7 +11,7 @@ const express = require("express");
 
 // import models so we can interact with the database
 const Story = require("./models/story");
-const {ActivityComment, MemberComment} = require("./models/comment");
+const {StoryComment, ActivityComment, MemberComment} = require("./models/comment");
 const {User, Admin} = require("./models/user");
 const Complaint = require("./models/complaint");
 const Activity = require("./models/activity");
