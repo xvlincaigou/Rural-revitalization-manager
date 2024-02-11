@@ -12,7 +12,7 @@ const ActivitySchema = new mongoose.Schema({
     capacity: Number,
     candidates: [String],  // Here contains u_id
     members: [String],
-    comments: [String],
+    comments: [mongoose.Schema.Types.ObjectId],
     supervisors: [String],
     score: {
         type: Number,

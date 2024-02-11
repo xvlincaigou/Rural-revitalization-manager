@@ -4,7 +4,9 @@ const mongoose = require("mongoose");
 const StorySchema = new mongoose.Schema({
   creator_id: String,
   creator_name: String,
+  title: String,
   content: String,
+  comments: [mongoose.Schema.Types.ObjectId]
 });
 
 // compile model from schema

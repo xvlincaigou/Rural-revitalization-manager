@@ -10,11 +10,8 @@ const CommentSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  activity_id: String, // links to the _id of a parent story
-  member_id: {
-    type: String,
-    default: 'x'
-  },
+  activity_id: mongoose.Schema.Types.ObjectId, // links to the _id of a parent story
+  member_id: String,
   rating: {
     type: Number,
     default: 0

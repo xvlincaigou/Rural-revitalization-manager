@@ -19,9 +19,12 @@ const UserSchema = new mongoose.Schema({
         2 <-> sysAdmin         <-> 系统管理员
         */
     },
-    activities: [String], // contains activity _id
-    previous_score: [Number],  
-    comment_received: [String], // contains comment _id
+    activities: [mongoose.Schema.Types.ObjectId], // contains activity _id
+    previous_scores: [{
+        score: Number,
+        activity_id: mongoose.Schema.Types.ObjectId
+    }],  
+    comment_received: [mongoose.Schema.Types.ObjectId], // contains comment _id
     tags: [{
         tag: String,
         visibility: Number
