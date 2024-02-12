@@ -29,6 +29,10 @@ const UserSchema = new mongoose.Schema({
         tag: String,
         visibility: Number
     }],
+    banned: {
+        type: Number,
+        default: 0
+    }
     /*
     用户保护功能：有待讨论
     isAccountFrozen: {

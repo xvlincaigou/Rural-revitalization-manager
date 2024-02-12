@@ -14,6 +14,7 @@ const ComplaintSchema = new mongoose.Schema({
   },
   // timestamp: {type: Date, default: Date.now},
   content: String,
+  reply: String,
   responsed: {type: Number, default: 0}
   /*
     投诉信息状态：
