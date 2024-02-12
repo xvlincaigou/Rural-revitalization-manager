@@ -4,6 +4,10 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../controllers/auth.controller");
 
+// POST /api/register
 router.post("/", auth.register);
+
+// GET /api/login
+router.get("/", auth.login);
 
 module.exports = router;

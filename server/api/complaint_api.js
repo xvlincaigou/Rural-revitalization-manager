@@ -10,7 +10,8 @@ const auth = require("../middlewares/authJwt");
 // api endpoints: all these paths will be prefixed with "/api/"
 const router = express.Router();
 
-router.post("/complaint", auth.verifyToken, async (req, res) => {
+// POST /api/complaint
+router.post("/", auth.verifyToken, async (req, res) => {
   try{
     const {sender, content} = req.body;
     const newComplaint = new Complaint({
@@ -25,7 +26,8 @@ router.post("/complaint", auth.verifyToken, async (req, res) => {
   }
 });
 
-router.get("/complaint", auth.verifyToken, async (req, res) => {
+// GET /api/complaint
+router.get("/", auth.verifyToken, async (req, res) => {
   // get all complaints that are not responsed and sort by date
   try{
     const not_responsed = await Complaint.find({responsed: 0}).sort({"sender.timestamp": 1});

@@ -12,6 +12,7 @@ const auth = require("../middlewares/authJwt");
 // api endpoints: all these paths will be prefixed with "/api/"
 const router = express.Router();
 
+// GET /api/global/appdata
 router.get("/appdata", auth.verifyToken, async (req, res) => {
   try{
     var count = 0;

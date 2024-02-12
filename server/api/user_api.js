@@ -9,7 +9,8 @@ const auth = require("../middlewares/authJwt");
 // api endpoints: all these paths will be prefixed with "/api/"
 const router = express.Router();
 
-router.post("/user/tags", auth.verifyToken, async (req, res) => {
+// POST /api/user/tags
+router.post("/tags", auth.verifyToken, async (req, res) => {
   try {
     const { u_id, tag, visibility, action } = req.body;
     let message;
@@ -44,7 +45,8 @@ router.post("/user/tags", auth.verifyToken, async (req, res) => {
   }
 });
 
-router.post("/user/tags/visibility", auth.verifyToken, async (req, res) => {
+// POST /api/user/tags/visibility
+router.post("/tags/visibility", auth.verifyToken, async (req, res) => {
   try {
     const { user_id, tag, visibility } = req.body;
 
@@ -74,7 +76,8 @@ router.post("/user/tags/visibility", auth.verifyToken, async (req, res) => {
   }
 });
 
-router.post("/user/admin", auth.verifyToken, async (req, res) => {
+// POST /api/user/admin
+router.post("/admin", auth.verifyToken, async (req, res) => {
   try {
     const { admin_email, action } = req.body;
 
@@ -104,7 +107,8 @@ router.post("/user/admin", auth.verifyToken, async (req, res) => {
 });
 // undo：启用或禁用用户等：需要在数据库方面进行改动支持，在user里添加一个是否封禁的属性。
 
-router.post("/user/ban",auth.verifyToken, async (req, res) => {
+// POST /api/user/ban
+router.post("/ban",auth.verifyToken, async (req, res) => {
   try{
     const {uid,ban}=req.body;
     const user=await User.findById(uid)
