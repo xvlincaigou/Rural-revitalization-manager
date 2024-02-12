@@ -1,44 +1,18 @@
 import React, { useState, useEffect } from "react";
-import Card from "../modules/Card.js";
-import { NewStory } from "../modules/NewPostInput.js";
 import "./Feed.css";
-
 import { get } from "../../utilities";
 
-const Feed = (props) => {
+/**
+ * Below are how to use story's api:
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  import { NewStory } from "../modules/NewPostInput.js";
+import Card from "../modules/Card.js";
   const [stories, setStories] = useState([]);
 
-  //lines 14 - 24 are new @xvlincaigou 2024/2/9
-  const [appData, setAppData] = useState({});
-
-  const DefaultAppData = {
-    activityCount: 0,
-    postCount: 0,
-    userCount: 0,
-    complaint: 1,
-    complaintReply: 1,
-  };
-
-  // called when the "Feed" component "mounts", i.e.
-  // when it shows up on screen
-  useEffect(() => {
-    document.title = "News Feed";
     get("/api/stories").then((storyObjs) => {
       let reversedStoryObjs = storyObjs.reverse();
       setStories(reversedStoryObjs);
-    });
-
-    //new @xvlincaigou 2024/2/9
-    setAppData(DefaultAppData);
-    //new @xvlincaigou 2024/2/10
-    /*get("/api/appData").then((appData) => {
-      setAppData(appData);
-    });*/
-  }, []);
-
-  //new @xvlincaigou 2024/2/9
-  const complaintReplyRate = (appData.complaintReply / appData.complaint) * 100;
-  const formattedRate = complaintReplyRate.toFixed(2) + "%";
+    }
 
   // this gets called when the user pushes "Submit", so their
   // post gets added to the screen right away
@@ -63,11 +37,39 @@ const Feed = (props) => {
     storiesList = <div>No stories!</div>;
   }
 
+      {props.userId && <NewStory addNewStory={addNewStory} />}
+      {storiesList}
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+
+/**
+ * @typedef appData
+ * @property { string } activityCount
+ * @property { string } postCount
+ * @property { string } userCount
+ * @property { string } complaintReply
+ * @property { string } complaint
+ * @returns 
+ */
+const Feed = (props) => {
+
+  const [appData, setAppData] = useState({});
+
+  // called when the "Feed" component "mounts", i.e.
+  // when it shows up on screen
+  useEffect(() => {
+    document.title = "News Feed";
+    get("/appdata").then((appData) => {
+      setAppData(appData);
+      console.log(appData);
+    });
+  }, []);
+
+  const complaintReplyRate = (appData.complaintReply / appData.complaint) * 100;
+  const formattedRate = complaintReplyRate.toFixed(2) + "%";
+
   return (
     <>
-      {props.userId && <NewStory addNewStory={addNewStory} />}
-      {/*storiesList*/}
-
       <div className="Feed-subContainer u-textCenter">
         <h4>{"活动总数"}</h4>
         <div className="Feed-content">{appData.activityCount}</ div>
