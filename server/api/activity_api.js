@@ -1,19 +1,9 @@
-/*
-|--------------------------------------------------------------------------
-| api.js -- server routes
-|--------------------------------------------------------------------------
-|
-| This file defines the routes for your server.
-|
-*/
-
 const express = require("express");
 
 // import models so we can interact with the database
-const Story = require("./models/story");
+
 const {StoryComment, ActivityComment, MemberComment} = require("./models/comment");
 const {User, Admin} = require("./models/user");
-const Complaint = require("./models/complaint");
 const Activity = require("./models/activity");
 
 // import authentication library
@@ -21,24 +11,6 @@ const auth = require("./middlewares/authJwt");
 
 // api endpoints: all these paths will be prefixed with "/api/"
 const router = express.Router();
-const socketManager = require("./server-socket");
-
-router.get("/stories", (req, res) => {
-  // empty selector means get all documents
-  Story.find({}).then((stories) => res.send(stories));
-});
-
-router.post("/story", auth.verifyToken, (req, res) => {
-  const {creator_id, creator_name, title, content} = req.body;
-  const newStory = new Story({
-    creator_id: creator_id,
-    creator_name: creator_name,
-    title: title,
-    content: content,
-  });
-
-  newStory.save().then((story) => res.send(story));
-});
 
 router.get("/activity", auth.verifyToken, async (req, res) => {
   // get all activities and sort by date
@@ -128,33 +100,6 @@ router.post("/activity/unsubscribe", auth.verifyToken, async (req, res) => {
   }
 });
 
-router.post("/complaint", auth.verifyToken, async (req, res) => {
-  try{
-    const {sender, content} = req.body;
-    const newComplaint = new Complaint({
-      sender: sender,
-      content: content
-    });
-
-    await newComplaint.save();
-    res.status(200).json({message: "Complaint added successfully"});
-  }catch(err){
-    res.status(404).json({error: "No complaint"});
-  }
-});
-
-router.get("/complaint", auth.verifyToken, async (req, res) => {
-  // get all complaints that are not responsed and sort by date
-  try{
-    const not_responsed = await Complaint.find({responsed: 0}).sort({"sender.timestamp": 1});
-    res.send(not_responsed);
-    res.status(200).json({message: "Complaints sent"});
-  }catch(err){
-    res.status(404).json({error: "No complaints"});
-  }
-});
-
-// not done yet
 router.post("/activity/comment", auth.verifyToken, async (req, res) => {
   try{
     const {creator, send_date, activity_id, rating, comment} = req.body;
@@ -175,27 +120,6 @@ router.post("/activity/comment", auth.verifyToken, async (req, res) => {
   }
 });
 
-// not done yet
-router.post("/member/comment", auth.verifyToken, async (req, res) => {
-  try{
-    const {creator, send_date, member_id, rating, comment} = req.body;
-    const member = await User.findOne({u_id: member_id});
-    member.comment_received.push(req.body._id);
-    const newComment = new MemberComment({
-      creator: creator,
-      send_date: send_date,
-      activity_id: req.body.activity_id,
-      member_id: member_id,
-      rating: rating,
-      comment: comment
-    });
-    // Save the new activity to the database
-    await member.save();
-    await newComment.save();
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
 
 router.post("/activity/register", auth.verifyToken, async (req, res) => {
   try {
@@ -348,71 +272,6 @@ router.post("/activity/delete", auth.verifyToken, async (req, res) => {
   }
 });
 
-router.post("/user/tags", auth.verifyToken, async (req, res) => {
-  try {
-    const { u_id, tag, visibility, action } = req.body;
-    let message;
-    let tagbag = { tag, visibility };
-    // 找到用户
-    const user = await User.findById(u_id);
-    if (!user) {
-      return res.status(404).json({ message: "未找到用户" });
-    }
-
-    // 执行添加或删除标签操作
-    if (action === "add") {
-      user.tags.push(tagbag);
-      message = "成功添加标签";
-    } else if (action === "remove") {
-      const index = user.tags.indexOf(tag);
-      if (index !== -1) {
-        user.tags.splice(index, 1);
-        message = "成功删除标签";
-      } else {
-        return res.status(404).json({ message: "未找到此标签" });
-      }
-    } else {
-      return res.status(400).json({ message: "非法操作" });
-    }
-
-    // 保存更新后的用户信息
-    await user.save();
-    res.status(200).json({ message: message });
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
-router.post("/user/tags/visibility", auth.verifyToken, async (req, res) => {
-  try {
-    const { user_id, tag, visibility } = req.body;
-
-    // 找到用户
-    const user = await User.findOne(user_id);
-    if (!user) {
-      return res.status(404).json({ message: "未找到用户" });
-    }
-
-    // 查找标签在用户模型中的索引
-    const tagIndex = user.tags.findIndex(entry => entry[0] === tag);
-
-    // 如果标签不存在于用户模型中，则添加新的标签及可见性信息
-    if (tagIndex === -1) {
-      user.tags.push({tag, visibility});
-    } else {
-      // 更新标签的可见性
-      user.tags[tagIndex].visibility = visibility;
-    }
-
-    // 保存更新后的用户信息
-    await user.save();
-
-    res.status(200).json({ message: "成功更新标签可见性" });
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
 router.post("/activity/admin", auth.verifyToken, async (req, res) => {
   try {
     const { activity_id, admin_email, action } = req.body;
@@ -442,93 +301,6 @@ router.post("/activity/admin", auth.verifyToken, async (req, res) => {
     // 保存更新后的活动信息
     await activity.save();
     res.status(200).json({ message: "成功更新管理员信息" });
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
-router.post("/user/admin", auth.verifyToken, async (req, res) => {
-  try {
-    const { admin_email, action } = req.body;
-
-    // 查找常务管理员
-    const adminUser = await Admin.findOne({ u_id: admin_email });
-    if (!adminUser) {
-      return res.status(404).json({ message: "未找到常务管理员" });
-    }
-
-    // 根据操作执行添加或删除常务管理员的操作
-    if (action === "add") {
-      // 添加常务管理员角色
-      adminUser.role = 1; // 常務
-      await adminUser.save();
-      res.status(200).json({ message: "成功添加常务管理员" });
-    } else if (action === "remove") {
-      // 删除常务管理员角色
-      adminUser.role = 0;
-      await adminUser.save();
-      res.status(200).json({ message: "成功删除常务管理员" });
-    } else {
-      res.status(400).json({ message: "非法操作" });
-    }
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-// undo：启用或禁用用户等：需要在数据库方面进行改动支持，在user里添加一个是否封禁的属性。
-
-router.post("/user/ban",auth.verifyToken, async (req, res) => {
-  try{
-    const {uid,ban}=req.body;
-    const user=await User.findById(uid)
-    if (!user) {
-      return res.status(404).json({ message: "未找到用户" });
-    }
-    user.ban=ban;
-    await user.save();
-    res.status(200).json({ message: "成功更改用户封禁状态" });
-  }catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
-router.get("/appdata", auth.verifyToken, async (req, res) => {
-  try{
-    var count = 0;
-    Complaint.countDocuments({ responsed: 1 }, (err, result) => {
-      if (err) {
-        console.error('Error:', err);
-      } else {
-        count = result;
-      }
-    });
-    const returnData={
-      activityCount: Activity.size(),
-      postCount: Story.size(),
-      userCount: User.size(),
-      complaint: Complaint.size(),
-      complaintReply: count,
-    };
-    res.status(200).json(returnData);
-  }catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
-router.post("/story/comment", auth.verifyToken, async (req, res) => {
-  try{
-    const {creator, send_date, story_id, comment} = req.body;
-    const story = await Story.findById(story_id);
-    story.comments.push(req.body._id);
-    const newComment = new StoryComment({
-      creator: creator,
-      send_date: send_date,
-      story_id: story_id,
-      comment: comment
-    });
-    // Save the new activity to the database
-    await story.save();
-    await newComment.save();
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
