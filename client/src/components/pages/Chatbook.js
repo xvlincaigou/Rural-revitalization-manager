@@ -52,6 +52,7 @@ const Chatbook = (props) => {
 
   useEffect(() => {
     document.title = "Chatbook";
+    console.log(props.userId);
   }, []);
 
   useEffect(() => {

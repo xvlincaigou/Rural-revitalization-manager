@@ -4,7 +4,21 @@ import './Register.css';
 
 import { get, post } from "../../utilities";
 
-const Register = () => {
+/**
+ * @param {string} username
+ * @param {string} mail
+ * @param {string} phone
+ * @param {string} identificationCard
+ * @param {string} password
+ * @param {string} registerCode
+ * @param {boolean} step
+ * @param {string} email
+ * @param {string} loginpassword
+ * @param {string} warning
+ * @param {string} step_
+ * @param {string} userId
+ */
+const Register = ({upload}) => {
 
     useEffect(() => {
         document.title = "Register";
@@ -24,6 +38,9 @@ const Register = () => {
     const [loginpassword, setLoginpassword] = useState('');
     const [warning, setWarning] = useState(false);
     const [step_, setStep_] = useState(false);
+
+    //整个App的id
+    const [userId, setUserId] = useState(null);
 
     const handleUsernameChange = (e) => {
         setUsername(e.target.value);
@@ -67,7 +84,7 @@ const Register = () => {
         event.preventDefault();
         post("/api/login", { u_id: email, password: loginpassword }).then((useremailObj) => {
             if (useremailObj) {
-                props.userId(useremailObj);  
+                upload(useremailObj);
                 setStep_(true);
             } else {
                setWarning(true);

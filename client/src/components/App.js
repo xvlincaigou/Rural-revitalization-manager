@@ -13,20 +13,15 @@ import { socket } from "../client-socket.js";
 
 import { get, post } from "../utilities";
 
-// to use styles, import the necessary CSS files
 import "../utilities.css";
 import "./App.css";
 
-/**
- * Define the "App" component as a function.
- */
 const App = () => {
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     get("/api/whoami").then((user) => {
       if (user._id) {
-        // they are registed in the database, and currently logged in.
         setUserId(user._id);
       }
     });
@@ -46,12 +41,11 @@ const App = () => {
     post("/api/logout");
   };
 
-  //In order to test the front end, i changed profile.:w
-  // required method: whatever is returned defines what
-  // shows up on screen
+  const logInPut = (val) => {
+    setUserId(val);
+  }
+
   return (
-    // <> is like a <div>, but won't show
-    // up in the DOM tree
     <>
       <NavBar handleLogin={handleLogin} handleLogout={handleLogout} userId={userId} />
       <div className="App-container">
@@ -60,7 +54,7 @@ const App = () => {
           <Profile path="/profile/" />
           <Chatbook path="/chat/" userId={userId} />
           <Activity path="/activity/"/>
-          <Register path="/register/" />
+          <Register path="/register/" upload={logInPut}/>
           <ComplaintPage path="/complaint/" />
           <NotFound default />
         </Router>
