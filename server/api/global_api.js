@@ -1,13 +1,13 @@
 const express = require("express");
 
 // import models so we can interact with the database
-const Story = require("./models/story");
-const {User, Admin} = require("./models/user");
-const Complaint = require("./models/complaint");
-const Activity = require("./models/activity");
+const Story = require("../models/story");
+const {User, Admin} = require("../models/user");
+const Complaint = require("../models/complaint");
+const Activity = require("../models/activity");
 
 // import authentication library
-const auth = require("./middlewares/authJwt");
+const auth = require("../middlewares/authJwt");
 
 // api endpoints: all these paths will be prefixed with "/api/"
 const router = express.Router();
