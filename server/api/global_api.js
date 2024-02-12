@@ -10,25 +10,24 @@ const Activity = require("../models/activity");
 const router = express.Router();
 
 // GET /api/global/appdata
-router.get("/appdata", auth.verifyToken, async (req, res) => {
-  try{
-    var count = 0;
-    Complaint.countDocuments({ responsed: 1 }, (err, result) => {
-      if (err) {
-        console.error('Error:', err);
-      } else {
-        count = result;
-      }
-    });
+router.get("/appdata", async (req, res) => {
+  try {
+    const activityCount = await Activity.countDocuments();
+    const postCount = await Story.countDocuments();
+    const userCount = await User.countDocuments();
+    const complaintCount = await Complaint.countDocuments();
+    const complaintReplyCount = await Complaint.countDocuments({ responsed: 1 });
+
     const returnData = {
-      activityCount: Activity.size(),
-      postCount: Story.size(),
-      userCount: User.size(),
-      complaint: Complaint.size(),
-      complaintReply: count,
+      activityCount,
+      postCount,
+      userCount,
+      complaintCount,
+      complaintReplyCount,
     };
+
     res.status(200).json(returnData);
-  }catch (err) {
+  } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });

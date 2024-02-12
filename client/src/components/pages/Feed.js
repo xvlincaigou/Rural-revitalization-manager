@@ -44,28 +44,25 @@ import Card from "../modules/Card.js";
 
 /**
  * @typedef appData
- * @property { string } activityCount
- * @property { string } postCount
- * @property { string } userCount
- * @property { string } complaintReply
- * @property { string } complaint
+ * @property { number } activityCount
+ * @property { number } postCount
+ * @property { number } userCount
+ * @property { number } complaintCount
+ * @property { number } complaintReplyCount
  * @returns 
  */
 const Feed = (props) => {
 
   const [appData, setAppData] = useState({});
 
-  // called when the "Feed" component "mounts", i.e.
-  // when it shows up on screen
   useEffect(() => {
     document.title = "News Feed";
-    get("/appdata").then((appData) => {
-      setAppData(appData);
-      console.log(appData);
+    get("/api/global/appdata").then((appDataObj) => {
+      setAppData(appDataObj);
     });
   }, []);
 
-  const complaintReplyRate = (appData.complaintReply / appData.complaint) * 100;
+  const complaintReplyRate = appData.complaintReplyCount * 100 / appData.complaintCount;
   const formattedRate = complaintReplyRate.toFixed(2) + "%";
 
   return (

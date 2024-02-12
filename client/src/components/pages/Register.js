@@ -23,6 +23,7 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [loginpassword, setLoginpassword] = useState('');
     const [warning, setWarning] = useState(false);
+    const [step_, setStep_] = useState(false);
 
     const handleUsernameChange = (e) => {
         setUsername(e.target.value);
@@ -64,18 +65,16 @@ const Register = () => {
 
     const handleLogin = (event) => {
         event.preventDefault();
-        // 在这里处理登录逻辑
-        // 如何把信息传导到app.js呢？
-        /**
-         * post("/api/login", { email, password }).then((user) => {
-         *     if (user) {
-         *        props.userId(user._id);
-         *        //跳转到主页面  
-         *    } else {
-         *       setWarning(true);
-         *   }
-         */
-        console.log(`Logging in with email: ${email} and password: ${password}`);
+        post("/api/login", { u_id: email, password: loginpassword }).then((useremailObj) => {
+            if (useremailObj) {
+                props.userId(useremailObj);  
+                setStep_(true);
+            } else {
+               setWarning(true);
+            }
+            console.log(`Logging in with email: ${email} and password: ${password}`);
+            console.log(useremailObj);
+        });
     };
 
     return (
@@ -95,8 +94,8 @@ const Register = () => {
           <form onSubmit={handleLogin}>
             <input type="email" placeholder="邮箱" value={email} onChange={(e) => setEmail(e.target.value)} required />
             <input type="password" placeholder="密码" value={loginpassword} onChange={(e) => setLoginpassword(e.target.value)} required />
-            <input type="password" placeholder="验证码，请查看邮箱" required />
             <button type="submit">登录</button>
+            {step_ ? <input type="password" placeholder="验证码，请查看邮箱" required /> : null}
           </form>
           {warning ? <p className='warning-message'>登录失败，请重试</p> : null}
         </div>
