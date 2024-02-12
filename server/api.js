@@ -11,20 +11,37 @@ const express = require("express");
 
 // import models so we can interact with the database
 const Story = require("./models/story");
-const {ActivityComment, MemberComment} = require("./models/comment");
+const {StoryComment, ActivityComment, MemberComment} = require("./models/comment");
 const {User, Admin} = require("./models/user");
 const Complaint = require("./models/complaint");
 const Activity = require("./models/activity");
 const ActivityRegistration = require("./models/registration");
 
 // import authentication library
-const auth = require("./controllers/auth.controller");
+const auth = require("./middlewares/authJwt");
 
 // api endpoints: all these paths will be prefixed with "/api/"
 const router = express.Router();
 const socketManager = require("./server-socket");
 
-router.get("/activity", auth.ensureLoggedIn, async (req, res) => {
+router.get("/stories", (req, res) => {
+  // empty selector means get all documents
+  Story.find({}).then((stories) => res.send(stories));
+});
+
+router.post("/story", auth.verifyToken, (req, res) => {
+  const {creator_id, creator_name, title, content} = req.body;
+  const newStory = new Story({
+    creator_id: creator_id,
+    creator_name: creator_name,
+    title: title,
+    content: content,
+  });
+
+  newStory.save().then((story) => res.send(story));
+});
+
+router.get("/activity", auth.verifyToken, async (req, res) => {
   // get all activities and sort by date
   try{
     const activities = await Activity.find().sort({start_time: -1});
@@ -35,19 +52,15 @@ router.get("/activity", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/activity", auth.ensureLoggedIn, async (req, res) => {
+router.post("/activity", auth.verifyToken, async (req, res) => {
   // post a new activity
   try{
-    const {name, location, date, capacity, candidates,
-           members, comments, supervisors} = req.body;
+    const {name, location, date, capacity, supervisors} = req.body;
     const newActivity = new Activity({
       name: name,
       location: location,
       date: date,
       capacity: capacity,
-      candidates: candidates,
-      members: members,
-      comments: comments,
       supervisors: supervisors
     });
 
@@ -58,7 +71,7 @@ router.post("/activity", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/activity/subscribe", auth.ensureLoggedIn, async (req, res) => {
+router.post("/activity/subscribe", auth.verifyToken, async (req, res) => {
   try{
     const {uid, aid} = req.body;
     const activity = await Activity.findOne({_id: aid});
@@ -82,7 +95,7 @@ router.post("/activity/subscribe", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/activity/unsubscribe", auth.ensureLoggedIn, async (req, res) => {
+router.post("/activity/unsubscribe", auth.verifyToken, async (req, res) => {
   try{
     const {uid, aid} = req.body;
     const activity = await Activity.findOne({_id: aid});
@@ -116,12 +129,11 @@ router.post("/activity/unsubscribe", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/complaint", auth.ensureLoggedIn, async (req, res) => {
+router.post("/complaint", auth.verifyToken, async (req, res) => {
   try{
-    const {sender, timestamp, content} = req.body;
+    const {sender, content} = req.body;
     const newComplaint = new Complaint({
       sender: sender,
-      timestamp: timestamp,
       content: content
     });
 
@@ -132,10 +144,10 @@ router.post("/complaint", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.get("/complaint", auth.ensureLoggedIn, async (req, res) => {
+router.get("/complaint", auth.verifyToken, async (req, res) => {
   // get all complaints that are not responsed and sort by date
   try{
-    const not_responsed = await Complaint.find({responsed: 0}).sort({timestamp: 1});
+    const not_responsed = await Complaint.find({responsed: 0}).sort({"sender.timestamp": 1});
     res.send(not_responsed);
     res.status(200).json({message: "Complaints sent"});
   }catch(err){
@@ -143,7 +155,8 @@ router.get("/complaint", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/activity/comment", auth.ensureLoggedIn, async (req, res) => {
+// not done yet
+router.post("/activity/comment", auth.verifyToken, async (req, res) => {
   try {
     const {creator, send_date, rating, comment} = req.body;
 
@@ -157,18 +170,20 @@ router.post("/activity/comment", auth.ensureLoggedIn, async (req, res) => {
     });
 
     await activityComment.save();
+    res.send(activityComment);
     res.status(200).json({ message: "成功获得对活动的评价并存入数据库" });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
 
-router.post("/member/comment", auth.ensureLoggedIn, async (req, res) => {
+// not done yet
+router.post("/member/comment", auth.verifyToken, async (req, res) => {
   try {
     const {creator, send_date, rating, comment} = req.body;
 
     // Assuming ActivityRating model has fields: email, rating, review, activity_id
-    const activityComment = new ActivityComment({
+    const memberComment = new ActivityComment({
       creator: creator,
       send_date: send_date,
       activity_id: req.body.activity_id,  // Assuming activity_id is provided in the request body
@@ -177,14 +192,15 @@ router.post("/member/comment", auth.ensureLoggedIn, async (req, res) => {
       comment: comment
     });
 
-    await activityComment.save();
+    await memberComment.save();
+    res.send(memberComment);
     res.status(200).json({ message: "成功获得对成员的评价并存入数据库" });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
 
-router.post("/activity/register", auth.ensureLoggedIn, async (req, res) => {
+router.post("/activity/register", auth.verifyToken, async (req, res) => {
   try {
     const { email, activity_id } = req.body;
 
@@ -200,54 +216,52 @@ router.post("/activity/register", auth.ensureLoggedIn, async (req, res) => {
     }
 
     // Assuming ActivityRegistration model has fields: email, activity_id
-    const activityRegistration = new ActivityRegistration({
-      email: email,
-      activity_id: activity_id
-    });
+    activity.candidates.push(email);
 
-    await activityRegistration.save();
+    await activity.save();
     res.status(200).json({ message: "成功报名" });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
 
-router.get("/activity/registrants", auth.ensureLoggedIn, async (req, res) => {
+router.get("/activity/registrants", auth.verifyToken, async (req, res) => {
   try {
-    const { u_id } = req.query;
+    const { activity_id } = req.query;
 
     // Assuming you want to find registrants by their email
-    const user = await User.findOne({ u_id: u_id });
-    if (!user) {
-      return res.status(404).json({ message: "没有找到此用户" });
+    const activity = await Activity.findById(activity_id);
+    if (!activity) {
+      return res.status(404).json({ message: "没有此活动" });
     }
+    const candidates = activity.candidates;
 
     // Find activity registrations associated with the user
-    const registrations = await ActivityRegistration.find({ u_id: u_id });
+    // const telephone = [];
+    // const name = [];
+    var responseInfo = [];
+
+    for(let i=0; i<candidates.size(); i++){
+      const user = User.findById(candidates[i]);
+      if(user.banned !== 1){
+        responseInfo.push(user);
+      }
+    }
 
     // Construct response with user's basic information and registrations
-    const responseData = {
-      user: {
-        name: user.name,
-        email: user.email,
-        // Add more user basic information fields as needed
-      },
-      registrations: registrations
-    };
-
-    res.status(200).json(responseData);
+    res.status(200).json(responseInfo);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
-
-router.post("/activity/approve", auth.ensureLoggedIn, async (req, res) => {
+  
+router.post("/activity/approve", auth.verifyToken, async (req, res) => {
   try {
-    const { u_id, accept } = req.body;
-    const activity_id = req.body.activity_id;
+    const { u_id, accept, activity_id } = req.body;
+    const Activity_id = activity_id;
 
     // Check if the activity exists
-    const activity = await Activity.findById(activity_id);
+    const activity = await Activity.findById(Activity_id);
     if (!activity) {
       return res.status(404).json({ message: "没有找到活动" });
     }
@@ -271,19 +285,24 @@ router.post("/activity/approve", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/activity/update", auth.ensureLoggedIn, async (req, res) => {
+router.post("/activity/update", auth.verifyToken, async (req, res) => {
   try {
-    const { activity_id, updatedInfo } = req.body;//这里待完成！undo，需要按格式修改updateinfo
-
+    const {new_name, new_location, new_start, 
+           new_end, new_sign_up, new_capacity} = req.body;
     // Check if the activity exists
-    const activity = await Activity.findById(activity_id);
+    const activity = await Activity.findById(req.body.activity_id);
     if (!activity) {
       return res.status(404).json({ message: "没有找到活动" });
     }
-
-    // Update activity information based on the provided updatedInfo object
-    Object.assign(activity, updatedInfo);
-
+    activity.name = new_name;
+    activity.location = new_location;
+    const newdate = {
+      start:new_start,
+      end:new_end,
+      sign_up:new_sign_up
+    }
+    activity.date = newdate;
+    activity.capacity = new_capacity;
     // Save the updated activity
     await activity.save();
 
@@ -293,7 +312,7 @@ router.post("/activity/update", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/activity/create", auth.ensureLoggedIn, async (req, res) => {
+router.post("/activity/create", auth.verifyToken, async (req, res) => {
   try {
     const {name, location, date, capacity, supervisors} = req.body;
 
@@ -314,7 +333,7 @@ router.post("/activity/create", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/activity/delete", auth.ensureLoggedIn, async (req, res) => {
+router.post("/activity/delete", auth.verifyToken, async (req, res) => {
   try {
     const activity_id = req.body.activity_id;
 
@@ -332,7 +351,7 @@ router.post("/activity/delete", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/user/tags", auth.ensureLoggedIn, async (req, res) => {
+router.post("/user/tags", auth.verifyToken, async (req, res) => {
   try {
     const { u_id, tag, visibility, action } = req.body;
     let message;
@@ -367,7 +386,7 @@ router.post("/user/tags", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/tag/visibility", auth.ensureLoggedIn, async (req, res) => {
+router.post("/tag/visibility", auth.verifyToken, async (req, res) => {
   try {
     const { user_id, tag, visibility } = req.body;
 
@@ -397,7 +416,7 @@ router.post("/tag/visibility", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/activity/admin", auth.ensureLoggedIn, async (req, res) => {
+router.post("/activity/admin", auth.verifyToken, async (req, res) => {
   try {
     const { activity_id, admin_email, action } = req.body;
 
@@ -431,7 +450,7 @@ router.post("/activity/admin", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 
-router.post("/admin", auth.ensureLoggedIn, async (req, res) => {
+router.post("/admin", auth.verifyToken, async (req, res) => {
   try {
     const { admin_email, action } = req.body;
 
@@ -460,5 +479,57 @@ router.post("/admin", auth.ensureLoggedIn, async (req, res) => {
   }
 });
 // undo：启用或禁用用户等：需要在数据库方面进行改动支持，在user里添加一个是否封禁的属性。
+
+router.post("/user/ban",auth.verifyToken, async (req, res) => {
+  try{
+    const {uid,ban}=req.body;
+    const user=await User.findById(uid)
+    if (!user) {
+      return res.status(404).json({ message: "未找到用户" });
+    }
+    user.ban=ban;
+    await user.save();
+    res.status(200).json({ message: "成功更改用户封禁状态" });
+  }catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+router.get("/appdata", auth.verifyToken, async (req, res) => {
+  try{
+    var count = 0;
+    Complaint.countDocuments({ responsed: 1 }, (err, result) => {
+      if (err) {
+        console.error('Error:', err);
+      } else {
+        count = result;
+      }
+    });
+    const returnData={
+      activityCount: Activity.size(),
+      postCount: Story.size(),
+      userCount: User.size(),
+      complaint: Complaint.size(),
+      complaintReply: count,
+    };
+    res.status(200).json(returnData);
+  }catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+router.post("/story/comment",auth.verifyToken, async (req, res) => {
+  try{
+    const comment = req.body;
+    const story = await Story.findById(comment.story_id);
+    story.comments.push(comment.comment);
+    const newComment = new StoryComment(comment);
+    // Save the new activity to the database
+    await story.save();
+    await newComment.save();
+  }catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
 
 module.exports = router;

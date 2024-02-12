@@ -3,15 +3,18 @@ const mongoose = require("mongoose");
 //define a message schema for the database
 const ComplaintSchema = new mongoose.Schema({
   sender: {
-    _id: String,  // email
+    u_id: String,  // email
     name: String,
+    timestamp: Date
   },
   recipient: {
-    _id: String,
+    u_id: String,
     name: String,
+    timestamp: Date
   },
-  timestamp: {type: Date, default: Date.now},
+  // timestamp: {type: Date, default: Date.now},
   content: String,
+  reply: String,
   responsed: {type: Number, default: 0}
   /*
     投诉信息状态：
