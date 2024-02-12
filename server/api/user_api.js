@@ -1,10 +1,10 @@
 const express = require("express");
 
 // import models so we can interact with the database
-const {User, Admin} = require("./models/user");
+const {User, Admin} = require("../models/user");
 
 // import authentication library
-const auth = require("./middlewares/authJwt");
+const auth = require("../middlewares/authJwt");
 
 // api endpoints: all these paths will be prefixed with "/api/"
 const router = express.Router();
