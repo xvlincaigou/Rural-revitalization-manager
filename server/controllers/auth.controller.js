@@ -98,7 +98,7 @@ exports.login = (req, res) => {
                 return res.status(401).send({ message: "密码错误！" });
             }
 
-            const token = jwt.sign({ id: user.id },
+            const token = jwt.sign({ id: user._id },
                 config.secret,
                 {
                     algorithm: 'HS256',

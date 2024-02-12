@@ -1,4 +1,4 @@
-// user-WIP.js将在将来替代本文件
+// 本文件为原项目的user.js，由现user.js替代
 const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
