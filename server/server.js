@@ -31,6 +31,7 @@ const complaintApi = require("./api/complaint_api");
 const globalApi = require("./api/global_api");
 const storyApi = require("./api/story_api");
 const userApi = require("./api/user_api");
+const registerApi = require("./api/register_api");
 const auth = require("./controllers/auth.controller");
 
 // socket stuff
@@ -80,6 +81,7 @@ app.use("/api/complaint", complaintApi);
 app.use("/api/global", globalApi);
 app.use("/api/story", storyApi);
 app.use("/api/user", userApi);
+app.use("/api/register", registerApi);
 
 // load the compiled react files, which will serve /index.html and /bundle.js
 const reactPath = path.resolve(__dirname, "..", "client", "dist");

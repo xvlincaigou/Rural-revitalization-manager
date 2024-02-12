@@ -1,6 +1,6 @@
 const config = require("../config/auth.config");
 // const db = require("../models");
-const User = require("../models/user.js"); // 调试用
+const { User } = require("../models/user.js"); // 调试用
 // const Role = db.role;
 
 // var session = require("express-session"); // library that stores info about each connected user
