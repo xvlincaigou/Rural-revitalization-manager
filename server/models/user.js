@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema({
     password: String, // 密码
     role: { // 用户角色
         type: Number,
-        default: 0  // 默认情况下，用户被认为是普通用户
+        default: 0,  // 默认情况下，用户被认为是普通用户
         /*
         角色代号与用户角色对应关系：
         0 <-> regularUser      <-> 普通用户
@@ -19,19 +19,31 @@ const UserSchema = new mongoose.Schema({
         2 <-> sysAdmin         <-> 系统管理员
         */
     },
-    activities: [mongoose.Schema.Types.ObjectId], // contains activity _id
-    previous_scores: [{
+    activities: {
+        type: [mongoose.Schema.Types.ObjectId], // contains activity _id
+        default: [],
+    },
+    previous_scores: {
+        type: [{
         score: Number,
         activity_id: mongoose.Schema.Types.ObjectId
-    }],  
-    comment_received: [mongoose.Schema.Types.ObjectId], // contains comment _id
-    tags: [{
+        }],
+        default: [],
+    },  
+    comment_received: {
+        type: [mongoose.Schema.Types.ObjectId],
+        default: [],
+    }, // contains comment _id
+    tags: {
+        type: [{
         tag: String,
         visibility: Number
-    }],
+        }],
+        default: [],
+    },
     banned: {
         type: Number,
-        default: 0
+        default: 0,
     }
     /*
     用户保护功能：有待讨论
@@ -43,8 +55,10 @@ const UserSchema = new mongoose.Schema({
 });
 // 注册码应在用户进行注册时核验
 
+UserSchema.index({ u_id: 1 });
+
 // compile model from schema
 module.exports = {
     User: mongoose.model("user", UserSchema),
-    Admin: mongoose.model("admin", UserSchema)
+    Admin: mongoose.model("admin", UserSchema),
 };
