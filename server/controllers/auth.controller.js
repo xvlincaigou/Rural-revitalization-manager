@@ -1,6 +1,6 @@
 const config = require("../config/auth.config");
 // const db = require("../models");
-const User = require("../models/user.js"); // 调试用
+const { User } = require("../models/user.js"); // 调试用
 // const Role = db.role;
 
 // var session = require("express-session"); // library that stores info about each connected user
@@ -14,10 +14,10 @@ exports.register = (req, res) => {
     // TODO: 需要与前端沟通变量名称及类型
     User.findOne({
         $or: [
-            { username: req.body.username },
-            { email: req.body.email },
-            { phoneNumber: req.body.phoneNumber },
-            { idNumber: req.body.idNumber }
+            { name: req.body.name },
+            { u_id: req.body.u_id },
+            { phone_number: req.body.phone_number },
+            { id_number: req.body.id_number }
         ]
     }, (err, existingUser) => {
         if (err) {
@@ -27,29 +27,29 @@ exports.register = (req, res) => {
         if (existingUser) {
             // 构建一个包含重复字段的数组
             const duplicateFields = [];
-            if (existingUser.username === req.body.username) {
+            if (existingUser.name === req.body.name) {
                 duplicateFields.push('姓名');
             }
-            if (existingUser.email === req.body.email) {
+            if (existingUser.u_id === req.body.u_id) {
                 duplicateFields.push('电子邮件');
             }
-            if (existingUser.phoneNumber === req.body.phoneNumber) {
+            if (existingUser.phone_number === req.body.phone_number) {
                 duplicateFields.push('电话号码');
             }
-            if (existingUser.idNumber === req.body.idNumber) {
+            if (existingUser.id_number === req.body.id_number) {
                 duplicateFields.push('身份证号');
             }
 
             // 返回带有重复字段信息的响应
-            return res.status(400).send({ message: `以下字段重复：${duplicateFields.join(', ')}` });
+            return res.status(400).send({ message: `以下字段重复：${duplicateFields.join('，')}。` });
         }
 
         // 如果用户名、电子邮件、电话号码和身份证号都不存在重复，继续创建用户
         const user = new User({
-            username: req.body.username,
-            email: req.body.email,
-            phoneNumber: req.body.phoneNumber,
-            idNumber: req.body.idNumber, // TODO: 沟通敏感信息安全性问题
+            name: req.body.name,
+            u_id: req.body.u_id,
+            phone_number: req.body.phone_number,
+            id_number: req.body.id_number, // TODO: 沟通敏感信息安全性问题
             password: bcrypt.hashSync(req.body.password, 8),
         });
 
@@ -77,7 +77,7 @@ exports.register = (req, res) => {
 
 exports.login = (req, res) => {
     User.findOne({
-        email: req.body.email,
+        u_id: req.body.u_id,
     })
         .exec((err, user) => {
             if (err) {
@@ -98,7 +98,7 @@ exports.login = (req, res) => {
                 return res.status(401).send({ message: "密码错误！" });
             }
 
-            const token = jwt.sign({ id: user.id },
+            const token = jwt.sign({ id: user.u_id },
                 config.secret,
                 {
                     algorithm: 'HS256',
@@ -107,17 +107,21 @@ exports.login = (req, res) => {
                 });
 
             req.session.token = token;
-            req.session.user = user;
 
-            res.status(200).send({
+            const { u_id } = user;
+            const strippedUser = { u_id };
+
+            req.session.user = strippedUser;
+
+            res.status(200).send(
                 /*
                 id: user._id,
                 username: user.username,
                 email: user.email,
                 role: user.role,
                 */
-                user
-            });
+                strippedUser
+            );
         });
 };
 
@@ -125,11 +129,14 @@ exports.logout = async (req, res) => {
     try {
         req.session = null;
         req.session.user = null;
-        const userSocket = socketManager.getSocketFromUserID(req.user._id);
+
+        /*
+        const userSocket = socketManager.getSocketFromUserID(req.user.u_id);
         if (userSocket) {
             // delete user's socket if they logged out
             socketManager.removeUser(req.user, userSocket);
         }
+        */
         res.send({});
     } catch (err) {
         this.next(err);

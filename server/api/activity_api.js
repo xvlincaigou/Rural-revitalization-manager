@@ -12,7 +12,8 @@ const auth = require("../middlewares/authJwt");
 // api endpoints: all these paths will be prefixed with "/api/"
 const router = express.Router();
 
-router.get("/activity", auth.verifyToken, async (req, res) => {
+// GET /api/activity
+router.get("/", auth.verifyToken, async (req, res) => {
   // get all activities and sort by date
   try{
     const activities = await Activity.find().sort({start_time: -1});
@@ -23,7 +24,8 @@ router.get("/activity", auth.verifyToken, async (req, res) => {
   }
 });
 
-router.post("/activity", auth.verifyToken, async (req, res) => {
+// POST /api/activity
+router.post("/", auth.verifyToken, async (req, res) => {
   // post a new activity
   try{
     const {name, location, date, capacity, supervisors} = req.body;
@@ -42,7 +44,8 @@ router.post("/activity", auth.verifyToken, async (req, res) => {
   }
 });
 
-router.post("/activity/subscribe", auth.verifyToken, async (req, res) => {
+// POST /api/activity/subscribe
+router.post("/subscribe", auth.verifyToken, async (req, res) => {
   try{
     const {uid, aid} = req.body;
     const activity = await Activity.findOne({_id: aid});
@@ -66,7 +69,8 @@ router.post("/activity/subscribe", auth.verifyToken, async (req, res) => {
   }
 });
 
-router.post("/activity/unsubscribe", auth.verifyToken, async (req, res) => {
+// POST /api/activity/unsubscribe
+router.post("/unsubscribe", auth.verifyToken, async (req, res) => {
   try{
     const {uid, aid} = req.body;
     const activity = await Activity.findOne({_id: aid});
@@ -100,7 +104,8 @@ router.post("/activity/unsubscribe", auth.verifyToken, async (req, res) => {
   }
 });
 
-router.post("/activity/comment", auth.verifyToken, async (req, res) => {
+// POST /api/activity/comment
+router.post("/comment", auth.verifyToken, async (req, res) => {
   try{
     const {creator, send_date, activity_id, rating, comment} = req.body;
     const activity = await Activity.findById(activity_id);
@@ -120,8 +125,8 @@ router.post("/activity/comment", auth.verifyToken, async (req, res) => {
   }
 });
 
-
-router.post("/activity/register", auth.verifyToken, async (req, res) => {
+// POST /api/activity/register
+router.post("/register", auth.verifyToken, async (req, res) => {
   try {
     const { email, activity_id } = req.body;
 
@@ -146,7 +151,8 @@ router.post("/activity/register", auth.verifyToken, async (req, res) => {
   }
 });
 
-router.get("/activity/registrants", auth.verifyToken, async (req, res) => {
+// GET /api/activity/registrants
+router.get("/registrants", auth.verifyToken, async (req, res) => {
   try {
     const { activity_id } = req.query;
 
@@ -175,8 +181,9 @@ router.get("/activity/registrants", auth.verifyToken, async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
-  
-router.post("/activity/approve", auth.verifyToken, async (req, res) => {
+
+// POST /api/activity/approve
+router.post("/approve", auth.verifyToken, async (req, res) => {
   try {
     const { u_id, accept, activity_id } = req.body;
     const Activity_id = activity_id;
@@ -206,7 +213,8 @@ router.post("/activity/approve", auth.verifyToken, async (req, res) => {
   }
 });
 
-router.post("/activity/update", auth.verifyToken, async (req, res) => {
+// POST /api/activity/update
+router.post("/update", auth.verifyToken, async (req, res) => {
   try {
     const {new_name, new_location, new_start, 
            new_end, new_sign_up, new_capacity} = req.body;
@@ -233,7 +241,8 @@ router.post("/activity/update", auth.verifyToken, async (req, res) => {
   }
 });
 
-router.post("/activity/create", auth.verifyToken, async (req, res) => {
+// POST /api/activity/create
+router.post("/create", auth.verifyToken, async (req, res) => {
   try {
     const {name, location, date, capacity, supervisors} = req.body;
 
@@ -254,7 +263,8 @@ router.post("/activity/create", auth.verifyToken, async (req, res) => {
   }
 });
 
-router.post("/activity/delete", auth.verifyToken, async (req, res) => {
+// POST /api/activity/delete
+router.post("/delete", auth.verifyToken, async (req, res) => {
   try {
     const activity_id = req.body.activity_id;
 
@@ -272,7 +282,8 @@ router.post("/activity/delete", auth.verifyToken, async (req, res) => {
   }
 });
 
-router.post("/activity/admin", auth.verifyToken, async (req, res) => {
+// POST /api/activity/admin
+router.post("/admin", auth.verifyToken, async (req, res) => {
   try {
     const { activity_id, admin_email, action } = req.body;
 

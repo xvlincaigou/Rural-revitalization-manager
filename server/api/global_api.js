@@ -9,7 +9,8 @@ const Activity = require("../models/activity");
 // api endpoints: all these paths will be prefixed with "/api/"
 const router = express.Router();
 
-router.get("/appdata", async (req, res) => {
+// GET /api/global/appdata
+router.get("/appdata", auth.verifyToken, async (req, res) => {
   try{
     var count = 0;
     Complaint.countDocuments({ responsed: 1 }, (err, result) => {

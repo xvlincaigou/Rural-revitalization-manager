@@ -12,12 +12,14 @@ const auth = require("../middlewares/authJwt");
 // api endpoints: all these paths will be prefixed with "/api/"
 const router = express.Router();
 
+// GET /api/story/stories
 router.get("/stories", (req, res) => {
   // empty selector means get all documents
   Story.find({}).then((stories) => res.send(stories));
 });
 
-router.post("/story", auth.verifyToken, (req, res) => {
+// POST /api/story
+router.post("/", auth.verifyToken, (req, res) => {
   const {creator_id, creator_name, title, content} = req.body;
   const newStory = new Story({
     creator_id: creator_id,
@@ -29,7 +31,8 @@ router.post("/story", auth.verifyToken, (req, res) => {
   newStory.save().then((story) => res.send(story));
 });
 
-router.post("/story/comment", auth.verifyToken, async (req, res) => {
+// POST /api/comment
+router.post("/comment", auth.verifyToken, async (req, res) => {
   try{
     const {creator, send_date, story_id, comment} = req.body;
     const story = await Story.findById(story_id);

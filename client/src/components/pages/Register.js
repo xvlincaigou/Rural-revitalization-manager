@@ -51,10 +51,10 @@ const Register = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         const newMan ={
-            username: username,
-            email: mail,
-            phoneNumber: phone,
-            idNumber: identificationCard,
+            name: username,
+            u_id: mail,
+            phone_number: phone,
+            id_number: identificationCard,
             password: password,
         }
         post("/api/register", newMan).then(() => {
