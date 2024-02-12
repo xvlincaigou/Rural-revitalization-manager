@@ -6,13 +6,10 @@ const {User, Admin} = require("../models/user");
 const Complaint = require("../models/complaint");
 const Activity = require("../models/activity");
 
-// import authentication library
-const auth = require("../middlewares/authJwt");
-
 // api endpoints: all these paths will be prefixed with "/api/"
 const router = express.Router();
 
-router.get("/appdata", auth.verifyToken, async (req, res) => {
+router.get("/appdata", async (req, res) => {
   try{
     var count = 0;
     Complaint.countDocuments({ responsed: 1 }, (err, result) => {
@@ -22,7 +19,7 @@ router.get("/appdata", auth.verifyToken, async (req, res) => {
         count = result;
       }
     });
-    const returnData={
+    const returnData = {
       activityCount: Activity.size(),
       postCount: Story.size(),
       userCount: User.size(),
@@ -34,3 +31,5 @@ router.get("/appdata", auth.verifyToken, async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
+module.exports = router;
