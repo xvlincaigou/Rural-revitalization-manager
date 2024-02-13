@@ -31,8 +31,7 @@ router.get("/", auth.verifyToken, async (req, res) => {
   // get all complaints that are not responsed and sort by date
   try{
     const not_responsed = await Complaint.find({responsed: 0}).sort({"sender.timestamp": 1});
-    res.send(not_responsed);
-    res.status(200).json({message: "Complaints sent"});
+    res.status(200).json({complaint: not_responsed, message: "Complaints sent"});
   }catch(err){
     res.status(404).json({error: "No complaints"});
   }

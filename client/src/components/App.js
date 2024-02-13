@@ -19,14 +19,6 @@ import "./App.css";
 const App = () => {
   const [userId, setUserId] = useState(null);
 
-  useEffect(() => {
-    get("/api/whoami").then((user) => {
-      if (user._id) {
-        setUserId(user._id);
-      }
-    });
-  }, []);
-
   const handleLogin = (res) => {
     const userToken = res.tokenObj.id_token;
     post("/api/login", { token: userToken }).then((user) => {
@@ -55,7 +47,7 @@ const App = () => {
           <Chatbook path="/chat/" userId={userId} />
           <Activity path="/activity/"/>
           <Register path="/register/" upload={logInPut}/>
-          <ComplaintPage path="/complaint/" />
+          <ComplaintPage path="/complaint/" userId={userId} />
           <NotFound default />
         </Router>
       </div>

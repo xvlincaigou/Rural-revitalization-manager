@@ -1,16 +1,29 @@
 import React, { useState, useEffect } from "react";
+
+import { post , get} from "../../utilities.js"; 
 import "./ComplaintPage.css";
 
 const ComplaintPage = (props) => {
-    const [user, setUser] = useState();
     const [complaint, setComplaint] = useState('');
 
     const [reply, setReply] = useState('');
 
+    const [complaints, setComplaints] = useState([]);
+
     useEffect(() => {
-        document.title = "Complaint Page";
-        setUser({name:"xulin", role:1}) //get(`/api/user`, { userid: props.userId }).then((userObj) => setUser(userObj));
-      }, []);
+      document.title = "Complaint Page";
+      if (props.userId == null) {
+        return <div>请先登录</div>
+      }
+      if (props.userId == null) {
+
+      } else {
+        get ("/api/complaint").then((res) => {
+            setComplaints(res);
+            console.log(complaints);
+        });
+      }
+    }, []);
 
     const handleInputChange = (event) => {
         setComplaint(event.target.value);
@@ -18,12 +31,18 @@ const ComplaintPage = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        // 在这里处理提交逻辑，比如发送投诉到服务器
         if (complaint.length > 200 || complaint.length === 0) {
             alert('字符数过多或过少！');
         } else {
-            alert('提交成功！');
-            setComplaint('');
+            post("/api/complaint", {sender: props.userId, content: complaint}).then((res) => {
+                if (res.message == "Complaint added successfully") {
+                    alert('提交成功！');
+                    setComplaint('');
+                } else {
+                    alert('提交失败！');
+                }
+                console.log(res);
+            });
         }
         console.log('提交投诉:', complaint);
     }
@@ -44,10 +63,7 @@ const ComplaintPage = (props) => {
         console.log('提交回复:', reply);
     }
 
-    if (!user) {
-        return <div> Loading! </div>;
-    }
-    if (user.role === 0) 
+    if (false) 
     return (
         <div>
             <div className="ComplaintPage">
