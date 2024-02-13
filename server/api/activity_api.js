@@ -327,6 +327,7 @@ router.post("/admin", auth.verifyToken, async (req, res) => {
 
 // POST /api/activity/certificate
 // 请求中应包含：uid（用户邮箱，user中u_id）, aid（activity中_id）
+const generatingUsers = {};
 router.post("/certificate", auth.verifyToken, async (req, res) => {
   try {
     // 读取请求信息
@@ -339,6 +340,15 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
     if (!activity) {
       return res.status(400).json({ message: "没有找到活动！" })
     }
+
+    // 检查用户是否在生成列表中
+    if (generatingUsers[uid]) {
+      // 如果用户已经在生成列表中，则返回错误
+      return res.status(400).send("已经有一个证书正在生成中。");
+    }
+
+    // 将用户添加到生成列表中
+    generatingUsers[uid] = true;
 
     // 读取证书模板
     const templateBytes = fs.readFileSync("../assets/certificate_template.pdf");
@@ -611,6 +621,9 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
     const tempString = user._id.toString();
     const outputPath = `../temp/generated_certificate_${tempString}.pdf`;
     fs.writeFileSync(outputPath, pdfBytes);
+
+    // 生成完成后，从列表中删除该用户
+    delete generatingUsers[uid];
 
     // 发送生成的 PDF 文件给前端
     res.download(outputPath, 'certificate.pdf', (err) => {
