@@ -63,7 +63,7 @@ const ComplaintPage = (props) => {
         console.log('提交回复:', reply);
     }
 
-    if (false) 
+    if (true) 
     return (
         <div>
             <div className="ComplaintPage">
