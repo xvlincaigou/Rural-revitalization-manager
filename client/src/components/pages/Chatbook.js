@@ -31,7 +31,7 @@ const Chatbook = (props) => {
         _id={storyObj._id}
         creator_name={storyObj.creator_name}
         creator_id={storyObj.creator_id}
-        userId={props.userId}
+        user={props.user}
         content={storyObj.content}
         commentids={storyObj.comments}
       />
@@ -40,12 +40,12 @@ const Chatbook = (props) => {
     storiesList = <div>No stories!</div>;
   }
 
-  if (!props.userId) {
+  if (!props.user) {
     return <div>登录以发帖</div>;
   }
   return (
     <>
-      {props.userId && <NewStory addNewStory={addNewStory} />}
+      {props.user && <NewStory addNewStory={addNewStory} />}
       {storiesList}
     </>
   );

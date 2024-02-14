@@ -15,36 +15,36 @@ import "../utilities.css";
 import "./App.css";
 
 const App = () => {
-  const [userId, setUserId] = useState(null);
+  const [user, setUser] = useState(null);
 
   const handleLogin = (res) => {
     const userToken = res.tokenObj.id_token;
     post("/api/login", { token: userToken }).then((user) => {
-      setUserId(user._id);
+      setUser(user);
     });
   };
 
   const handleLogout = () => {
     console.log("Logged out successfully!");
-    setUserId(null);
+    setUser(null);
     post("/api/logout");
   };
 
   const logInPut = (val) => {
-    setUserId(val);
+    setUser(val);
   }
 
   return (
     <>
-      <NavBar handleLogin={handleLogin} handleLogout={handleLogout} userId={userId} />
+      <NavBar handleLogin={handleLogin} handleLogout={handleLogout} user={user} />
       <div className="App-container">
         <Router>
-          <Feed path="/" userId={userId} />
+          <Feed path="/" />
           <Profile path="/profile/" />
-          <Chatbook path="/chat/" userId={userId} />
+          <Chatbook path="/chat/" user={user} />
           <Activity path="/activity/"/>
           <Register path="/register/" upload={logInPut}/>
-          <ComplaintPage path="/complaint/" userId={userId} />
+          <ComplaintPage path="/complaint/" user={user} />
           <NotFound default />
         </Router>
       </div>

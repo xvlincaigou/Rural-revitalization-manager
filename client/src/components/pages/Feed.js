@@ -11,7 +11,7 @@ import { get } from "../../utilities";
  * @property { number } complaintReplyCount
  * @returns 
  */
-const Feed = (props) => {
+const Feed = () => {
 
   const [appData, setAppData] = useState({});
 

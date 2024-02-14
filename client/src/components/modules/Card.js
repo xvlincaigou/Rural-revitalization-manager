@@ -15,17 +15,31 @@ import "./Card.css";
  * @param {string} content of the story
  * @param {[string]} commentids id of the comments
  */
+//继承了user
+
 const Card = (props) => {
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
     let commentList = [];
     for (const commentid of props.commentids) {
-      get("/api/comment", {commentid: commentid}).then((commentObj) => {
+      console.log("wobuhao");
+      get("/api/comment", {commentid: commentid}).then((response) => {
+        console.log("nihaoya");
+        console.log(response.message);
+        console.log(response.status);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((commentObj) => {
         commentList.push(commentObj);
         console.log(commentObj);
         console.log(commentObj.message);
-        console.log("hello world!");
+      })
+      .catch((error) => {
+        console.error('There has been a problem with your fetch operation:', error);
       });
     }
     setComments(commentList);
@@ -47,7 +61,7 @@ const Card = (props) => {
         story={props}
         comments={comments}
         creator_id={props.creator_id}
-        userId={props.userId}
+        userId={props.user}
         addNewComment={addNewComment}
       />
     </div>

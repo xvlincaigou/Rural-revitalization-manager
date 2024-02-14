@@ -12,18 +12,10 @@ const ComplaintPage = (props) => {
 
     useEffect(() => {
       document.title = "Complaint Page";
-      if (props.userId == null) {
-        return <div>请先登录</div>
-      }
-      if (props.userId == null) {
-
-      } else {
-        get ("/api/complaint").then((res) => {
-            setComplaints(res);
-            console.log(complaints);
-        });
-      }
-    }, []);
+      get ("/api/complaint").then((res) => {
+        setComplaints(res.complaint);
+    });
+    }, [complaints]);
 
     const handleInputChange = (event) => {
         setComplaint(event.target.value);
@@ -34,7 +26,7 @@ const ComplaintPage = (props) => {
         if (complaint.length > 200 || complaint.length === 0) {
             alert('字符数过多或过少！');
         } else {
-            post("/api/complaint", {sender: props.userId, content: complaint}).then((res) => {
+            post("/api/complaint", {sender: props.user.u_id, content: complaint}).then((res) => {
                 if (res.message == "Complaint added successfully") {
                     alert('提交成功！');
                     setComplaint('');
@@ -63,7 +55,10 @@ const ComplaintPage = (props) => {
         console.log('提交回复:', reply);
     }
 
-    if (true) 
+    if (props.user == null) {
+        return <div>请先登录</div>
+    }
+    if (props.user.role == 0) 
     return (
         <div>
             <div className="ComplaintPage">

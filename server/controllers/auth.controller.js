@@ -120,7 +120,7 @@ exports.login = (req, res) => {
                 email: user.email,
                 role: user.role,
                 */
-                strippedUser
+                user
             );
         });
 };

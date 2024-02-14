@@ -41,7 +41,7 @@ const NewPostInput = (props) => {
         value="Submit"
         onClick={handleSubmit}
       >
-        Submit
+        提交
       </button>
     </div>
   );
@@ -63,7 +63,7 @@ const NewComment = (props) => {
     });
   };
 
-  return <NewPostInput defaultText="New Comment" onSubmit={addComment} />;
+  return <NewPostInput defaultText="发表你的评论吧" onSubmit={addComment} />;
 };
 
 /**
@@ -74,14 +74,14 @@ const NewComment = (props) => {
  */
 const NewStory = (props) => {
   const addStory = (value) => {
-    const body = { content: value };
+    const body = { title: null , content: value };
     post("/api/story", body).then((story) => {
       // display this story on the screen
       props.addNewStory(story);
     });
   };
 
-  return <NewPostInput defaultText="New Story" onSubmit={addStory} />;
+  return <NewPostInput defaultText="发表你的帖子吧" onSubmit={addStory} />;
 };
 
 /**
