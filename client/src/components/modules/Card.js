@@ -21,9 +21,11 @@ const Card = (props) => {
   useEffect(() => {
     let commentList = [];
     for (const commentid of props.commentids) {
-      get("/api/comment", { commentid: commentid }).then((comment) => {
-        commentList.push(comment);
-        console.log(comment);
+      get("/api/comment"/*, {commentid: commentid}*/).then((commentObj) => {
+        commentList.push(commentObj);
+        console.log(commentObj);
+        console.log(commentObj.message);
+        console.log("hello world!");
       });
     }
     setComments(commentList);
