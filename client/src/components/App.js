@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import NavBar from "./modules/NavBar.js";
 import { Router } from "@reach/router";
 import Feed from "./pages/Feed.js";
@@ -9,9 +9,7 @@ import Activity from "./pages/Activity.js";
 import Register from "./pages/Register.js";
 import ComplaintPage from "./pages/ComplaintPage.js";
 
-import { socket } from "../client-socket.js";
-
-import { get, post } from "../utilities";
+import { post } from "../utilities";
 
 import "../utilities.css";
 import "./App.css";
@@ -23,7 +21,6 @@ const App = () => {
     const userToken = res.tokenObj.id_token;
     post("/api/login", { token: userToken }).then((user) => {
       setUserId(user._id);
-      post("/api/initsocket", { socketid: socket.id });
     });
   };
 
