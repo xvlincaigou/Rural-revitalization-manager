@@ -13,18 +13,21 @@ import "./Card.css";
  * @param {string} creator_name
  * @param {string} creator_id
  * @param {string} content of the story
+ * @param {[string]} commentids id of the comments
  */
 const Card = (props) => {
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
-    get("/api/comment", { parent: props._id }).then((comments) => {
-      setComments(comments);
-    });
+    let commentList = [];
+    for (const commentid in props.commentids) {
+      get("/api/comment", { commentid: commentid }).then((comment) => {
+        commentList.push(comment);
+      });
+    }
+    setComments(commentList);
   }, []);
 
-  // this gets called when the user pushes "Submit", so their
-  // post gets added to the screen right away
   const addNewComment = (commentObj) => {
     setComments(comments.concat([commentObj]));
   };

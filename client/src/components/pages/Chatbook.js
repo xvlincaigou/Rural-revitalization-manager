@@ -4,12 +4,7 @@ import { NewStory } from "../modules/NewPostInput.js";
 import Card from "../modules/Card.js";
 import { get } from "../../utilities.js";
 
-/**
- * Page component to display when at the "/chat" route
- *
- * Proptypes
- * @param {string} userId id of current logged in user
- */
+
 const Chatbook = (props) => {
 
   useEffect(() => {
@@ -23,8 +18,6 @@ const Chatbook = (props) => {
 
   const [stories, setStories] = useState([]);
 
-  // this gets called when the user pushes "Submit", so their
-  // post gets added to the screen right away
   const addNewStory = (storyObj) => {
     setStories([storyObj].concat(stories));
   };
@@ -40,6 +33,7 @@ const Chatbook = (props) => {
         creator_id={storyObj.creator_id}
         userId={props.userId}
         content={storyObj.content}
+        commentids={storyObj.comments}
       />
     ));
   } else {

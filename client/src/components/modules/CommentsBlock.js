@@ -24,9 +24,9 @@ const CommentsBlock = (props) => {
           <SingleComment
             key={`SingleComment_${comment._id}`}
             _id={comment._id}
-            creator_name={comment.creator_name}
-            creator_id={comment.creator_id}
-            content={comment.content}
+            creator_name={comment.creator.name}
+            creator_id={comment.creator.u_id}
+            content={comment.comment}
           />
         ))}
         {props.userId && (
