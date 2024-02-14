@@ -3,46 +3,6 @@ import "./Feed.css";
 import { get } from "../../utilities";
 
 /**
- * Below are how to use story's api:
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  import { NewStory } from "../modules/NewPostInput.js";
-import Card from "../modules/Card.js";
-  const [stories, setStories] = useState([]);
-
-    get("/api/stories").then((storyObjs) => {
-      let reversedStoryObjs = storyObjs.reverse();
-      setStories(reversedStoryObjs);
-    }
-
-  // this gets called when the user pushes "Submit", so their
-  // post gets added to the screen right away
-  const addNewStory = (storyObj) => {
-    setStories([storyObj].concat(stories));
-  };
-
-  let storiesList = null;
-  const hasStories = stories.length !== 0;
-  if (hasStories) {
-    storiesList = stories.map((storyObj) => (
-      <Card
-        key={`Card_${storyObj._id}`}
-        _id={storyObj._id}
-        creator_name={storyObj.creator_name}
-        creator_id={storyObj.creator_id}
-        userId={props.userId}
-        content={storyObj.content}
-      />
-    ));
-  } else {
-    storiesList = <div>No stories!</div>;
-  }
-
-      {props.userId && <NewStory addNewStory={addNewStory} />}
-      {storiesList}
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
-
-/**
  * @typedef appData
  * @property { number } activityCount
  * @property { number } postCount
