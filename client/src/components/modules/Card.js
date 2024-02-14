@@ -20,9 +20,10 @@ const Card = (props) => {
 
   useEffect(() => {
     let commentList = [];
-    for (const commentid in props.commentids) {
+    for (const commentid of props.commentids) {
       get("/api/comment", { commentid: commentid }).then((comment) => {
         commentList.push(comment);
+        console.log(comment);
       });
     }
     setComments(commentList);
