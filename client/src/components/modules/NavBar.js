@@ -16,21 +16,36 @@ const NavBar = (props) => {
         <Link to="/" className="NavBar-link">
           主页
         </Link>
-          <Link to={"/profile/"} className="NavBar-link">
-            我的
-          </Link>
-        <Link to="/chat/" className="NavBar-link">
-          发帖
-        </Link>
-        <Link to="/activity/" className="NavBar-link">
-          活动
-        </Link>
-        <Link to="/complaint/" className="NavBar-link">
-          投诉
-        </Link>
-        <Link to="/register/" className="NavBar-link">
-          注册/登录
-        </Link>
+          {props.userId && (
+              <Link to={`/profile/${props.useId}`} className="NavBar-link">
+                我的
+              </Link>
+            )
+          }
+          {props.userId && (
+              <Link to={"/chat/"} className="NavBar-link">
+                发帖
+              </Link>
+            )
+          }
+          {props.userId && (
+              <Link to={"/activity/"} className="NavBar-link">
+                活动
+              </Link>
+            )
+          }
+          {props.userId && (
+              <Link to={"/complaint/"} className="NavBar-link">
+                投诉
+              </Link>
+            )
+          }
+          {!props.userId && (
+              <Link to={"/register/"} className="NavBar-link">
+                注册/登录
+              </Link>
+            )
+          }
       </div>
     </nav>
   );

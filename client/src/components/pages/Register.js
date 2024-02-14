@@ -1,4 +1,5 @@
 import React, { useState , useEffect } from 'react';
+import { Redirect } from '@reach/router';
 
 import './Register.css';
 
@@ -38,9 +39,6 @@ const Register = ({upload}) => {
     const [loginpassword, setLoginpassword] = useState('');
     const [warning, setWarning] = useState(false);
     const [step_, setStep_] = useState(false);
-
-    //整个App的id
-    const [userId, setUserId] = useState(null);
 
     const handleUsernameChange = (e) => {
         setUsername(e.target.value);
@@ -112,7 +110,7 @@ const Register = ({upload}) => {
             <input type="email" placeholder="邮箱" value={email} onChange={(e) => setEmail(e.target.value)} required />
             <input type="password" placeholder="密码" value={loginpassword} onChange={(e) => setLoginpassword(e.target.value)} required />
             <button type="submit">登录</button>
-            {step_ ? <input type="password" placeholder="验证码，请查看邮箱" required /> : null}
+            {step_ ? <Redirect to="/" /> : null}
           </form>
           {warning ? <p className='warning-message'>登录失败，请重试</p> : null}
         </div>

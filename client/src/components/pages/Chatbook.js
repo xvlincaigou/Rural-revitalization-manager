@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import ChatList from "../modules/ChatList.js";
 import Chat from "../modules/Chat.js";
 import { socket } from "../../client-socket.js";
-import { get } from "../../utilities";
 
 import "./Chatbook.css";
 
@@ -41,32 +40,9 @@ const Chatbook = (props) => {
     messages: [],
   });
 
-  const loadMessageHistory = (recipient) => {
-    get("/api/chat", { recipient_id: recipient._id }).then((messages) => {
-      setActiveChat({
-        recipient: recipient,
-        messages: messages,
-      });
-    });
-  };
-
   useEffect(() => {
     document.title = "Chatbook";
     console.log(props.userId);
-  }, []);
-
-  useEffect(() => {
-    loadMessageHistory(activeChat.recipient);
-  }, [activeChat.recipient._id]);
-
-  useEffect(() => {
-    get("/api/activeUsers").then((data) => {
-      // If user is logged in, we load their chats. If they are not logged in,
-      // there's nothing to load. (Also prevents data races with socket event)
-      if (props.userId) {
-        setActiveUsers([ALL_CHAT].concat(data.activeUsers));
-      };
-    });
   }, []);
 
   useEffect(() => {
