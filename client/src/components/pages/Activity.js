@@ -33,8 +33,9 @@ const Activity = (props) => {
 
     useEffect(() => {
         document.title = "Activity";
-        get("api/activity").then((res) => {
+        get("/api/activity").then((res) => {
             console.log(res);
+            setActivityList(res.activities);
         }).catch((error) => {
             console.log(error);
         });
