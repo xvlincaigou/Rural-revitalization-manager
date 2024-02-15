@@ -55,12 +55,13 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
 router.get("/comment", auth.verifyToken, async (req, res) => {
   try{
     const comment = await StoryComment.findById(req.query.commentid);
+    res.set('Content-Type', 'application/json');
     if(!comment){
       return res.status(404).json({message: "Comment not found."});
     }
-    res.status(200).json({comment: comment, message: "Comment find successfully."});
+    res.status(200).send(JSON.stringify(comment));
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({message: err.message});
   }
 });
 

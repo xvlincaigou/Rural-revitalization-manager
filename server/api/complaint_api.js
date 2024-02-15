@@ -2,7 +2,6 @@ const express = require("express");
 
 // import models so we can interact with the database
 const Complaint = require("../models/complaint");
-const Activity = require("../models/activity");
 
 // import authentication library
 const auth = require("../middlewares/authJwt");
@@ -11,7 +10,6 @@ const auth = require("../middlewares/authJwt");
 const router = express.Router();
 
 // POST /api/complaint
-// 发出新投诉的时候调用
 router.post("/", auth.verifyToken, async (req, res) => {
   try{
     const {sender, content} = req.body;
@@ -36,7 +34,6 @@ router.post("/", auth.verifyToken, async (req, res) => {
 });
 
 // GET /api/complaint
-// 管理员得到所有未回复的投诉
 router.get("/", auth.verifyToken, async (req, res) => {
   // get all complaints that are not responsed and sort by date
   try{
@@ -47,40 +44,47 @@ router.get("/", auth.verifyToken, async (req, res) => {
   }
 });
 
-//管理员回复成员的投诉
-router.post("/complaint/reply",auth.verifyToken,async(req,res)=>{
-  try{
-    const { complaint_id,reply}=req.body;
-    const complaint=Complaint.findById(complaint_id);
+//回复投诉
+//POST /api/complaint/reply
+router.post("/reply",auth.verifyToken,async(req,res)=>{
+   try{
+    const { complaint_id,reply,recipient_id,recipient_name}=req.body;
+    const complaint= await Complaint.findById(complaint_id);
+    const currentDate = new Date();
     if (!complaint) {
-      return res.status(404).json({ message: "未找到投诉" });
+     return res.status(404).json({ message: "未找到投诉" });
     }
     complaint.reply=reply;
     complaint.responsed=1;
+    complaint.recipient={
+     u_id: recipient_id,
+     name: recipient_name,
+     timestamp: currentDate
+    }
     await complaint.save();
+    res.status(200).json({ message: "回复成功" });
     }catch (err) {
     res.status(400).json({ message: err.message });
-  }
-});
+   }
+  });
   
-//查看自己发出的投诉的回复
-router.post("/complaint/reply/check",auth.verifyToken,async(req,res)=>{
-  try{
-    const { complaint_id}=req.body;
-    const complaint=Complaint.findById(complaint_id);
-    if (!complaint) {
-      return res.status(404).json({ message: "未找到投诉" });
+//查看回复
+//GET /api/complaint/reply/check
+router.get("/reply/check",auth.verifyToken,async(req,res)=>{
+   try{
+    const uid = req.params.uid;
+    const complaints = await Complaint.find({ 'sender.u_id': uid, responsed: 1 });
+    if(complaints.length === 0){
+     return res.status(404).json({ message: "还没有被回复的投诉" });
     }
-    if(complaint.responsed==0){
-      return res.status(404).json({ message: "此投诉尚未被管理员回复" });
-    }
-    const responseData = {
-      reply:complaint.reply,
-    };
-    res.status(200).json(responseData);
+    res.status(200).json(complaints);
     }catch (err) {
     res.status(400).json({ message: err.message });
-  }
-});
+    console.log(uid);
+    console.log(err);
+    console.log(res);
+    console.log(uid);
+   }
+  });
 
 module.exports = router;

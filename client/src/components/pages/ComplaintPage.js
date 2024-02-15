@@ -16,17 +16,8 @@ const ComplaintPage = (props) => {
     //管理员要处理的全部投诉
     const [complaints, setComplaints] = useState([]);
 
-    useEffect((props) => {
+    useEffect(() => {
       document.title = "Complaint Page";
-      //props.user.role == 0 ? 
-      //get("api/complaint/reply/check").then((res) => {
-      //  setReplies(res.complaint)}) :
-      get ("/api/complaint").then((res) => {
-        setComplaints(res.complaint);
-    console.log(props.user);
-    }).catch((error) => {
-        console.log(error);
-    });
     }, []);
 
     const handleInputChange = (event) => {
@@ -38,7 +29,8 @@ const ComplaintPage = (props) => {
         if (complaint.length > 200 || complaint.length === 0) {
             alert('字符数过多或过少！');
         } else {
-            post("/api/complaint", {sender: props.user.u_id, content: complaint}).then((res) => {
+            const sender = {u_id: props.user.u_id, name: props.user.name, timestamp: new Date().toLocaleString()};
+            post("/api/complaint", {sender: sender, content: complaint}).then((res) => {
                 if (res.message == "Complaint added successfully") {
                     alert('提交成功！');
                     setComplaint('');
@@ -57,20 +49,32 @@ const ComplaintPage = (props) => {
 
     const handleReplySubmit = (event) => {
         event.preventDefault();
-        // 在这里处理提交逻辑，比如发送投诉到服务器
         if (reply.length > 200 || reply.length === 0) {
             alert('字符数过多或过少！');
         } else {
-            alert('提交成功！');
-            setReply('');
+            event.preventDefault();
+            const complaintId = event.target.getAttribute("complaint_id");
+            post("/api/complaint/reply", {complaint_id: complaintId, reply: reply, recipient_id: props.user._id, recipient_name: props.user.name}).then((res) => {
+                if (res.message == "回复成功") {
+                    alert('提交成功！');
+                    setReply('');
+                    setComplaints(prevComplaints => prevComplaints.filter(complaint => complaint.complaint_id !== complaintId));
+                } else {
+                    alert('提交失败！');
+                }
+                console.log(res);
+            }).catch((err) => {console.log(err)});
+            console.log('提交回复:', reply);
         }
-        console.log('提交回复:', reply);
     }
 
     if (props.user == null) {
         return <div>请先登录</div>
     }
-    if (props.user.role == 0) 
+    if (props.user.role == 0) {
+        get("api/complaint/reply/check", {uid: props.user.u_id}).then((res) => {setReplies(res.complaints)}).catch((err) => {console.log(err)});
+        console.log(replies);
+        console.log(props.user);
         return (
             <>
             <div className="ComplaintPage">
@@ -98,12 +102,14 @@ const ComplaintPage = (props) => {
             ))}
             </>
         );
+    }
+    get ("/api/complaint").then((res) => {setComplaints(res.complaint)}).catch((err) => {console.log(err)});
     return (
         complaints.length == 0 ? <div>没有待回复的投诉</div> :
         complaints.map((complaint) => (
             <div className="complaint-box">
             <div className="ComplaintPage">
-                <form onSubmit={handleReplySubmit}>
+                <form onSubmit={handleReplySubmit} complaint_id={complaint._id}>
                     <label>
                         回复内容（限制200个字符）:
                         <textarea value={reply} onChange={handleReplyInputChange}/>

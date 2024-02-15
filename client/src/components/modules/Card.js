@@ -23,24 +23,15 @@ const Card = (props) => {
   useEffect(() => {
     let commentList = [];
     for (const commentid of props.commentids) {
-      console.log("wobuhao");
-      get("/api/comment", {commentid: commentid}).then((response) => {
-        console.log("nihaoya");
-        console.log(response.message);
-        console.log(response.status);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((commentObj) => {
-        commentList.push(commentObj);
-        console.log(commentObj);
-        console.log(commentObj.message);
-      })
-      .catch((error) => {
-        console.error('There has been a problem with your fetch operation:', error);
-      });
+      get("/api/comment", {commentid: commentid})
+        .then(response => response.json()) // 解析 JSON 数据
+        .then(commentObj => {
+          commentList.push(commentObj);
+          console.log(commentObj);
+          console.log(commentObj.message);
+          console.log("hello world!");
+        })
+        .catch(error => console.error('Error fetching comment:', error));
     }
     setComments(commentList);
   }, []);

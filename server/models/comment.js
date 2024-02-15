@@ -22,7 +22,7 @@ const CommentSchema = new mongoose.Schema({
 
 // compile model from schema
 module.exports = {
-  StoryComment: mongoose.model("story_comment", CommentSchema),
-  ActivityComment: mongoose.model("activity_comment", CommentSchema),
-  MemberComment: mongoose.model("member_comment", CommentSchema)
+  StoryComment: mongoose.model("story_comments", CommentSchema),
+  ActivityComment: mongoose.model("activity_comments", CommentSchema),
+  MemberComment: mongoose.model("member_comments", CommentSchema)
 };
