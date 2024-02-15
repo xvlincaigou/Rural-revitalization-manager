@@ -42,7 +42,7 @@ const App = () => {
           <Feed path="/" />
           <Profile path="/profile/" />
           <Chatbook path="/chat/" user={user} />
-          <Activity path="/activity/"/>
+          <Activity path="/activity/" user={user}/>
           <Register path="/register/" upload={logInPut}/>
           <ComplaintPage path="/complaint/" user={user} />
           <NotFound default />
