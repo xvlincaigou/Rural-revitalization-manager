@@ -11,6 +11,7 @@ const auth = require("../middlewares/authJwt");
 const router = express.Router();
 
 // POST /api/complaint
+// 发出新投诉的时候调用
 router.post("/", auth.verifyToken, async (req, res) => {
   try{
     const {sender, content} = req.body;
@@ -35,6 +36,7 @@ router.post("/", auth.verifyToken, async (req, res) => {
 });
 
 // GET /api/complaint
+// 管理员得到所有未回复的投诉
 router.get("/", auth.verifyToken, async (req, res) => {
   // get all complaints that are not responsed and sort by date
   try{

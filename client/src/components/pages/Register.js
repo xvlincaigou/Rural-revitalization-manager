@@ -1,5 +1,4 @@
 import React, { useState , useEffect } from 'react';
-import { Redirect } from '@reach/router';
 
 import './Register.css';
 
@@ -92,6 +91,9 @@ const Register = ({upload}) => {
         });
     };
 
+    if (step_) {
+        return <div>您已登录！</div>
+    }
     return (
     <div>
         <div className="Register">
@@ -110,7 +112,6 @@ const Register = ({upload}) => {
             <input type="email" placeholder="邮箱" value={email} onChange={(e) => setEmail(e.target.value)} required />
             <input type="password" placeholder="密码" value={loginpassword} onChange={(e) => setLoginpassword(e.target.value)} required />
             <button type="submit">登录</button>
-            {step_ ? <Redirect to="/" /> : null}
           </form>
           {warning ? <p className='warning-message'>登录失败，请重试</p> : null}
         </div>
