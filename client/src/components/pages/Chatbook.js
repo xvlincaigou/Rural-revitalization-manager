@@ -9,10 +9,13 @@ const Chatbook = (props) => {
 
   useEffect(() => {
     document.title = "Chatbook";
+    console.log(props.user);
     get("/api/story/stories").then((storyObjs) => {
       let reversedStoryObjs = storyObjs.reverse();
       setStories(reversedStoryObjs);
       console.log(storyObjs);
+    }).catch((error) => {
+      console.log(error);
     });
   }, []);
 
@@ -45,7 +48,7 @@ const Chatbook = (props) => {
   }
   return (
     <>
-      {props.user && <NewStory addNewStory={addNewStory} />}
+      {props.user && <NewStory addNewStory={addNewStory} creator_id={props.user.u_id} creator_name={props.user.name} />}
       {storiesList}
     </>
   );

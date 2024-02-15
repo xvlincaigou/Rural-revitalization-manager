@@ -74,7 +74,7 @@ const NewComment = (props) => {
  */
 const NewStory = (props) => {
   const addStory = (value) => {
-    const body = { title: null , content: value };
+    const body = {creator_id: props.creator_id, creator_name: props.creator_name, title: null, content: value };
     post("/api/story", body).then((story) => {
       // display this story on the screen
       props.addNewStory(story);
