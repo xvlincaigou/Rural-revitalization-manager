@@ -25,26 +25,30 @@ const UserSchema = new mongoose.Schema({
     },
     previous_scores: {
         type: [{
-        score: Number,
-        activity_id: mongoose.Schema.Types.ObjectId
+            score: Number,
+            activity_id: mongoose.Schema.Types.ObjectId
         }],
         default: [],
-    },  
+    },
     comment_received: {
         type: [mongoose.Schema.Types.ObjectId],
         default: [],
     }, // contains comment _id
     tags: {
         type: [{
-        tag: String,
-        visibility: Number
+            tag: String,
+            visibility: Number
         }],
         default: [],
     },
     banned: {
         type: Number,
         default: 0,
-    }
+    },
+    verificationCode: {
+        type: {code: String, lastSent: Date, expiration: Date},
+        default: undefined,
+    },
     /*
     用户保护功能：有待讨论
     isAccountFrozen: {

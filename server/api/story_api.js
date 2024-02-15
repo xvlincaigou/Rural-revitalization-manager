@@ -31,7 +31,7 @@ router.post("/", auth.verifyToken, (req, res) => {
   newStory.save().then((story) => res.send(story));
 });
 
-// POST /api/comment
+// POST /api/story/comment
 router.post("/comment", auth.verifyToken, async (req, res) => {
   try{
     const {creator, send_date, story_id, comment} = req.body;
@@ -51,7 +51,7 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
   }
 });
 
-// GET /api/comment
+// GET /api/story/comment
 router.get("/comment", auth.verifyToken, async (req, res) => {
   try{
     const comment = await StoryComment.findById(req.query.commentid);
