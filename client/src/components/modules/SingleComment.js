@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "@reach/router";
 
 /**
  * Component to render a single comment

@@ -19,14 +19,10 @@ const fontkit = require('fontkit'); // 导入 fontkit 库
 
 // GET /api/activity
 router.get("/", auth.verifyToken, async (req, res) => {
-  // get all activities and sort by date
-  try {
-    const activities = await Activity.find().sort({ start_time: -1 });
-    res.send(activities);
-    res.status(200).json({ message: "Activities sent" });
-  } catch (err) {
-    res.status(404).json({ error: "No activities" });
-  }
+   // get all activities and sort by date
+   Activity.find({}).sort({ date: -1 })
+    .then((activities) => res.send(activities))
+    .catch((err) => res.status(404).send(err));
 });
 
 // POST /api/activity

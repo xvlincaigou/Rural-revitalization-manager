@@ -51,15 +51,23 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
   }
 });
 
-// GET /api/comment
 router.get("/comment", auth.verifyToken, async (req, res) => {
   try{
-    const comment = await StoryComment.findById(req.query.commentid);
+    console.log(req.query.commentid);
+    const comment = await StoryComment.findById(req.query.commentid, (err, comment) => {
+      if (err) {
+        console.log("damn!");
+        console.log(err);
+      } else {
+        console.log("win!");
+        console.log(comment);
+      }
+    });
     res.set('Content-Type', 'application/json');
     if(!comment){
       return res.status(404).json({message: "Comment not found."});
     }
-    res.status(200).send(JSON.stringify(comment));
+    res.status(200).json({comment: comment, message: "Comment sent."});
   } catch (err) {
     res.status(400).json({message: err.message});
   }

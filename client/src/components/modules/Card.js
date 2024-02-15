@@ -23,13 +23,10 @@ const Card = (props) => {
   useEffect(() => {
     let commentList = [];
     for (const commentid of props.commentids) {
-      get("/api/comment", {commentid: commentid})
-        .then(response => response.json()) // 解析 JSON 数据
+      get("/api/story/comment", {commentid: commentid})
         .then(commentObj => {
-          commentList.push(commentObj);
-          console.log(commentObj);
-          console.log(commentObj.message);
-          console.log("hello world!");
+          commentList.push(commentObj.comment);
+          console.log("commentList", commentList);
         })
         .catch(error => console.error('Error fetching comment:', error));
     }

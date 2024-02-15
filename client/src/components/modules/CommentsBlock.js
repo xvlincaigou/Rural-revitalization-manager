@@ -17,23 +17,27 @@ import { NewComment } from "./NewPostInput.js";
  * @param {ContentObject} story
  */
 const CommentsBlock = (props) => {
+  console.log("comments", props.comments)
+  const commentList = props.comments.map((comment) => (
+    <SingleComment
+      key={`SingleComment_${comment._id}`}
+      _id={comment._id}
+      creator_name={comment.creator.name}
+      creator_id={comment.creator.u_id}
+      content={comment.comment}
+    />
+  ))
   return (
+    <>
     <div className="Card-commentSection">
       <div className="story-comments">
-        {props.comments.map((comment) => (
-          <SingleComment
-            key={`SingleComment_${comment._id}`}
-            _id={comment._id}
-            creator_name={comment.creator.name}
-            creator_id={comment.creator.u_id}
-            content={comment.comment}
-          />
-        ))}
+      {commentList}
         {props.userId && (
           <NewComment storyId={props.story._id} addNewComment={props.addNewComment} />
         )}
       </div>
     </div>
+    </>
   );
 };
 
