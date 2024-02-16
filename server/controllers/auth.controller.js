@@ -138,7 +138,7 @@ exports.login = (req, res) => {
             };
             await user.save();
 
-            // TODO: 发送验证码
+            // 发送验证码
             sendCode(user.u_id, verificationCode).then(() => {
                 res.status(200).send({ message: "验证码已发送！" });
             })
@@ -170,7 +170,7 @@ exports.requestCode = async (req, res) => {
             expiration: expirationDate // 5 minutes
         };
         await user.save();
-        // TODO: 发送验证码
+        // 发送验证码
         sendCode(user.u_id, verificationCode).then(() => {
             res.status(200).send({ message: "验证码已重新发送！" });
         })
