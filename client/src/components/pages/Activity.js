@@ -35,7 +35,7 @@ const Activity = (props) => {
         document.title = "Activity";
         get("/api/activity").then((res) => {
             console.log(res);
-            setActivityList(res.activities);
+            setActivityList(res);
         }).catch((error) => {
             console.log(error);
         });
@@ -49,12 +49,12 @@ const Activity = (props) => {
         activityList.map((activity) => (
             <SingleActivity
             name={activity.name}
-            held_time={activity.held_time}
-            latest_register_time={activity.latest_register_time}
-            information={activity.information}
-            number_of_people_signed_up={activity.number_of_people_signed_up}
-            users_signed_up={activity.users_signed_up}
-            average_score={activity.average_score}
+            held_time={activity.date.start}
+            latest_register_time={activity.date.sign_up}
+            information={activity.location}
+            number_of_people_signed_up={activity.capacity}
+            users_signed_up={activity.candidates}
+            average_score={activity.score}
             />
         ))
     );

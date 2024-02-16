@@ -40,7 +40,7 @@ const App = () => {
       <div className="App-container">
         <Router>
           <Feed path="/" />
-          <Profile path="/profile/" />
+          <Profile path="/profile/:user.u_id" user={user}/>
           <Chatbook path="/chat/" user={user} />
           <Activity path="/activity/" user={user}/>
           <Register path="/register/" upload={logInPut}/>

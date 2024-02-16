@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import SingleStory from "./SingleStory.js";
-import CommentsBlock from "./CommentsBlock.js";
+import SingleComment from "./SingleComment.js";
 import { get } from "../../utilities";
+import { NewComment } from "./NewPostInput.js";
 
 import "./Card.css";
 
@@ -21,24 +22,23 @@ const Card = (props) => {
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
-    let commentList = [];
-    for (const commentid of props.commentids) {
-      get("/api/comment", {commentid: commentid})
-        .then(response => response.json()) // 解析 JSON 数据
-        .then(commentObj => {
-          commentList.push(commentObj);
-          console.log(commentObj);
-          console.log(commentObj.message);
-          console.log("hello world!");
-        })
-        .catch(error => console.error('Error fetching comment:', error));
-    }
-    setComments(commentList);
+    const commentPromises = props.commentids.map((commentid) =>
+      get("/api/story/comment", {commentid: commentid})
+      .catch(error => console.error('Error fetching comment:', error))
+    )
+
+    Promise.all(commentPromises)
+      .then(commentResponses => {
+        setComments(commentResponses.map(response => response.comment));
+      })
+      .catch(error => console.error('Error fetching comments:', error));
   }, []);
 
   const addNewComment = (commentObj) => {
     setComments(comments.concat([commentObj]));
   };
+
+  console.log(comments);
 
   return (
     <div className="Card-container">
@@ -48,13 +48,20 @@ const Card = (props) => {
         creator_id={props.creator_id}
         content={props.content}
       />
-      <CommentsBlock
-        story={props}
-        comments={comments}
-        creator_id={props.creator_id}
-        userId={props.user}
-        addNewComment={addNewComment}
-      />
+      <div className="Card-commentSection">
+        <div className="story-comments">
+          {comments.map((comment) => 
+            (<SingleComment
+              key={`SingleComment_${comment._id}`}
+              _id={comment._id}
+              creator={comment.creator || {name:'' , u_id:''}}
+              content={comment.comment}
+            />
+          )
+          )}
+         <NewComment storyId={props._id} addNewComment={addNewComment} />
+        </div>
+      </div>
     </div>
   );
 };
