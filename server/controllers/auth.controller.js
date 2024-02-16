@@ -128,32 +128,13 @@ exports.login = (req, res) => {
             if (!passwordIsValid) {
                 return res.status(401).send({ message: "密码错误！" });
             }
-
-            /*
-                        const token = jwt.sign({ id: user.u_id },
-                            config.secret,
-                            {
-                                algorithm: 'HS256',
-                                allowInsecureKeySizes: true,
-                                expiresIn: 86400, // TODO: 决定令牌有效期
-                            });
-            
-                        req.session.token = token;
-            
-                        const { u_id } = user;
-                        const strippedUser = { u_id };
-            
-                        req.session.user = strippedUser;
-            
-                        res.status(200).send(
-                            user
-                        );
-            */
             const verificationCode = generateVerificationCode();
+            let expirationDate = new Date();
+            expirationDate.setMinutes(expirationDate.getMinutes() + 5);
             user.verificationCode = {
                 code: verificationCode,
                 lastSent: new Date(),
-                expiration: new Date(Date.now().getMinutes() + 5), // 5 minutes
+                expiration: expirationDate // 5 minutes
             };
             await user.save();
 
@@ -175,16 +156,18 @@ exports.requestCode = async (req, res) => {
     try {
         const user = await User.findOne({ u_id: u_id });
 
-        if (user.verificationCode.lastSent && new Date(user.verificationCode.lastSent.getMinutes() + 1) > new Date()) {
+        if (user.verificationCode.lastSent && new Date(user.verificationCode.lastSent.getTime() + 60000) > new Date()) {
             return res.status(429).send({ message: "距离上次发送验证码还不足一分钟，请稍后再试。" });
         }
 
         const verificationCode = generateVerificationCode();
+        let expirationDate = new Date();
+        expirationDate.setMinutes(expirationDate.getMinutes() + 5);
 
         user.verificationCode = {
             code: verificationCode,
             lastSent: new Date(),
-            expiration: new Date(Date.now().getMinutes() + 5), // 5 minutes
+            expiration: expirationDate // 5 minutes
         };
         await user.save();
         // TODO: 发送验证码
@@ -225,13 +208,13 @@ exports.verifyCode = (req, res) => {
 
                 req.session.token = token;
 
-                const { u_id } = user;
-                const strippedUser = { u_id };
+                const { name, u_id, role, activities, previous_scores, comment_received, tags, banned, verificationCode } = user;
+                const strippedUser = { name, u_id, role, activities, previous_scores, comment_received, tags, banned, verificationCode };
 
                 req.session.user = strippedUser;
 
                 res.status(200).send(
-                    user
+                    strippedUser
                 );
             } else {
                 // 验证码无效或已过期
