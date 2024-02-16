@@ -24,6 +24,6 @@ router.post("/verifyCode", auth.verifyCode);
 // 用于请求新的验证码
 // 若可以发送验证码则返回200状态码和{ message: "验证码已重新发送！" }
 // 若冷却时间还没到则返回500状态码和{ message: "验证码发送失败！" }
-router.post("/requestCode", auth.verifyCode);
+router.post("/requestCode", auth.requestCode);
 
 module.exports = router;

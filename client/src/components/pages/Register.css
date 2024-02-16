@@ -27,6 +27,8 @@
   }
   
   .Register form button {
+    margin-bottom: 10px;
+    margin-top: 10px;
     padding: 10px;
     border-radius: 5px;
     border: none;
@@ -37,6 +39,6 @@
 
 .warning-message {
     color: red;
-    font-size: 20px;
-    margin-top: 5px;
+    /* font-size: 20px; */
+    /* margin-top: 5px; */
 }

@@ -128,24 +128,29 @@ exports.login = (req, res) => {
             if (!passwordIsValid) {
                 return res.status(401).send({ message: "密码错误！" });
             }
-            const verificationCode = generateVerificationCode();
-            let expirationDate = new Date();
-            expirationDate.setMinutes(expirationDate.getMinutes() + 5);
-            user.verificationCode = {
-                code: verificationCode,
-                lastSent: new Date(),
-                expiration: expirationDate // 5 minutes
-            };
-            await user.save();
 
-            // 发送验证码
-            sendCode(user.u_id, verificationCode).then(() => {
+            if (!(user.verificationCode.lastSent && new Date(user.verificationCode.lastSent.getTime() + 60000) > new Date())) {
+                const verificationCode = generateVerificationCode();
+                let expirationDate = new Date();
+                expirationDate.setMinutes(expirationDate.getMinutes() + 5);
+                user.verificationCode = {
+                    code: verificationCode,
+                    lastSent: new Date(),
+                    expiration: expirationDate // 5 minutes
+                };
+                await user.save();
+                // 发送验证码
+                sendCode(user.u_id, verificationCode).then(() => {
+                    res.status(200).send({ message: "验证码已发送！" });
+                })
+                    .catch((error) => {
+                        console.error(error);
+                        res.status(500).send({ message: "验证码发送失败！" });
+                    });
+            } else {
                 res.status(200).send({ message: "验证码已发送！" });
-            })
-                .catch((error) => {
-                    console.error(error);
-                    res.status(500).send({ message: "验证码发送失败！" });
-                });
+            }
+
         });
 };
 
@@ -157,7 +162,7 @@ exports.requestCode = async (req, res) => {
         const user = await User.findOne({ u_id: u_id });
 
         if (user.verificationCode.lastSent && new Date(user.verificationCode.lastSent.getTime() + 60000) > new Date()) {
-            return res.status(429).send({ message: "距离上次发送验证码还不足一分钟，请稍后再试。" });
+            return res.status(200).send({ message: "距离上次发送验证码还不足一分钟，请稍后再试。" });
         }
 
         const verificationCode = generateVerificationCode();

@@ -1,8 +1,6 @@
-import React, { useState , useEffect } from 'react';
-
+import React, { useState, useEffect } from 'react';
 import './Register.css';
-
-import { get, post } from "../../utilities";
+import { post } from "../../utilities";
 
 /**
  * @param {string} username
@@ -18,104 +16,189 @@ import { get, post } from "../../utilities";
  * @param {string} step_
  * @param {string} userId
  */
-const Register = ({upload}) => {
-
+const Register = ({ upload }) => {
     useEffect(() => {
         document.title = "Register";
-      }, []);
+    }, []);
 
-    //注册部分
+    const [registerWarning, setRegisterWarning] = useState(false);
+    const [loginWarning, setLoginWarning] = useState(false);
+    const [codeCDWarning, setCodeCDWarning] = useState(false);
+    const [codeInvalidWarning, setCodeInvalidWarning] = useState(false);
     const [username, setUsername] = useState('');
     const [mail, setMail] = useState('');
     const [phone, setPhone] = useState('');
     const [identificationCard, setIdentificationCard] = useState('');
     const [password, setPassword] = useState('');
-    const [registerCode, setRegisterCode] = useState(''); 
-    const [step, setStep] = useState(false);
-    
-    //登录部分
+    const [registerCode, setRegisterCode] = useState('');
+    const [step, setStep] = useState(0);
     const [email, setEmail] = useState('');
     const [loginpassword, setLoginpassword] = useState('');
-    const [warning, setWarning] = useState(false);
-    const [step_, setStep_] = useState(false);
+    const [verificationCode, setVerificationCode] = useState('');
+    const [codeSent, setCodeSent] = useState(false);
 
     const handleUsernameChange = (e) => {
+        setRegisterWarning(false);
         setUsername(e.target.value);
     };
 
     const handleMailChange = (e) => {
+        setRegisterWarning(false);
         setMail(e.target.value);
-    }
+    };
 
     const handlePhoneChange = (e) => {
+        setRegisterWarning(false);
         setPhone(e.target.value);
-    }
+    };
 
     const handleIndentificationCardChange = (e) => {
+        setRegisterWarning(false);
         setIdentificationCard(e.target.value);
-    }
+    };
 
     const handlePasswordChange = (e) => {
+        setRegisterWarning(false);
         setPassword(e.target.value);
     };
 
     const handleRegisterCodeChange = (e) => {
         setRegisterCode(e.target.value);
-    }
+    };
 
-    const handleSubmit = (e) => {
+    const handleLoginEmailChange = (e) => {
+        setLoginWarning(false);
+        setEmail(e.target.value);
+    };
+
+    const handleLoginPasswordChange = (e) => {
+        setLoginWarning(false);
+        setLoginpassword(e.target.value);
+    };
+
+    const handleLoginVerificationCodeChange = (e) => {
+        setLoginWarning(false);
+        setCodeCDWarning(false);
+        setCodeInvalidWarning(false);
+        setVerificationCode(e.target.value);
+    };
+
+    const handleRegister = (e) => {
         e.preventDefault();
-        const newMan ={
+        const newUser = {
             name: username,
             u_id: mail,
             phone_number: phone,
             id_number: identificationCard,
             password: password,
-        }
-        post("/api/register", newMan).then(() => {
-            setStep(true);
+        };
+        post("/api/register", newUser).then(() => {
+            setStep(0);
+        }).catch((error) => {
+            console.error(error);
+            setRegisterWarning(true);
         });
     };
 
     const handleLogin = (event) => {
         event.preventDefault();
-        post("/api/login", { u_id: email, password: loginpassword }).then((useremailObj) => {
-            if (useremailObj) {
-                upload(useremailObj);
-                setStep_(true);
-            } else {
-               setWarning(true);
+        if (step === 0) {
+            post("/api/login", { u_id: email, password: loginpassword }).then((response) => {
+                if (response.message === "验证码已发送！") {
+                    setCodeSent(true);
+                    setStep(1);
+                } else {
+                    setLoginWarning(true);
+                }
+            }).catch((error) => {
+                console.error(error);
+                setLoginWarning(true);
+            });
+        } else if (step === 1) {
+            post("/api/login/verifyCode", { u_id: email, code: verificationCode }).then((useremailObj) => {
+                if (useremailObj) {
+                    upload(useremailObj);
+                    setStep(2);
+                }
+            }).catch((error) => {
+                console.error(error);
+                setCodeInvalidWarning(true);
+            });
+        }
+    };
+
+    const handleSendCode = (e) => {
+        e.preventDefault();
+        setCodeCDWarning(false);
+        post("/api/login/requestCode", { u_id: email }).then((response) => {
+            if (response.message === "验证码已重新发送！") {
+                setCodeSent(true);
             }
-            console.log(`Logging in with email: ${email} and password: ${password}`);
-            console.log(useremailObj);
+            if (response.message === "距离上次发送验证码还不足一分钟，请稍后再试。") {
+                setCodeCDWarning(true);
+                setCodeSent(false);
+            }
+        }).catch((error) => {
+            console.error(error);
+            setCodeSent(false);
+            setCodeCDWarning(false);
+            setLoginWarning(true);
         });
     };
 
-    if (step_) {
-        return <div>您已登录！</div>
-    }
+    const renderStep0 = () => {
+        return (
+            <div>
+                <div className="Register">
+                    <form onSubmit={handleRegister}>
+                        <input type="text" placeholder="姓名" value={username} onChange={handleUsernameChange} required />
+                        <input type="email" placeholder="邮箱" value={mail} onChange={handleMailChange} required />
+                        <input type="tel" placeholder="电话" value={phone} onChange={handlePhoneChange} required />
+                        <input type="text" placeholder="身份证" value={identificationCard} onChange={handleIndentificationCardChange} required />
+                        <input type="password" placeholder="设置密码" value={password} onChange={handlePasswordChange} required />
+                        <button type="submit">注册</button>
+                        {registerWarning ? <p className='warning-message'>注册失败，可能是因为姓名等信息已经被用于注册。请重试。</p> : null}
+                    </form>
+                </div>
+                <div className="Register">
+                    <form onSubmit={handleLogin}>
+                        <input type="email" placeholder="邮箱" value={email} onChange={handleLoginEmailChange} required />
+                        <input type="password" placeholder="密码" value={loginpassword} onChange={handleLoginPasswordChange} required />
+                        <button type="submit">登录</button>
+                        {loginWarning ? <p className='warning-message'>登录失败，请重试。</p> : null}
+                    </form>
+                </div>
+            </div>
+        );
+    };
+
+    const renderStep1 = () => {
+        return (
+            <div className="Register">
+                <form onSubmit={handleLogin}>
+                    {codeCDWarning ? <p className='warning-message'>发送验证码过于频繁，请稍后再试。</p> : <p>二步认证验证码已发送，请验证。</p>}
+                    <input type="text" placeholder="验证码" value={verificationCode} onChange={handleLoginVerificationCodeChange} required />
+                    <button type="submit">提交</button>
+                    <button onClick={handleSendCode}>重新获取验证码</button>
+                    {loginWarning ? <p className='warning-message'>登录失败，请重试。</p> : null}
+                    {codeInvalidWarning ? <p className='warning-message'>验证码无效。</p> : null}
+                </form>
+            </div>
+        );
+    };
+
+    const renderStep2 = () => {
+        return (
+            <div>您已登录！</div>
+        );
+    };
+
     return (
-    <div>
-        <div className="Register">
-            <form onSubmit={handleSubmit}>
-            <input type="text" placeholder="姓名" value={username} onChange={handleUsernameChange} required />
-            <input type="email" placeholder="邮箱" value={mail} onChange={handleMailChange} required />
-            <input type="tel" placeholder="电话" value={phone} onChange={handlePhoneChange} required />
-            <input type="text" placeholder="身份证" value={identificationCard} onChange={handleIndentificationCardChange} required />
-            <input type="password" placeholder="设置密码" value={password} onChange={handlePasswordChange} required />
-            <button type="submit">注册</button>
-            {step ?  <input type="text" placeholder="我们会向您的手机发送注册码，有效期三个月" value={registerCode} onChange={handleRegisterCodeChange} required /> : null}
-            </form>
+        <div>
+            {step === 0 ? renderStep0() : null}
+            {step === 1 ? renderStep1() : null}
+            {step === 2 ? renderStep2() : null}
         </div>
-        <div className="Register">
-          <form onSubmit={handleLogin}>
-            <input type="email" placeholder="邮箱" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            <input type="password" placeholder="密码" value={loginpassword} onChange={(e) => setLoginpassword(e.target.value)} required />
-            <button type="submit">登录</button>
-          </form>
-          {warning ? <p className='warning-message'>登录失败，请重试</p> : null}
-        </div>
-    </div>
     );
 };
 
