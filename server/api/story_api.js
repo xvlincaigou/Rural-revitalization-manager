@@ -53,13 +53,10 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
 
 router.get("/comment", auth.verifyToken, async (req, res) => {
   try{
-    console.log(req.query.commentid);
     const comment = await StoryComment.findById(req.query.commentid, (err, comment) => {
       if (err) {
-        console.log("damn!");
         console.log(err);
       } else {
-        console.log("win!");
         console.log(comment);
       }
     });

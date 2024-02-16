@@ -9,11 +9,9 @@ const Chatbook = (props) => {
 
   useEffect(() => {
     document.title = "Chatbook";
-    console.log(props.user);
     get("/api/story/stories").then((storyObjs) => {
       let reversedStoryObjs = storyObjs.reverse();
       setStories(reversedStoryObjs);
-      console.log(storyObjs);
     }).catch((error) => {
       console.log(error);
     });
@@ -40,7 +38,7 @@ const Chatbook = (props) => {
       />
     ));
   } else {
-    storiesList = <div>No stories!</div>;
+    storiesList = <div>没有帖子！</div>;
   }
 
   if (!props.user) {
