@@ -47,7 +47,7 @@ const UserSchema = new mongoose.Schema({
     },
     verificationCode: {
         type: {code: String, lastSent: Date, expiration: Date},
-        default: undefined,
+        default: { code: null, lastSent: null, expiration: null },
     },
     /*
     用户保护功能：有待讨论

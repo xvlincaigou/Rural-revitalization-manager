@@ -201,7 +201,7 @@ exports.verifyCode = (req, res) => {
 
             if (user.verificationCode && user.verificationCode.code === code && user.verificationCode.expiration > new Date()) {
                 // 验证码有效
-                user.verificationCode = undefined;
+                // user.verificationCode = undefined;
                 await user.save();
                 const token = jwt.sign({ id: user.u_id },
                     config.secret,
