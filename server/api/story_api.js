@@ -36,7 +36,6 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
   try{
     const {creator, send_date, story_id, comment} = req.body;
     const story = await Story.findById(story_id);
-    story.comments.push(req.body._id);
     const newComment = new StoryComment({
       creator: creator,
       send_date: send_date,
@@ -44,8 +43,9 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
       comment: comment
     });
     // Save the new activity to the database
-    await story.save();
     await newComment.save();
+    story.comments.push(newComment._id);
+    await story.save();
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

@@ -66,7 +66,7 @@ const Profile = (props) => {
           <CatHappiness catHappiness={user.activity.length} />
         </div>
       </div>
-      <h1 className="Profile-name u-textCenter">{user.name}</h1>
+      <h1 className="Profile-name u-textCenter">{props.user.name}</h1>
       <hr className="Profile-linejj" />
       <div className="u-flex">
         <div className="Profile-subContainer u-textCenter">
