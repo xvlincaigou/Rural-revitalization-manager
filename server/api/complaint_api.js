@@ -72,18 +72,15 @@ router.post("/reply",auth.verifyToken,async(req,res)=>{
 //GET /api/complaint/reply/check
 router.get("/reply/check",auth.verifyToken,async(req,res)=>{
    try{
-    const uid = req.params.uid;
+    const uid = req.query.uid;
     const complaints = await Complaint.find({ 'sender.u_id': uid, responsed: 1 });
+    console.log(complaints);
     if(complaints.length === 0){
      return res.status(404).json({ message: "还没有被回复的投诉" });
     }
-    res.status(200).json(complaints);
+    res.status(200).json({complaints: complaints});
     }catch (err) {
     res.status(400).json({ message: err.message });
-    console.log(uid);
-    console.log(err);
-    console.log(res);
-    console.log(uid);
    }
   });
 

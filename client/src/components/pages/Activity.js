@@ -34,7 +34,6 @@ const Activity = (props) => {
     useEffect(() => {
         document.title = "Activity";
         get("/api/activity").then((res) => {
-            console.log(res);
             setActivityList(res);
         }).catch((error) => {
             console.log(error);
@@ -48,8 +47,11 @@ const Activity = (props) => {
         activityList.length === 0 ? <div>没有活动</div> : 
         activityList.map((activity) => (
             <SingleActivity
+            _id={activity._id}
             name={activity.name}
-            held_time={activity.date.start}
+            location={activity.location}
+            start_time={activity.date.start}
+            end_time={activity.date.end}
             latest_register_time={activity.date.sign_up}
             information={activity.location}
             number_of_people_signed_up={activity.capacity}

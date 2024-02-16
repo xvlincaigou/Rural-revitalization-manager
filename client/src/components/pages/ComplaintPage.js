@@ -71,10 +71,9 @@ const ComplaintPage = (props) => {
     if (props.user == null) {
         return <div>请先登录</div>
     }
+    
     if (props.user.role == 0) {
-        get("api/complaint/reply/check", {uid: props.user.u_id}).then((res) => {setReplies(res.complaints)}).catch((err) => {console.log(err)});
-        console.log(replies);
-        console.log(props.user);
+        get("/api/complaint/reply/check", {uid: props.user.u_id}).then((res) => {setReplies(res.complaints);console.log(res)}).catch((err) => {console.log(err)});
         return (
             <>
             <div className="ComplaintPage">
