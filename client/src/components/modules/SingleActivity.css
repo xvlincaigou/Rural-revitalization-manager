@@ -18,6 +18,10 @@
 }
 
 .Activity-held-time-color3{
+    color: var(--thupurple);
+}
+
+.Activity-held-time-color4{
     color: red;
 }
 

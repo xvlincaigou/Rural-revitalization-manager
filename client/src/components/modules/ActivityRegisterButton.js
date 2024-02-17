@@ -3,12 +3,6 @@ import './ActivityRegisterButton.css';
 import { get } from "../../utilities";
 
 const ActivityRegisterButton = (props) => {
-    const [isRegistered, setIsRegistered] = useState(false);
-
-    const handleClick = () => {
-      setIsRegistered(!isRegistered);
-    };
-  
     return (
       <button 
         className={`ActivityRegisterButton ${isRegistered ? 'red' : ''}`} 

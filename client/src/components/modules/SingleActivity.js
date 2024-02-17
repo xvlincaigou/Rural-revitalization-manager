@@ -1,53 +1,86 @@
-import React, { useState, useEffect } from "react";
-import { get } from "../../utilities";
+import React from "react";
 
 import "../../utilities.css";
 import "./SingleActivity.css";
 import "./ActivityRegisterButton.js";
 import ActivityRegisterButton from "./ActivityRegisterButton.js";
 
-/**
- * SingleActivity is a component that renders an activity.
- *
- * Proptypes
- * @param {string} name of the activity
- * @param {string} held_time of the activity
- * @param {string} latest_register_time of the activity
- * @param {string} information of the activity
- * @param {number} number_of_people_signed_up for the activity
- * @param {string[]} users_signed_up for the activity
- * @param {number} average_score of the activity
- */
-
 const SingleActivity = (props) => {
+  
+    const [inOrOut, setInOrOut] = useState(false);
+
+    const convertToBeijingTime = (isoString) => {
+        const date = new Date(isoString);
+      
+        const formatter = new Intl.DateTimeFormat('zh-CN', {
+          timeZone: 'Asia/Shanghai',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        const beijingTime = formatter.format(date);
+      
+        return beijingTime;
+      }
     
-    //0: you can register for it, 1: you can't register for it and the activity has not been held, 2: the activity has been held.
+    
+    const handleClick = () => {
+        if (inOrOut) {
+            //首先要从报名的人员中删除（api？）
+            //然后要在页面上渲染出来
+        } else {
+            //首先要加到报名的人员中（api？）
+            //然后要在页面上渲染出来
+        }
+    };
+
     const currentDateTime = new Date();
-    const heldTime = new Date(props.held_time);
-    const latestRegisterTime = new Date(props.latest_register_time);
-    let button = <button className="Activity-button">报名</button>, held_time;
-    if (latestRegisterTime > currentDateTime) {
-        held_time = <div className="Activity-held-time Activity-held-time-color1">{props.held_time}</div>;
-        button = <ActivityRegisterButton />;
-    } else if (heldTime > currentDateTime) {
-        held_time = <div className="Activity-held-time Activity-held-time-color2">{props.held_time}</div>
+    const start_time = new Date(props.start_time);
+    const end_time = new Date(props.end_time);
+    const latest_register_time = new Date(props.latest_register_time);
+    const candidate = {u_id:props.user.u_id, name:props.user.name};
+    setInOrOut(candidate in props.users_signed_up);
+    let button = null, time = null;
+
+    if (latest_register_time > currentDateTime) {
+        time = <div className="Activity-held-time Activity-held-time-color1">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>;
+        button = <ActivityRegisterButton candidate={candidate} inOrOut={inOrOut} handleClick={handleClick}/>;
+    } else if (start_time > currentDateTime) {
+        time = <div className="Activity-held-time Activity-held-time-color2">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>
+    } else if (end_time > currentDateTime){
+        time = <div className="Activity-held-time Activity-held-time-color3">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>
     } else {
-        held_time = <div className="Activity-held-time Activity-held-time-color3">{props.held_time}</div>
+        time = <div className="Activity-held-time Activity-held-time-color4">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>
     }
-    
+
     return (
         <div className="Activity-container">
-            {held_time}
+            {time}
             <div className="Activity-Content">{props.name}</div>
             {button}
             <div className="Activity-infoSection">
-                <div className="Activity-infoBody">报名截止时间{" | " + props.latest_register_time}</div>
+                <div className="Activity-infoBody">地点{" | " + props.location}</div>
+                <div className="Activity-infoBody">报名截止时间{" | " + convertToBeijingTime(props.latest_register_time)}</div>
+                <div className="Activity-infoBody">活动容量{" | " + props.capacity}</div>
                 <div className="Activity-infoBody">活动信息{" | " + props.information}</div>
-                <div className="Activity-infoBody">已报名人数{" | " + props.number_of_people_signed_up}</div>
                 <div className="Activity-infoBody">平均评分{" | " + props.average_score}</div>
+                <div className="Activity-infoBody">
+                    <span>活动管理员 | </span>
+                    {props.supervisors.map((user) => (
+                        <span>{user + "  "}</span>
+                    ))}
+                </div>
                 <div className="Activity-infoBody">
                     <span>已报名的用户 | </span>
                     {props.users_signed_up.map((user) => (
+                        <span>{user + "  "}</span>
+                    ))}
+                </div>
+                <div className="Activity-infoBody">
+                    <span>已被接受的用户 | </span>
+                    {props.users_admin.map((user) => (
                         <span>{user + "  "}</span>
                     ))}
                 </div>

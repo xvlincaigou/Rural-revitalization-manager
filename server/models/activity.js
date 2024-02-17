@@ -21,7 +21,8 @@ const ActivitySchema = new mongoose.Schema({
     score: {
         type: Number,
         default: 0
-    }
+    },
+    intro: String
 });
 
 // compile model from schema

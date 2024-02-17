@@ -7,7 +7,7 @@
  
     text-decoration: none;
     color: #ffffff;
-    background-color: green;
+    background-color: var(--thupurple);
     border: none;
     border-radius: 4px;
     cursor: pointer;
