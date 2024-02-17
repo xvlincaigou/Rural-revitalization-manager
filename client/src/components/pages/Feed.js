@@ -19,7 +19,7 @@ const Feed = () => {
     document.title = "News Feed";
     get("/api/global/appdata").then((appDataObj) => {
       setAppData(appDataObj);
-    });
+    }).catch((err) => {console.log(err.message);});
   }, []);
 
   const complaintReplyRate = appData.complaintReplyCount * 100 / appData.complaintCount;

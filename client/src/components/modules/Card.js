@@ -36,6 +36,8 @@ const Card = (props) => {
 
   const addNewComment = (commentObj) => {
     setComments(comments.concat([commentObj]));
+    console.log(commentObj);
+    console.log(comments);
   };
 
   console.log(comments);

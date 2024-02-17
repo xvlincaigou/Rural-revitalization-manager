@@ -94,9 +94,10 @@ const Register = ({ upload }) => {
         };
         post("/api/register", newUser).then(() => {
             setStep(0);
+            alert("注册成功！请登录。");
         }).catch((error) => {
-            console.error(error);
             setRegisterWarning(true);
+            alert(error);
         });
     };
 
@@ -157,7 +158,7 @@ const Register = ({ upload }) => {
                         <input type="text" placeholder="身份证" value={identificationCard} onChange={handleIndentificationCardChange} required />
                         <input type="password" placeholder="设置密码" value={password} onChange={handlePasswordChange} required />
                         <button type="submit">注册</button>
-                        {registerWarning ? <p className='warning-message'>注册失败，可能是因为姓名等信息已经被用于注册。请重试。</p> : null}
+                        {registerWarning ? <p className='warning-message'>注册失败，可能是因为邮箱等信息已经被用于注册。请重试。</p> : null}
                     </form>
                 </div>
                 <div className="Register">

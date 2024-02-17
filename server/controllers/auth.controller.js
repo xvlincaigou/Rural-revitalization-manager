@@ -25,9 +25,6 @@ exports.register = (req, res) => {
         if (existingUser) {
             // 构建一个包含重复字段的数组
             const duplicateFields = [];
-            if (existingUser.name === req.body.name) {
-                duplicateFields.push('姓名');
-            }
             if (existingUser.u_id === req.body.u_id) {
                 duplicateFields.push('电子邮件');
             }

@@ -43,9 +43,9 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
       comment: comment
     });
     // Save the new activity to the database
-    await newComment.save();
     story.comments.push(newComment._id);
     await story.save();
+    await newComment.save().then((comment) => res.send(comment));
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
