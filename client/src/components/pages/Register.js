@@ -177,7 +177,7 @@ const Register = ({ upload }) => {
         return (
             <div className="Register">
                 <form onSubmit={handleLogin}>
-                    {codeCDWarning ? <p className='warning-message'>发送验证码过于频繁，请稍后再试。</p> : <p>二步认证验证码已发送，请验证。</p>}
+                    {codeCDWarning ? <p className='warning-message'>发送验证码过于频繁，请稍后再试。</p> : <p>二步认证验证码已发送，请验证。验证码5分钟内有效。</p>}
                     <input type="text" placeholder="验证码" value={verificationCode} onChange={handleLoginVerificationCodeChange} required />
                     <button type="submit">提交</button>
                     <button onClick={handleSendCode}>重新获取验证码</button>

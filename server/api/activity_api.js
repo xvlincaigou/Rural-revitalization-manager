@@ -16,6 +16,7 @@ const router = express.Router();
 const { PDFDocument, degrees, rgb } = require("pdf-lib");
 const fs = require("fs");
 const fontkit = require('fontkit'); // 导入 fontkit 库
+const path = require('path');
 
 // GET /api/activity
 router.get("/", auth.verifyToken, async (req, res) => {
@@ -347,7 +348,8 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
     generatingUsers[uid] = true;
 
     // 读取证书模板
-    const templateBytes = fs.readFileSync("../assets/certificate_template.pdf");
+    const templatePath = path.join(__dirname, '../assets/certificate_template.pdf');
+    const templateBytes = fs.readFileSync(templatePath);
 
     // 创建一个新的 PDF 文档
     const pdfDoc = await PDFDocument.load(templateBytes);
@@ -359,7 +361,8 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
     const page = pdfDoc.getPages()[0];
 
     // 设置字体
-    const fontBytes = fs.readFileSync('../assets/SIMKAI.TTF');
+    const fontPath = path.join(__dirname, '../assets/certificate_template.pdf');
+    const fontBytes = fs.readFileSync(fontPath);
     const kaiTiFont = await pdfDoc.embedFont(fontBytes);
     const fontSize = 13;
 
