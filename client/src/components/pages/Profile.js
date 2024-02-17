@@ -30,7 +30,7 @@ const Profile = (props) => {
           <div className="Profile-avatar" />
           <div className="Profile-subContainer u-textCenter">
             <h4 className="Profile-subTitle">{"我参加的活动数"}</h4>
-            <CatHappiness catHappiness={user.activity.length} />
+            <CatHappiness catHappiness={props.user.activities.length} />
           </div>
         </div>
         <h1 className="Profile-name u-textCenter">{props.user.name}</h1>

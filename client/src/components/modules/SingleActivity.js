@@ -5,6 +5,7 @@ import "./SingleActivity.css";
 import ActivityRegisterButton from "./ActivityRegisterButton.js";
 import ActivityRemarkButton from "./ActivityRemarkButton.js";
 import ActivityDownloadButton from "./ActivityDownloadButton.js";
+import { post } from "../../utilities.js";
 
 const SingleActivity = (props) => {
   
@@ -22,17 +23,20 @@ const SingleActivity = (props) => {
 
         if (latest_register_time > currentDateTime) {//活动可以报名
             setTime(<div className="Activity-held-time Activity-held-time-color1">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>);
-            setButton(<ActivityRegisterButton candidate={candidate} inOrOut={inOrOut} handleClick={handleClick}/>);
+            setButton(<ActivityRegisterButton inOrOut={inOrOut} handleClick={handleClick}/>);
         } else if (start_time > currentDateTime) {//活动报名结束但是没有开始
             setTime(<div className="Activity-held-time Activity-held-time-color2">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>);
         } else if (end_time > currentDateTime){//活动正在进行
             setTime(<div className="Activity-held-time Activity-held-time-color3">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>);
         } else {//活动结束
             setTime(<div className="Activity-held-time Activity-held-time-color4">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>);
-            if (candidate in props.users_admin || candidate in props.supervisors) {
+            //if (props.users_admin.some(user => user == candidate) || props.supervisors.some(user => user == candidate)) {
                 setButton(<><ActivityDownloadButton uid={candidate.u_id} aid={props._id}/>
                 <ActivityRemarkButton creator={candidate} activity_id={props._id}/></>);
-            }
+            //}
+            console.log(props.users_admin);
+            console.log(props.supervisors);
+            console.log(candidate);
         }
     }, []);
 
@@ -56,7 +60,8 @@ const SingleActivity = (props) => {
         if (inOrOut) {
             post("/api/activity/unsubscribe", {uid: props.user.u_id, aid:props._id}).then((res) => {alert(res);setInOrOut(!inOrOut)}).catch((err) => {alert(err);});
         } else {
-            post("/api/activity/subscribe", {uid: props.user.u_id, aid:props._id}).then((res) => {alert(res);setInOrOut(!inOrOut)}).catch((err) => {alert(err);});
+            post("/api/activity/register", {email: props.user.u_id, activity_id:props._id, name: props.user.name}).then((res) => 
+            {alert(res.message);setInOrOut(!inOrOut);setButton(<ActivityRegisterButton inOrOut={inOrOut} handleClick={handleClick}/>);}).catch((err) => {alert(err);});
         }
     };
 
@@ -74,19 +79,19 @@ const SingleActivity = (props) => {
                 <div className="Activity-infoBody">
                     <span>活动管理员 | </span>
                     {props.supervisors.map((user) => (
-                        <span>{user + "  "}</span>
+                        <span>{user.name + "  "}</span>
                     ))}
                 </div>
                 <div className="Activity-infoBody">
                     <span>已报名的用户 | </span>
                     {props.users_signed_up.map((user) => (
-                        <span>{user + "  "}</span>
+                        <span>{user.name + "  "}</span>
                     ))}
                 </div>
                 <div className="Activity-infoBody">
                     <span>已被接受的用户 | </span>
                     {props.users_admin.map((user) => (
-                        <span>{user + "  "}</span>
+                        <span>{user.name + "  "}</span>
                     ))}
                 </div>
             </div>

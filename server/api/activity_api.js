@@ -130,8 +130,7 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
 // POST /api/activity/register
 router.post("/register", auth.verifyToken, async (req, res) => {
   try {
-    const { email, activity_id } = req.body;
-
+    const { email, activity_id, name } = req.body;
     // Check if activity exists and if the registration date has not passed
     const activity = await Activity.findById(activity_id);
     if (!activity) {
@@ -143,8 +142,9 @@ router.post("/register", auth.verifyToken, async (req, res) => {
       return res.status(400).json({ message: "已经超过报名截止日期" });
     }
 
+    const candidate = {u_id: email, name: name};
     // Assuming ActivityRegistration model has fields: email, activity_id
-    activity.candidates.push(email);
+    activity.candidates.push(candidate);
 
     await activity.save();
     res.status(200).json({ message: "成功报名" });
@@ -328,6 +328,9 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
   try {
     // 读取请求信息
     const { uid, aid } = req.body;
+    console.log("uid: ", uid);
+    console.log("aid:" , aid);
+    console.log(req.body);
     const user = await User.findOne({ u_id: uid });
     const activity = await Activity.findOne({ _id: aid });
     if (!user) {

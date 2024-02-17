@@ -12,6 +12,7 @@ const Activity = (props) => {
         document.title = "Activity";
         get("/api/activity").then((res) => {
             setActivityList(res);
+            console.log(activityList);
         }).catch((error) => {
             console.log(error);
         });
