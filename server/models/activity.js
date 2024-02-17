@@ -14,10 +14,19 @@ const ActivitySchema = new mongoose.Schema({
         sign_up: Date
     },
     capacity: Number,
-    candidates: [String],  // 内容为报名用户的u_id
-    members: [String],
+    candidates: {
+        type: [{u_id: String, name: String}],
+        default: [] 
+    },  
+    members: {
+        type: [{u_id: String, name: String}],
+        default: [] 
+    },  
     comments: [mongoose.Schema.Types.ObjectId],
-    supervisors: [String],
+    supervisors: {
+        type: [{u_id: String, name: String}],
+        default: [] 
+    },  
     score: {
         type: Number,
         default: 0

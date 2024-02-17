@@ -7,78 +7,64 @@ import "../../utilities.css";
 import "./Profile.css";
 
 const Profile = (props) => {
-  const [user, setUser] = useState();
 
-  const xulinuser = {
-    name: "许霖",
-    activity: [
-      {
-        name:"打扫410B",
-        held_time:"2024/02/09",
-        latest_register_time:"2024/02/09",
-        information:"这是一个测试",
-        number_of_people_signed_up:4,
-        users_signed_up:["许霖", "葛冠辰", "关世开", "刘明轩"],
-        average_score:100
+  const [activityList, setActivityList] = useState([]);
+
+    useEffect(() => {
+        document.title = "Profile Page";
+        get("/api/activity").then((res) => {//改为返回这个用户对应的活动
+            setActivityList(res);
+        }).catch((error) => {
+            console.log(error);
+        });
+    }, []);
+
+    if (props.user === null) {
+        return <div>请先登录</div>
     }
-      , 
-      {
-        name:"建院外包开发",
-            held_time:"2024/02/02",
-            latest_register_time:"2024/02/02",
-            information:"这是一个测试",
-            number_of_people_signed_up:4,
-            users_signed_up:["许霖", "赵畅", "关世开", "刘明轩"],
-            average_score:100
-      }
-    ]
-  };
-
-  useEffect(() => {
-    document.title = "Profile Page";
-    setUser(xulinuser) //get(`/api/user`, { userid: props.userId }).then((userObj) => setUser(userObj));
-  }, []);
-
-  if (!user) {
-    return <div> Loading! </div>;
-  }
-  
-  let registerActivities = user.activity.map((activity) => (
-      <SingleActivity
-        name={activity.name}
-        held_time={activity.held_time}
-        latest_register_time={activity.latest_register_time}
-        information={activity.information}
-        number_of_people_signed_up={activity.number_of_people_signed_up}
-        users_signed_up={activity.users_signed_up}
-        average_score={activity.average_score}
-      />
-  ));
-
-  return (
-    <>
-      <div
-        className="Profile-avatarContainer"
-      >
-        <div className="Profile-avatar" />
-         <div className="Profile-subContainer u-textCenter">
-          <h4 className="Profile-subTitle">{"我参加的活动数"}</h4>
-          <CatHappiness catHappiness={user.activity.length} />
+    return (
+      <>
+        <div
+          className="Profile-avatarContainer"
+        >
+          <div className="Profile-avatar" />
+          <div className="Profile-subContainer u-textCenter">
+            <h4 className="Profile-subTitle">{"我参加的活动数"}</h4>
+            <CatHappiness catHappiness={user.activity.length} />
+          </div>
         </div>
-      </div>
-      <h1 className="Profile-name u-textCenter">{props.user.name}</h1>
-      <hr className="Profile-linejj" />
-      <div className="u-flex">
+        <h1 className="Profile-name u-textCenter">{props.user.name}</h1>
+        <hr className="Profile-linejj" />
+        <div className="u-flex">
+          <div className="Profile-subContainer u-textCenter">
+            <h4 className="Profile-subTitle">我报名的活动</h4>
+            {activityList.length === 0 ? <div>没有活动</div> : 
+              activityList.map((activity) => (
+              <SingleActivity
+              key={`SingleActivity_${activity._id}`}
+              _id={activity._id}
+              name={activity.name}
+              location={activity.location}
+              start_time={activity.date.start}
+              end_time={activity.date.end}
+              latest_register_time={activity.date.sign_up}
+              capacity={activity.capacity}
+              users_signed_up={activity.candidates}
+              users_admin={activity.members}
+              comments={activity.comments}
+              supervisors={activity.supervisors}
+              information={activity.intro}
+              average_score={activity.score}
+              user={props.user}
+              />
+          ))}
+          </div>
         <div className="Profile-subContainer u-textCenter">
-          <h4 className="Profile-subTitle">我报名的活动</h4>
-          {registerActivities}
+            <h4 className="Profile-subTitle">我管理的活动</h4>
+          </div>
         </div>
-       <div className="Profile-subContainer u-textCenter">
-          <h4 className="Profile-subTitle">我管理的活动</h4>
-        </div>
-      </div>
-    </>
-  );
+      </>
+    );
 };
 
 export default Profile;

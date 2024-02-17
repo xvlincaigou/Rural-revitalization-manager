@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from "react";
-import './ActivityRegisterButton.css';
-import { get } from "../../utilities";
+import React from "react";
+import './ActivityButton.css';
 
 const ActivityRegisterButton = (props) => {
     return (
       <button 
-        className={`ActivityRegisterButton ${isRegistered ? 'red' : ''}`} 
-        onClick={handleClick}
+        className={`ActivityButton ${props.inOrOut ? 'red' : ''}`} 
+        onClick={props.handleClick}
       >
-        {isRegistered ? '取消' : '报名'}
+        {props.inOrOut ? '取消' : '报名'}
       </button>
     );  
 }

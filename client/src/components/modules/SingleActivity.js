@@ -1,13 +1,40 @@
-import React from "react";
+import React , { useState , useEffect }from "react";
 
 import "../../utilities.css";
 import "./SingleActivity.css";
-import "./ActivityRegisterButton.js";
 import ActivityRegisterButton from "./ActivityRegisterButton.js";
+import ActivityRemarkButton from "./ActivityRemarkButton.js";
+import ActivityDownloadButton from "./ActivityDownloadButton.js";
 
 const SingleActivity = (props) => {
   
     const [inOrOut, setInOrOut] = useState(false);
+    const [button, setButton] = useState(null);
+    const [time, setTime] = useState(null);
+
+    useEffect(() => {
+        const currentDateTime = new Date();
+        const start_time = new Date(props.start_time);
+        const end_time = new Date(props.end_time);
+        const latest_register_time = new Date(props.latest_register_time);
+        const candidate = {u_id:props.user.u_id, name:props.user.name};
+        setInOrOut(candidate in props.users_signed_up);
+
+        if (latest_register_time > currentDateTime) {//活动可以报名
+            setTime(<div className="Activity-held-time Activity-held-time-color1">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>);
+            setButton(<ActivityRegisterButton candidate={candidate} inOrOut={inOrOut} handleClick={handleClick}/>);
+        } else if (start_time > currentDateTime) {//活动报名结束但是没有开始
+            setTime(<div className="Activity-held-time Activity-held-time-color2">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>);
+        } else if (end_time > currentDateTime){//活动正在进行
+            setTime(<div className="Activity-held-time Activity-held-time-color3">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>);
+        } else {//活动结束
+            setTime(<div className="Activity-held-time Activity-held-time-color4">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>);
+            if (candidate in props.users_admin || candidate in props.supervisors) {
+                setButton(<><ActivityDownloadButton uid={candidate.u_id} aid={props._id}/>
+                <ActivityRemarkButton creator={candidate} activity_id={props._id}/></>);
+            }
+        }
+    }, []);
 
     const convertToBeijingTime = (isoString) => {
         const date = new Date(isoString);
@@ -25,35 +52,13 @@ const SingleActivity = (props) => {
         return beijingTime;
       }
     
-    
     const handleClick = () => {
         if (inOrOut) {
-            //首先要从报名的人员中删除（api？）
-            //然后要在页面上渲染出来
+            post("/api/activity/unsubscribe", {uid: props.user.u_id, aid:props._id}).then((res) => {alert(res);setInOrOut(!inOrOut)}).catch((err) => {alert(err);});
         } else {
-            //首先要加到报名的人员中（api？）
-            //然后要在页面上渲染出来
+            post("/api/activity/subscribe", {uid: props.user.u_id, aid:props._id}).then((res) => {alert(res);setInOrOut(!inOrOut)}).catch((err) => {alert(err);});
         }
     };
-
-    const currentDateTime = new Date();
-    const start_time = new Date(props.start_time);
-    const end_time = new Date(props.end_time);
-    const latest_register_time = new Date(props.latest_register_time);
-    const candidate = {u_id:props.user.u_id, name:props.user.name};
-    setInOrOut(candidate in props.users_signed_up);
-    let button = null, time = null;
-
-    if (latest_register_time > currentDateTime) {
-        time = <div className="Activity-held-time Activity-held-time-color1">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>;
-        button = <ActivityRegisterButton candidate={candidate} inOrOut={inOrOut} handleClick={handleClick}/>;
-    } else if (start_time > currentDateTime) {
-        time = <div className="Activity-held-time Activity-held-time-color2">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>
-    } else if (end_time > currentDateTime){
-        time = <div className="Activity-held-time Activity-held-time-color3">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>
-    } else {
-        time = <div className="Activity-held-time Activity-held-time-color4">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>
-    }
 
     return (
         <div className="Activity-container">

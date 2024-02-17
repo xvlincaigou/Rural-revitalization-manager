@@ -38,6 +38,7 @@ const Activity = (props) => {
             supervisors={activity.supervisors}
             information={activity.intro}
             average_score={activity.score}
+            user={props.user}
             />
         ))
     );
