@@ -1,11 +1,9 @@
 const config = require("../config/auth.config");
-// const db = require("../models");
-const { User } = require("../models/user.js"); // 调试用
-// const Role = db.role;
+const { User } = require("../models/user.js");
 
-// var session = require("express-session"); // library that stores info about each connected user
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+const nodemailer = require('nodemailer');
 
 exports.register = (req, res) => {
     // TODO: 注册码核验
@@ -73,18 +71,51 @@ exports.register = (req, res) => {
     });
 };
 
+function generateVerificationCode() {
+    let code = Math.floor(Math.random() * 1000000);
+    return String(code).padStart(6, '0');
+}
 
+async function sendCode(email, code) {
+    return new Promise(async (resolve, reject) => {
+        let transporter = nodemailer.createTransport({
+            host: 'ydmsk.xyz', // 你的 SMTP 服务器地址
+            port: 465, // SMTP 服务器的端口，通常是 587 或 465
+            secure: true, // 如果端口是 465，需要将这个选项设置为 true
+            auth: {
+                user: 'potatores@ydmsk.xyz', // SMTP 服务器的用户名
+                pass: 'sbwzs233' // SMTP 服务器的密码
+            }
+        });
+
+        let mailOptions = {
+            from: 'potatores@ydmsk.xyz', // 发件人地址
+            to: email, // 收件人地址，可以是一个数组，表示多个收件人
+            subject: '验证码', // 邮件主题
+            text: `您的2FA验证码：${code}，5分钟内有效。` // 邮件内容
+        };
+
+        try {
+            let info = await transporter.sendMail(mailOptions);
+            console.log('Email sent: ' + info.response);
+            resolve();
+        } catch (error) {
+            console.error('Error sending email: ' + error);
+            reject(new Error('发送邮件时遇到错误：' + error));
+        }
+    });
+}
 
 exports.login = (req, res) => {
     User.findOne({
         u_id: req.body.u_id,
     })
-        .exec((err, user) => {
+        .exec(async (err, user) => {
             if (err) {
                 res.status(500).send({ message: err });
                 return;
             }
-            
+
             if (!user) {
                 return res.status(404).send({ message: "没有找到用户！" });
             }
@@ -98,32 +129,105 @@ exports.login = (req, res) => {
                 return res.status(401).send({ message: "密码错误！" });
             }
 
-            const token = jwt.sign({ id: user.u_id },
-                config.secret,
-                {
-                    algorithm: 'HS256',
-                    allowInsecureKeySizes: true,
-                    expiresIn: 86400, // TODO: 决定令牌有效期
-                });
+            if (!(user.verificationCode.lastSent && new Date(user.verificationCode.lastSent.getTime() + 60000) > new Date())) {
+                const verificationCode = generateVerificationCode();
+                let expirationDate = new Date();
+                expirationDate.setMinutes(expirationDate.getMinutes() + 5);
+                user.verificationCode = {
+                    code: verificationCode,
+                    lastSent: new Date(),
+                    expiration: expirationDate // 5 minutes
+                };
+                await user.save();
+                // 发送验证码
+                sendCode(user.u_id, verificationCode).then(() => {
+                    res.status(200).send({ message: "验证码已发送！" });
+                })
+                    .catch((error) => {
+                        console.error(error);
+                        res.status(500).send({ message: "验证码发送失败！" });
+                    });
+            } else {
+                res.status(200).send({ message: "验证码已发送！" });
+            }
 
-            req.session.token = token;
-
-            const { u_id } = user;
-            const strippedUser = { u_id };
-
-            req.session.user = strippedUser;
-
-            res.status(200).send(
-                /*
-                id: user._id,
-                username: user.username,
-                email: user.email,
-                role: user.role,
-                */
-                user
-            );
         });
 };
+
+// 2FA
+exports.requestCode = async (req, res) => {
+    const { u_id } = req.body;
+
+    try {
+        const user = await User.findOne({ u_id: u_id });
+
+        if (user.verificationCode.lastSent && new Date(user.verificationCode.lastSent.getTime() + 60000) > new Date()) {
+            return res.status(200).send({ message: "距离上次发送验证码还不足一分钟，请稍后再试。" });
+        }
+
+        const verificationCode = generateVerificationCode();
+        let expirationDate = new Date();
+        expirationDate.setMinutes(expirationDate.getMinutes() + 5);
+
+        user.verificationCode = {
+            code: verificationCode,
+            lastSent: new Date(),
+            expiration: expirationDate // 5 minutes
+        };
+        await user.save();
+        // 发送验证码
+        sendCode(user.u_id, verificationCode).then(() => {
+            res.status(200).send({ message: "验证码已重新发送！" });
+        })
+            .catch((error) => {
+                console.error(error);
+                res.status(500).send({ message: "验证码发送失败！" });
+            });
+    } catch (err) {
+        res.status(500).send({ message: err.message });
+    }
+};
+
+
+exports.verifyCode = (req, res) => {
+    const { u_id, code } = req.body;
+
+    User.findOne({ u_id: u_id })
+        .exec(async (err, user) => {
+            if (err) {
+                res.status(500).send({ message: err });
+                return;
+            }
+
+            if (user.verificationCode && user.verificationCode.code === code && user.verificationCode.expiration > new Date()) {
+                // 验证码有效
+                // user.verificationCode = undefined;
+                await user.save();
+                const token = jwt.sign({ id: user.u_id },
+                    config.secret,
+                    {
+                        algorithm: 'HS256',
+                        allowInsecureKeySizes: true,
+                        expiresIn: 86400,
+                    });
+
+                req.session.token = token;
+
+                const { name, u_id, role, activities, previous_scores, comment_received, tags, banned, verificationCode } = user;
+                const strippedUser = { name, u_id, role, activities, previous_scores, comment_received, tags, banned, verificationCode };
+
+                req.session.user = strippedUser;
+
+                res.status(200).send(
+                    strippedUser
+                );
+            } else {
+                // 验证码无效或已过期
+                res.status(401).send({ message: "验证码无效！" });
+            }
+        });
+};
+
 
 exports.logout = async (req, res) => {
     try {
