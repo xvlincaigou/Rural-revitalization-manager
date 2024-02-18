@@ -98,6 +98,7 @@ router.get("/comment", auth.verifyToken, async (req, res) => {
       if (err) {
         console.log(err);
       } else {
+        // DEBUG
         console.log(comment);
       }
     });
@@ -124,6 +125,7 @@ router.delete("/:id", auth.verifyToken, async (req, res) => {
       if (err) {
         console.log(err);
       } else {
+        // DEBUG
         console.log(storyToBeDeleted);
       }
     });
@@ -166,6 +168,7 @@ router.delete("/deleteany/:id", auth.verifyToken, auth.isExecutiveManager, async
       if (err) {
         console.log(err);
       } else {
+        // DEBUG
         console.log(storyToBeDeleted);
       }
     });

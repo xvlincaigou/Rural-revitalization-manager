@@ -76,6 +76,7 @@ router.post("/subscribe", auth.verifyToken, async (req, res) => {
 router.post("/unsubscribe", auth.verifyToken, async (req, res) => {
   try {
     const { uid, aid } = req.body;
+    // DEBUG
     console.log(req.body);
     const activity = await Activity.findOne({ _id: aid });
     const user = await User.findOne({ u_id: uid });
@@ -330,6 +331,7 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
   try {
     // 读取请求信息
     const { uid, aid } = req.body;
+    // DEBUG
     console.log("uid: ", uid);
     console.log("aid:" , aid);
     console.log(req.body);
