@@ -354,7 +354,8 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
     generatingUsers[uid] = true;
 
     // 读取证书模板
-    const templatePath = path.join(__dirname, '..', 'assets', 'certificate_template.pdf');
+    const assetsDir = path.join(__dirname, '..', 'assets');
+    const templatePath = path.join(assetsDir, 'certificate_template.pdf');
     const templateBytes = fs.readFileSync(templatePath);
 
     // 创建一个新的 PDF 文档
@@ -367,7 +368,7 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
     const page = pdfDoc.getPages()[0];
 
     // 设置字体
-    const fontPath = path.join(__dirname, '../assets/SIMKAI.TTF');
+    const fontPath = path.join(assetsDir, "SIMKAI.TTF");
     const fontBytes = fs.readFileSync(fontPath);
     const kaiTiFont = await pdfDoc.embedFont(fontBytes);
     const fontSize = 13;
@@ -628,7 +629,7 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
       fs.mkdirSync(tempDir);
     }
     const tempString = user._id.toString();
-    const outputPath = path.join(__dirname, '..', 'temp', `generated_certificate_${tempString}.pdf`);
+    const outputPath = path.join(tempDir, `generated_certificate_${tempString}.pdf`);
     fs.writeFileSync(outputPath, pdfBytes);
 
     // 生成完成后，从列表中删除该用户

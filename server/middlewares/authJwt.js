@@ -41,8 +41,8 @@ isEventManager = (req, res, next) => {
 };
 */
 
-isExecutiveManager = (req, res, next) => {
-    User.findById(req.userId).exec((err, user) => {
+isExecutiveManager = async (req, res, next) => {
+    await User.findOne({ u_id: req.userId }).exec((err, user) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
@@ -57,8 +57,8 @@ isExecutiveManager = (req, res, next) => {
     });
 };
 
-isSysAdmin = (req, res, next) => {
-    User.findOne({ u_id: req.userId }).exec((err, user) => {
+isSysAdmin = async (req, res, next) => {
+    await User.findOne({ u_id: req.userId }).exec((err, user) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
