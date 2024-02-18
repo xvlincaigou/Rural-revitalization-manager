@@ -164,7 +164,7 @@ router.delete("/:id", auth.verifyToken, async (req, res) => {
 // DELETE /api/story/deleteany/:id
 router.delete("/deleteany/:id", auth.verifyToken, auth.isExecutiveManager, async (req, res) => {
   try {
-    const storyToBeDeleted = await Story.findById(req.query.storyid, (err, storyToBeDeleted) => {
+    const storyToBeDeleted = await Story.findById(req.params.id, (err, storyToBeDeleted) => {
       if (err) {
         console.log(err);
       } else {
