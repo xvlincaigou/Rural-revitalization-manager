@@ -1,5 +1,4 @@
 const express = require("express");
-const mongoose = require("mongoose");
 
 // import models so we can interact with the database
 

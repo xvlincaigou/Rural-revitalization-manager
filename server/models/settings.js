@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const settingsSchema = new mongoose.Schema({
-    storyPublishingEnabled: {
+    storyPostingEnabled: {
         type: Boolean,
         default: true,
     },
