@@ -1,71 +1,83 @@
 const config = require("../config/auth.config");
 const { User } = require("../models/user.js");
 
-var jwt = require("jsonwebtoken");
-var bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 
 exports.register = (req, res) => {
-    // TODO: 注册码核验
-
-    // 使用 $or 查询多个字段是否唯一
-    // TODO: 需要与前端沟通变量名称及类型
-    User.findOne({
-        $or: [
-            { name: req.body.name },
-            { u_id: req.body.u_id },
-            { phone_number: req.body.phone_number },
-            { id_number: req.body.id_number }
-        ]
-    }, (err, existingUser) => {
-        if (err) {
-            return res.status(500).send({ message: err });
+    try {
+        /*
+        // TODO: 注册码核验
+        const idHash = crypto.createHmac('sha256', config.secret)
+            .update(req.body.idNumber)
+            .digest('hex');
+        if (idHash !== req.body.registerCode) { 
+            return res.status(401).send({ message: "核验失败！" });
         }
-
-        if (existingUser) {
-            // 构建一个包含重复字段的数组
-            const duplicateFields = [];
-            if (existingUser.u_id === req.body.u_id) {
-                duplicateFields.push('电子邮件');
-            }
-            if (existingUser.phone_number === req.body.phone_number) {
-                duplicateFields.push('电话号码');
-            }
-            if (existingUser.id_number === req.body.id_number) {
-                duplicateFields.push('身份证号');
-            }
-
-            // 返回带有重复字段信息的响应
-            return res.status(400).send({ message: `以下字段重复：${duplicateFields.join('，')}。` });
-        }
-
-        // 如果用户名、电子邮件、电话号码和身份证号都不存在重复，继续创建用户
-        const user = new User({
-            name: req.body.name,
-            u_id: req.body.u_id,
-            phone_number: req.body.phone_number,
-            id_number: req.body.id_number, // TODO: 沟通敏感信息安全性问题
-            password: bcrypt.hashSync(req.body.password, 8),
-        });
-
-        user.save((err, user) => {
+        */
+        // 使用 $or 查询多个字段是否唯一
+        // TODO: 需要与前端沟通变量名称及类型
+        User.findOne({
+            $or: [
+                // { name: req.body.name },
+                { u_id: req.body.u_id },
+                { phone_number: req.body.phone_number },
+                { id_number: req.body.id_number }
+            ]
+        }, (err, existingUser) => {
             if (err) {
-                res.status(500).send({ message: err });
-                return;
+                return res.status(500).send({ message: err });
             }
 
-            if (req.body.role) {
-                user.role = req.body.role;
-                user.save((err) => {
-                    if (err) {
-                        res.status(500).send({ message: err });
-                        return;
-                    }
-                });
+            if (existingUser) {
+                // 构建一个包含重复字段的数组
+                const duplicateFields = [];
+                if (existingUser.u_id === req.body.u_id) {
+                    duplicateFields.push('电子邮件');
+                }
+                if (existingUser.phone_number === req.body.phone_number) {
+                    duplicateFields.push('电话号码');
+                }
+                if (existingUser.id_number === req.body.id_number) {
+                    duplicateFields.push('身份证号');
+                }
+
+                // 返回带有重复字段信息的响应
+                return res.status(400).send({ message: `以下字段重复：${duplicateFields.join('，')}。` });
             }
-            res.send({ message: "用户注册成功！" });
+
+            // 如果用户名、电子邮件、电话号码和身份证号都不存在重复，继续创建用户
+            const user = new User({
+                name: req.body.name,
+                u_id: req.body.u_id,
+                phone_number: req.body.phone_number,
+                id_number: req.body.id_number, // TODO: 沟通敏感信息安全性问题
+                password: bcrypt.hashSync(req.body.password, 8),
+            });
+
+            user.save((err, user) => {
+                if (err) {
+                    res.status(500).send({ message: err });
+                    return;
+                }
+
+                if (req.body.role) {
+                    user.role = req.body.role;
+                    user.save((err) => {
+                        if (err) {
+                            res.status(500).send({ message: err });
+                            return;
+                        }
+                    });
+                }
+                res.send({ message: "用户注册成功！" });
+            });
         });
-    });
+    } catch (err) {
+        res.status(500).send({ message: err.message });
+    }
 };
 
 function generateVerificationCode() {
