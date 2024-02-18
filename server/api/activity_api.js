@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 
 // import models so we can interact with the database
 
@@ -54,7 +55,7 @@ router.post("/subscribe", auth.verifyToken, async (req, res) => {
     const activity = await Activity.findOne({ _id: aid });
     const user = await User.findOne({ u_id: uid });
     if (activity) {
-      activity.candidates.push(uid);
+      activity.candidates.push({u_id: uid, name: user.name});
       await activity.save();
       res.status(200).json({ message: "User added successfully" });
     } else {
