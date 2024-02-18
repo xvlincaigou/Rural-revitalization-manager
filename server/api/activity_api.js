@@ -327,6 +327,13 @@ router.post("/admin", auth.verifyToken, async (req, res) => {
 const generatingUsers = {};
 router.post("/certificate", auth.verifyToken, async (req, res) => {
   try {
+    // 允许跨域请求
+    // TODO: 评估安全性
+    /*
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    */
     // 读取请求信息
     const { uid, aid } = req.body;
     console.log("uid: ", uid);
@@ -344,7 +351,7 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
     // 检查用户是否在生成列表中
     if (generatingUsers[uid]) {
       // 如果用户已经在生成列表中，则返回错误
-      return res.status(400).send("已经有一个证书正在生成中。");
+      return res.status(400).send("已经有一个正在生成的证书。");
     }
 
     // 将用户添加到生成列表中
@@ -364,7 +371,7 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
     const page = pdfDoc.getPages()[0];
 
     // 设置字体
-    const fontPath = path.join(__dirname, '../assets/certificate_template.pdf');
+    const fontPath = path.join(__dirname, '../assets/SIMKAI.TTF');
     const fontBytes = fs.readFileSync(fontPath);
     const kaiTiFont = await pdfDoc.embedFont(fontBytes);
     const fontSize = 13;
@@ -621,20 +628,21 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
 
     // 将生成的 PDF 字节写入文件
     const tempString = user._id.toString();
-    const outputPath = `../temp/generated_certificate_${tempString}.pdf`;
+    const outputPath = path.join(__dirname, `../temp/generated_certificate_${tempString}.pdf`);
     fs.writeFileSync(outputPath, pdfBytes);
 
     // 生成完成后，从列表中删除该用户
     delete generatingUsers[uid];
 
     // 发送生成的 PDF 文件给前端
-    res.download(outputPath, 'certificate.pdf', (err) => {
+    fs.readFile(outputPath, (err, data) => {
       if (err) {
-        console.error('Error sending PDF file:', err);
-        res.status(500).send('在发送证书PDF文件时发生错误。');
+        console.error('Error reading PDF file:', err);
+        res.status(500).send('在读取证书PDF文件时发生错误。');
       } else {
-        console.log('PDF file sent successfully!');
-        res.status(200).send('已经发生证书PDF文件！');
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="certificate.pdf"');
+        res.send(data);
       }
     });
   } catch (err) {
