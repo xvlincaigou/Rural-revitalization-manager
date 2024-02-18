@@ -80,4 +80,5 @@ const authJwt = {
     isExecutiveManager,
     isSysAdmin,
 };
+
 module.exports = authJwt;

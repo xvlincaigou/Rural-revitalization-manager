@@ -204,7 +204,7 @@ router.delete("/deleteany/:id", auth.verifyToken, auth.isExecutiveManager, async
 // PATCH /api/story/pinned-state
 router.patch("/pinned-state", auth.verifyToken, auth.isExecutiveManager, async (req, res) => {
   try {
-    const storyToBeEdited = await Story.findById(req.query.storyid, (err, storyToBeEdited) => {
+    const storyToBeEdited = await Story.findById(req.body.storyid, (err, storyToBeEdited) => {
       if (err) {
         console.log(err);
       } else {
@@ -230,7 +230,7 @@ router.patch("/pinned-state", auth.verifyToken, auth.isExecutiveManager, async (
 // PATCH /api/story/reply-feature-enabled-state
 router.patch("/reply-feature-enabled-state", auth.verifyToken, auth.isExecutiveManager, async (req, res) => {
   try {
-    const storyToBeEdited = await Story.findById(req.query.storyid, (err, storyToBeEdited) => {
+    const storyToBeEdited = await Story.findById(req.body.storyid, (err, storyToBeEdited) => {
       if (err) {
         console.log(err);
       } else {
