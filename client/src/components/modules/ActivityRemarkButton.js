@@ -25,7 +25,8 @@ const ActivityRemarkButton = (props) => {
         setReview(event.target.value);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = (event) => {
+        event.preventDefault();
         if (rating < 0 || rating > 10) {
             alert('分数要在0到10之间！');
             return;

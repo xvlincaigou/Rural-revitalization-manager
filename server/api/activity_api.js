@@ -76,6 +76,7 @@ router.post("/subscribe", auth.verifyToken, async (req, res) => {
 router.post("/unsubscribe", auth.verifyToken, async (req, res) => {
   try {
     const { uid, aid } = req.body;
+    console.log(req.body);
     const activity = await Activity.findOne({ _id: aid });
     const user = await User.findOne({ u_id: uid });
     if (activity) {
