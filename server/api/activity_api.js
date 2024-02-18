@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 // import models so we can interact with the database
 
 const { StoryComment, ActivityComment, MemberComment } = require("../models/comment");
-const { User, Admin } = require("../models/user");
+const User = require("../models/user");
 const Activity = require("../models/activity");
 
 // import authentication library
@@ -291,7 +291,7 @@ router.post("/delete", auth.verifyToken, async (req, res) => {
 });
 
 // POST /api/activity/admin
-router.post("/admin", auth.verifyToken, async (req, res) => {
+router.post("/admin", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
   try {
     const { activity_id, admin_email, action } = req.body;
 

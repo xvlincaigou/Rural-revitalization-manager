@@ -3,7 +3,7 @@ const express = require("express");
 // import models so we can interact with the database
 const Story = require("../models/story");
 const { StoryComment, ActivityComment, MemberComment } = require("../models/comment");
-const { User, Admin } = require("../models/user");
+const User = require("../models/user");
 const Activity = require("../models/activity");
 const Settings = require("../models/settings");
 
@@ -133,7 +133,7 @@ router.delete("/:id", auth.verifyToken, async (req, res) => {
       return res.status(404).json({ message: "没有找到帖子。" });
     }
     if (storyToBeDeleted.creator_id !== req.userId) {
-      return res.status(403).json({ message: "权限不足！" });
+      return res.status(403).json({ message: "没有删除的权限！" });
     }
     let jsonToBeReturned = {
       story: storyToBeDeleted,
@@ -162,7 +162,7 @@ router.delete("/:id", auth.verifyToken, async (req, res) => {
 // 未找到帖子时返回404状态码和{ message: "没有找到帖子。" }
 // 未知错误时返回400状态码和{ message: *错误信息* }
 // DELETE /api/story/deleteany/:id
-router.delete("/deleteany/:id", auth.verifyToken, auth.isExecutiveManager, async (req, res) => {
+router.delete("/deleteany/:id", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
   try {
     const storyToBeDeleted = await Story.findById(req.params.id, (err, storyToBeDeleted) => {
       if (err) {
@@ -202,7 +202,7 @@ router.delete("/deleteany/:id", auth.verifyToken, auth.isExecutiveManager, async
 // 未找到帖子时返回404状态码和{ message: "没有找到帖子。" }
 // 未知错误时返回400状态码和{ message: *错误信息* }
 // PATCH /api/story/pinned-state
-router.patch("/pinned-state", auth.verifyToken, auth.isExecutiveManager, async (req, res) => {
+router.patch("/pinned-state", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
   try {
     const storyToBeEdited = await Story.findById(req.body.storyid, (err, storyToBeEdited) => {
       if (err) {
@@ -228,7 +228,7 @@ router.patch("/pinned-state", auth.verifyToken, auth.isExecutiveManager, async (
 // 未找到帖子时返回404状态码和{ message: "没有找到帖子。" }
 // 未知错误时返回400状态码和{ message: *错误信息* }
 // PATCH /api/story/reply-feature-enabled-state
-router.patch("/reply-feature-enabled-state", auth.verifyToken, auth.isExecutiveManager, async (req, res) => {
+router.patch("/reply-feature-enabled-state", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
   try {
     const storyToBeEdited = await Story.findById(req.body.storyid, (err, storyToBeEdited) => {
       if (err) {
