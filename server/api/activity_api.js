@@ -328,13 +328,6 @@ router.post("/admin", auth.verifyToken, async (req, res) => {
 const generatingUsers = {};
 router.post("/certificate", auth.verifyToken, async (req, res) => {
   try {
-    // 允许跨域请求
-    // TODO: 评估安全性
-    /*
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    */
     // 读取请求信息
     const { uid, aid } = req.body;
     console.log("uid: ", uid);
