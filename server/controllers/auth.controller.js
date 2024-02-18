@@ -128,7 +128,8 @@ exports.login = (req, res) => {
             if (!user) {
                 return res.status(404).send({ message: "没有找到用户！" });
             }
-            // TODO:2FA
+
+            // 2FA
             var passwordIsValid = bcrypt.compareSync(
                 req.body.password,
                 user.password
@@ -171,7 +172,7 @@ exports.requestCode = async (req, res) => {
         const user = await User.findOne({ u_id: u_id });
 
         if (user.verificationCode.lastSent && new Date(user.verificationCode.lastSent.getTime() + 60000) > new Date()) {
-            return res.status(200).send({ message: "距离上次发送验证码还不足一分钟，请稍后再试。" });
+            return res.status(200).send({ message: "距离上次发送验证码还不足1分钟，请稍后再试。" });
         }
 
         const verificationCode = generateVerificationCode();

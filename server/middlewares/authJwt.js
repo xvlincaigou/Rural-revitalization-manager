@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config.js");
-const User = require("../models/user.js"); // 调试用
+const User = require("../models/user.js");
 
 verifyToken = (req, res, next) => {
     let token = req.session.token;
@@ -75,7 +75,7 @@ isSysAdmin = (req, res, next) => {
 
 const authJwt = {
     verifyToken,
-    isEventManager,
+    // isEventManager,
     isExecutiveManager,
     isSysAdmin,
 };

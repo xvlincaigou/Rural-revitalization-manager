@@ -76,6 +76,7 @@ router.post("/subscribe", auth.verifyToken, async (req, res) => {
 router.post("/unsubscribe", auth.verifyToken, async (req, res) => {
   try {
     const { uid, aid } = req.body;
+    // DEBUG
     console.log(req.body);
     const activity = await Activity.findOne({ _id: aid });
     const user = await User.findOne({ u_id: uid });
@@ -330,6 +331,7 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
   try {
     // 读取请求信息
     const { uid, aid } = req.body;
+    // DEBUG
     console.log("uid: ", uid);
     console.log("aid:" , aid);
     console.log(req.body);
@@ -352,7 +354,7 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
     generatingUsers[uid] = true;
 
     // 读取证书模板
-    const templatePath = path.join(__dirname, '../assets/certificate_template.pdf');
+    const templatePath = path.join(__dirname, '..', 'assets', 'certificate_template.pdf');
     const templateBytes = fs.readFileSync(templatePath);
 
     // 创建一个新的 PDF 文档
@@ -621,8 +623,12 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
     const pdfBytes = await pdfDoc.save();
 
     // 将生成的 PDF 字节写入文件
+    const tempDir = path.join(__dirname, '..', 'temp');
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir);
+    }
     const tempString = user._id.toString();
-    const outputPath = path.join(__dirname, `../temp/generated_certificate_${tempString}.pdf`);
+    const outputPath = path.join(__dirname, '..', 'temp', `generated_certificate_${tempString}.pdf`);
     fs.writeFileSync(outputPath, pdfBytes);
 
     // 生成完成后，从列表中删除该用户
