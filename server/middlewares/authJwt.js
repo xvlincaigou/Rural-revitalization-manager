@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config.js");
-const User = require("../models/user.js");
+const UserModel = require("../models/user.js");
+const User = UserModel.User;
 
 verifyToken = (req, res, next) => {
     let token = req.session.token;
@@ -79,4 +80,5 @@ const authJwt = {
     isExecutiveManager,
     isSysAdmin,
 };
+
 module.exports = authJwt;
