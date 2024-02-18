@@ -6,7 +6,15 @@ const StorySchema = new mongoose.Schema({
   creator_name: String,
   title: String,
   content: String,
-  comments: [mongoose.Schema.Types.ObjectId]
+  comments: [mongoose.Schema.Types.ObjectId],
+  isPinned: {
+    type: Boolean,
+    default: false,
+  },
+  canBeReplied: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 // compile model from schema

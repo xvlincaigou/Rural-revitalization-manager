@@ -1,8 +1,6 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config.js");
-// const db = require("../models");
 const User = require("../models/user.js"); // 调试用
-// const Role = db.role;
 
 verifyToken = (req, res, next) => {
     let token = req.session.token;
@@ -24,6 +22,8 @@ verifyToken = (req, res, next) => {
         });
 };
 
+// TODO: 确定/规范角色认证方式
+/*
 isEventManager = (req, res, next) => {
     User.findById(req.userId).exec((err, user) => {
         if (err) {
@@ -39,6 +39,7 @@ isEventManager = (req, res, next) => {
         return;
     });
 };
+*/
 
 isExecutiveManager = (req, res, next) => {
     User.findById(req.userId).exec((err, user) => {
@@ -47,27 +48,27 @@ isExecutiveManager = (req, res, next) => {
             return;
         }
 
-        if (user.role === 2) {
+        if (user.role >= 1) {
             next();
             return;
         }
-        res.status(403).send({ message: "需要常务管理员权限！" });
+        res.status(403).send({ message: "权限不足！" });
         return;
     });
 };
 
 isSysAdmin = (req, res, next) => {
-    User.findById(req.userId).exec((err, user) => {
+    User.findOne({ u_id: req.userId }).exec((err, user) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
         }
         
-        if (user.role === 3) {
+        if (user.role === 2) {
             next();
             return;
         }
-        res.status(403).send({ message: "需要系统管理员权限！" });
+        res.status(403).send({ message: "权限不足！" });
         return;
     });
 };
