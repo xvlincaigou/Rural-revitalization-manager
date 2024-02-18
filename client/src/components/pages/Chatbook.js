@@ -35,6 +35,8 @@ const Chatbook = (props) => {
         user={props.user}
         content={storyObj.content}
         commentids={storyObj.comments}
+        canBeReplied={storyObj.canBeReplied}
+        isPinned={storyObj.isPinned}
       />
     ));
   } else {

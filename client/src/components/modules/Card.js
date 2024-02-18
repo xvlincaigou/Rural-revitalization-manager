@@ -3,6 +3,7 @@ import SingleStory from "./SingleStory.js";
 import SingleComment from "./SingleComment.js";
 import { get } from "../../utilities";
 import { NewComment } from "./NewPostInput.js";
+import StoryControlButton from "./StoryControlButton.js";
 
 import "./Card.css";
 
@@ -16,10 +17,11 @@ import "./Card.css";
  * @param {string} content of the story
  * @param {[string]} commentids id of the comments
  */
-//继承了user
 
 const Card = (props) => {
   const [comments, setComments] = useState([]);
+  const [canBeReplied, setCanBeReplied] = useState(props.canBeReplied);
+  const [isPinned, setIsPinned] = useState(props.isPinned);
 
   useEffect(() => {
     const commentPromises = props.commentids.map((commentid) =>
@@ -36,11 +38,49 @@ const Card = (props) => {
 
   const addNewComment = (commentObj) => {
     setComments(comments.concat([commentObj]));
-    console.log(commentObj);
-    console.log(comments);
   };
 
-  console.log(comments);
+  const handleTop = () => {
+    if (props.user.role == 0) {
+      alert("您没有权限！");  
+    } else {
+      fetch("/api/story/pinned-state", {
+        method: 'PATCH',
+        body: JSON.stringify({storyid: props._id, isPinned: !isPinned}),
+      })
+      .then(res => {alert(res.message); setIsPinned(!isPinned);})
+      .catch((error) => console.error('Error:', error));
+    }
+  }
+
+  const handleDelete = () => {
+    if (props.user.role == 0) {
+      fetch(`/api/story/${props._id}`, {
+        method: 'DELETE',
+      })
+      .then(res => {res.status == 200 ? alert("删除成功！") : alert("删除失败！")})
+      .catch((error) => console.error('Error:', error));
+    } else {
+      fetch(`/api/story/deleteany/${props._id}`, {
+        method: 'DELETE',
+      })
+      .then(res => {res.status == 200 ? alert("删除成功！") : alert("删除失败！")})
+      .catch((error) => console.error('Error:', error));
+    }
+  }
+
+  const handleBan = () => {
+    if (props.user.role == 0) {
+      alert("您没有权限！");  
+    } else{
+      fetch("/api/story/reply-feature-enabled-state", {
+        method: 'PATCH',
+        body: JSON.stringify({storyid: props._id, canBeReplied: !canBeReplied}),
+      })
+      .then(res => {alert(res.message); setCanBeReplied(!canBeReplied);})
+      .catch((error) => console.error('Error:', error));
+    }
+  }
 
   return (
     <div className="Card-container">
@@ -50,6 +90,11 @@ const Card = (props) => {
         creator_id={props.creator_id}
         content={props.content}
       />
+      <div className="button-container">
+        <StoryControlButton text="置顶" handleClick={handleTop}/>
+        <StoryControlButton text="删帖" handleClick={handleDelete}/>
+        <StoryControlButton text={canBeReplied ? "禁止评论" : "允许评论"} handleClick={handleBan}/>
+      </ div>
       <div className="Card-commentSection">
         <div className="story-comments">
           {comments.map((comment) => 

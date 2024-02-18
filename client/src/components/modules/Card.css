@@ -31,3 +31,11 @@
 .Card-commentBody {
   margin: 0 0 var(--s);
 }
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 10px;
+}

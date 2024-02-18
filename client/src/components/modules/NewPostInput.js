@@ -22,6 +22,10 @@ const NewPostInput = (props) => {
   // called when the user hits "Submit" for a new post
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (!value) {
+      alert("不能为空！");
+      return;
+    }
     props.onSubmit && props.onSubmit(value);
     setValue("");
   };
@@ -60,10 +64,11 @@ const NewComment = (props) => {
       send_date: props.send_date,
       story_id: props.storyId,
       comment: value};
+      console.log(body);
     post("/api/story/comment", body).then((comment) => {
       // display this comment on the screen
       props.addNewComment(comment);
-    });
+    }).catch((error) => {console.log(error);});
   };
 
   return <NewPostInput defaultText="发表你的评论吧" onSubmit={addComment} />;
@@ -81,7 +86,7 @@ const NewStory = (props) => {
     post("/api/story", body).then((story) => {
       // display this story on the screen
       props.addNewStory(story);
-    });
+    }).catch((error) => {console.log(error);});
   };
 
   return <NewPostInput defaultText="发表你的帖子吧" onSubmit={addStory} />;

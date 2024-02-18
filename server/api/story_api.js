@@ -71,11 +71,11 @@ router.post("/", auth.verifyToken, async (req, res) => {
 // 如果帖子回复功能被禁用，返回403状态码和{ message: "帖子回复功能已被禁用。" }
 router.post("/comment", auth.verifyToken, async (req, res) => {
   try {
+    const { creator, send_date, story_id, comment } = req.body;
     const story = await Story.findById(story_id);
     if (story.canBeReplied === false) { 
       return res.status(403).json({ message: "帖子回复功能已被禁用。" });
     }
-    const { creator, send_date, story_id, comment } = req.body;
     const newComment = new StoryComment({
       creator: creator,
       send_date: send_date,
