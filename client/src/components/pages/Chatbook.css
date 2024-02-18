@@ -1,14 +1,15 @@
-.Chatbook-container {
-  height: calc(100vh - 120px);
-  width: 100%
-}
-
-.Chatbook-userList {
-  flex: 0 0 220px;
-  margin-right: var(--l);
-}
-
-.Chatbook-chatContainer {
-  flex-grow: 1;
-  overflow-x: hidden;
+.LifeDeathButton {
+  width: 90%;
+  height: 50px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
+  padding: 20px;
+  border-radius: 5px;
+  border: none;
+  background-color: var(--thupurple);
+  color: #fff;
+  cursor: pointer;
+  font-size: 20px;
 }

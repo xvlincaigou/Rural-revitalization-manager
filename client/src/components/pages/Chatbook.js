@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { NewStory } from "../modules/NewPostInput.js";
 import Card from "../modules/Card.js";
 import { get } from "../../utilities.js";
-
+import "./Chatbook.css";
 
 const Chatbook = (props) => {
 
@@ -11,6 +11,7 @@ const Chatbook = (props) => {
     document.title = "Chatbook";
     get("/api/story/stories").then((storyObjs) => {
       let reversedStoryObjs = storyObjs.reverse();
+      reversedStoryObjs.sort((a, b) => b.isPinned - a.isPinned);
       setStories(reversedStoryObjs);
     }).catch((error) => {
       console.log(error);
@@ -43,6 +44,18 @@ const Chatbook = (props) => {
     storiesList = <div>没有帖子！</div>;
   }
 
+  const LifeorDeath = (command) => {
+    fetch("/api/story/edit-global-settings", {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({storyPostingEnabled: command}),
+    })
+    .then(res => {alert(res.status == 200 ? `已经${command ? "开启" : "关闭"}发帖功能` : "失败！");})
+    .catch((error) => console.error('Error:', error));
+  }
+
   if (!props.user) {
     return <div>登录以发帖</div>;
   }
@@ -50,6 +63,8 @@ const Chatbook = (props) => {
     <>
       {props.user && <NewStory addNewStory={addNewStory} creator_id={props.user.u_id} creator_name={props.user.name} />}
       {storiesList}
+      {props.user.role === 2 && <button className="LifeDeathButton" onClick={() => LifeorDeath(true)}>开启发帖功能</button>}
+      {props.user.role === 2 && <button className="LifeDeathButton" onClick={() => LifeorDeath(false)}>关闭发帖功能</button>}
     </>
   );
 }
