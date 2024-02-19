@@ -58,7 +58,7 @@ const SingleActivity = (props) => {
     const handleClick = () => {
         if (button == 11) {
             post("/api/activity/unsubscribe", {uid: props.user.u_id, aid:props._id}).then((res) => {
-                alert(res);
+                alert(res.message);
                 setButton(10);
                 const newUsers_signed_up = users_signed_up.filter((user) => user.u_id !== props.user.u_id);
                 setUsers_signed_up(newUsers_signed_up);})

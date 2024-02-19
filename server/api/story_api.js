@@ -113,7 +113,7 @@ router.get("/comment", auth.verifyToken, async (req, res) => {
         console.log(err);
       } else {
         // DEBUG
-        console.log(comment);
+        //console.log(comment);
       }
     });
     res.set('Content-Type', 'application/json');

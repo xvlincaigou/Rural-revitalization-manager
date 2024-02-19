@@ -1,6 +1,5 @@
 import React from "react";
 
-import { post } from "../../utilities.js";
 import "./ActivityButton.css";
 
 const ActivityDownloadButton = (props) => {

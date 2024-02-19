@@ -53,19 +53,14 @@ router.post("/subscribe", auth.verifyToken, async (req, res) => {
     const { uid, aid } = req.body;
     const activity = await Activity.findOne({ _id: aid });
     const user = await User.findOne({ u_id: uid });
-    if (activity) {
+    if (activity && user) {
       activity.candidates.push({u_id: uid, name: user.name});
       await activity.save();
-      res.status(200).json({ message: "User added successfully" });
-    } else {
-      res.status(404).json({ message: "Cannot find the activity" });
-    }
-    if (user) {
       user.activities.push(aid);
       await user.save();
-      res.status(200).json({ message: "Activity recorded successfully" });
+      res.status(200).json({ message: "报名成功！" });
     } else {
-      res.status(404).json({ message: "Cannot find the user" });
+      res.status(404).json({ message: "没有找到活动或用户" });
     }
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -76,33 +71,22 @@ router.post("/subscribe", auth.verifyToken, async (req, res) => {
 router.post("/unsubscribe", auth.verifyToken, async (req, res) => {
   try {
     const { uid, aid } = req.body;
-    // DEBUG
-    console.log(req.body);
     const activity = await Activity.findOne({ _id: aid });
     const user = await User.findOne({ u_id: uid });
-    if (activity) {
-      const index = activity.candidates.indexOf(uid);
-      if (index !== -1) {
+    if (activity && user) {
+      const index = activity.candidates.findIndex((candidate) => candidate.u_id === uid);
+      const _index = user.activities.indexOf(aid);
+      if (index !== -1 && _index !== -1) {
         activity.candidates.splice(index, 1);
-        await activity.save();
-        res.status(200).json({ message: "User deleted successfully" });
-      } else {
-        res.status(404).json({ message: "User not added" });
-      }
-    } else {
-      res.status(404).json({ message: "Cannot find the activity" });
-    }
-    if (user) {
-      const index = user.activities.indexOf(aid);
-      if (index !== -1) {
         user.activities.splice(index, 1);
+        await activity.save();
         await user.save();
-        res.status(200).json({ message: "Activity deleted successfully" });
+        res.status(200).json({ message: "取消报名成功！" });
       } else {
-        res.status(404).json({ message: "Activity not recorded" });
+        res.status(404).json({ message: "没有找到活动或用户" });
       }
     } else {
-      res.status(404).json({ message: "Cannot find the user" });
+      res.status(404).json({ message: "没有找到活动或用户" });
     }
   } catch (err) {
     res.status(400).json({ message: err.message });
