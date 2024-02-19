@@ -1,13 +1,12 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config.js");
-const UserModel = require("../models/user.js");
-const User = UserModel.User;
+const User = require("../models/user.js");
 
 verifyToken = (req, res, next) => {
     let token = req.session.token;
 
     if (!token) {
-        return res.status(403).send({ message: "没有找到token！" });
+        return res.status(403).send({ message: "没有找到令牌！" });
     }
 
     jwt.verify(token,
@@ -15,7 +14,7 @@ verifyToken = (req, res, next) => {
         (err, decoded) => {
             if (err) {
                 return res.status(401).send({
-                    message: "权限不足！",
+                    message: "令牌无效！",
                 });
             }
             req.userId = decoded.id;
@@ -42,7 +41,7 @@ isEventManager = (req, res, next) => {
 };
 */
 
-isExecutiveManager = async (req, res, next) => {
+hasExecutiveManagerPrivileges = async (req, res, next) => {
     await User.findOne({ u_id: req.userId }).exec((err, user) => {
         if (err) {
             res.status(500).send({ message: err });
@@ -77,7 +76,7 @@ isSysAdmin = async (req, res, next) => {
 const authJwt = {
     verifyToken,
     // isEventManager,
-    isExecutiveManager,
+    hasExecutiveManagerPrivileges,
     isSysAdmin,
 };
 

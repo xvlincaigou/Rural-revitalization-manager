@@ -1,7 +1,7 @@
 const express = require("express");
 
 // import models so we can interact with the database
-const {User, Admin} = require("../models/user");
+const User = require("../models/user");
 
 // import authentication library
 const auth = require("../middlewares/authJwt");
@@ -10,7 +10,7 @@ const auth = require("../middlewares/authJwt");
 const router = express.Router();
 
 // POST /api/user/tags
-router.post("/tags", auth.verifyToken, async (req, res) => {
+router.post("/tags", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
   try {
     const { u_id, tag, visibility, action } = req.body;
     let message;
@@ -46,7 +46,7 @@ router.post("/tags", auth.verifyToken, async (req, res) => {
 });
 
 // POST /api/user/tags/visibility
-router.post("/tags/visibility", auth.verifyToken, async (req, res) => {
+router.post("/tags/visibility", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
   try {
     const { user_id, tag, visibility } = req.body;
 
@@ -77,7 +77,7 @@ router.post("/tags/visibility", auth.verifyToken, async (req, res) => {
 });
 
 // POST /api/user/admin
-router.post("/admin", auth.verifyToken, async (req, res) => {
+router.post("/admin", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
   try {
     const { admin_email, action } = req.body;
 
@@ -108,7 +108,7 @@ router.post("/admin", auth.verifyToken, async (req, res) => {
 // undo：启用或禁用用户等：需要在数据库方面进行改动支持，在user里添加一个是否封禁的属性。
 
 // POST /api/user/ban
-router.post("/ban",auth.verifyToken, async (req, res) => {
+router.post("/ban",auth.verifyToken, auth.isSysAdmin, async (req, res) => {
   try{
     const {uid,ban}=req.body;
     const user=await User.findById(uid)

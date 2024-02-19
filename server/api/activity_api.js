@@ -3,7 +3,7 @@ const express = require("express");
 // import models so we can interact with the database
 
 const { StoryComment, ActivityComment, MemberComment } = require("../models/comment");
-const { User, Admin } = require("../models/user");
+const User = require("../models/user");
 const Activity = require("../models/activity");
 
 // import authentication library
@@ -54,7 +54,7 @@ router.post("/subscribe", auth.verifyToken, async (req, res) => {
     const activity = await Activity.findOne({ _id: aid });
     const user = await User.findOne({ u_id: uid });
     if (activity) {
-      activity.candidates.push(uid);
+      activity.candidates.push({u_id: uid, name: user.name});
       await activity.save();
       res.status(200).json({ message: "User added successfully" });
     } else {
@@ -290,7 +290,7 @@ router.post("/delete", auth.verifyToken, async (req, res) => {
 });
 
 // POST /api/activity/admin
-router.post("/admin", auth.verifyToken, async (req, res) => {
+router.post("/admin", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
   try {
     const { activity_id, admin_email, action } = req.body;
 

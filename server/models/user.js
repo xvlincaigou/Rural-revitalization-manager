@@ -62,7 +62,4 @@ const UserSchema = new mongoose.Schema({
 UserSchema.index({ u_id: 1 });
 
 // compile model from schema
-module.exports = {
-    User: mongoose.model("user", UserSchema),
-    Admin: mongoose.model("admin", UserSchema),
-};
+module.exports = mongoose.model("user", UserSchema);

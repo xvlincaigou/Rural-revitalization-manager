@@ -3,7 +3,7 @@ const express = require("express");
 // import models so we can interact with the database
 const Story = require("../models/story");
 const { StoryComment, ActivityComment, MemberComment } = require("../models/comment");
-const { User, Admin } = require("../models/user");
+const User = require("../models/user");
 const Activity = require("../models/activity");
 const Settings = require("../models/settings");
 
@@ -26,12 +26,26 @@ const auth = require("../middlewares/authJwt");
 // api endpoints: all these paths will be prefixed with "/api/"
 const router = express.Router();
 
+// 获取帖子发布功能开启状态
+// 无请求体
+// 返回体形如：{ storyPostingEnabled: *true/false* }
+// 未知错误时返回400状态码和{ message: *错误信息* }
+// GET /api/story/global-settings
+router.get("/global-settings", auth.verifyToken, async (req, res) => {
+  try {
+    const settings = await Settings.findOne();
+    res.status(200).json({ settings });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 // 修改帖子发布功能开启状态-需要系统管理员权限
 // 请求体形如：{ storyPostingEnabled: *true/false* }
 // 返回体形如：{ message: `帖子发布功能开启状态已修改为${req.body.storyPostingEnabled}。` }
 // 未知错误时返回400状态码和{ message: *错误信息* }
-// PUT /api/story/edit-global-settings
-router.put("/edit-global-settings", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
+// PUT /api/story/global-settings
+router.put("/global-settings", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
   try {
     const settings = await Settings.findOne();
     settings.storyPostingEnabled = req.body.storyPostingEnabled;
@@ -73,7 +87,7 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
   try {
     const { creator, send_date, story_id, comment } = req.body;
     const story = await Story.findById(story_id);
-    if (story.canBeReplied === false) { 
+    if (story.canBeReplied === false) {
       return res.status(403).json({ message: "帖子回复功能已被禁用。" });
     }
     const newComment = new StoryComment({
@@ -133,7 +147,7 @@ router.delete("/:id", auth.verifyToken, async (req, res) => {
       return res.status(404).json({ message: "没有找到帖子。" });
     }
     if (storyToBeDeleted.creator_id !== req.userId) {
-      return res.status(403).json({ message: "权限不足！" });
+      return res.status(403).json({ message: "没有删除的权限！" });
     }
     let jsonToBeReturned = {
       story: storyToBeDeleted,
@@ -162,7 +176,7 @@ router.delete("/:id", auth.verifyToken, async (req, res) => {
 // 未找到帖子时返回404状态码和{ message: "没有找到帖子。" }
 // 未知错误时返回400状态码和{ message: *错误信息* }
 // DELETE /api/story/deleteany/:id
-router.delete("/deleteany/:id", auth.verifyToken, auth.isExecutiveManager, async (req, res) => {
+router.delete("/deleteany/:id", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
   try {
     const storyToBeDeleted = await Story.findById(req.params.id, (err, storyToBeDeleted) => {
       if (err) {
@@ -202,7 +216,7 @@ router.delete("/deleteany/:id", auth.verifyToken, auth.isExecutiveManager, async
 // 未找到帖子时返回404状态码和{ message: "没有找到帖子。" }
 // 未知错误时返回400状态码和{ message: *错误信息* }
 // PATCH /api/story/pinned-state
-router.patch("/pinned-state", auth.verifyToken, auth.isExecutiveManager, async (req, res) => {
+router.patch("/pinned-state", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
   try {
     const storyToBeEdited = await Story.findById(req.body.storyid, (err, storyToBeEdited) => {
       if (err) {
@@ -228,7 +242,7 @@ router.patch("/pinned-state", auth.verifyToken, auth.isExecutiveManager, async (
 // 未找到帖子时返回404状态码和{ message: "没有找到帖子。" }
 // 未知错误时返回400状态码和{ message: *错误信息* }
 // PATCH /api/story/reply-feature-enabled-state
-router.patch("/reply-feature-enabled-state", auth.verifyToken, auth.isExecutiveManager, async (req, res) => {
+router.patch("/reply-feature-enabled-state", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
   try {
     const storyToBeEdited = await Story.findById(req.body.storyid, (err, storyToBeEdited) => {
       if (err) {
