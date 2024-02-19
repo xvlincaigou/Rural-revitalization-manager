@@ -112,7 +112,7 @@ const Card = (props) => {
             />
           )
           )}
-         <NewComment storyId={props._id} send_date={new Date()} addNewComment={addNewComment} creator={props.user}/>
+         {canBeReplied ? <NewComment storyId={props._id} send_date={new Date()} addNewComment={addNewComment} creator={props.user}/> : null}
         </div>
       </div>
     </div>
