@@ -223,8 +223,8 @@ exports.verifyCode = (req, res) => {
 
                 req.session.token = token;
 
-                const { name, u_id, role, activities, previous_scores, comment_received, tags, banned, verificationCode } = user;
-                const strippedUser = { name, u_id, role, activities, previous_scores, comment_received, tags, banned, verificationCode };
+                const { name, u_id, role, activities, previous_scores, comment_received, tags, banned } = user;
+                const strippedUser = { name, u_id, role, activities, previous_scores, comment_received, tags, banned };
 
                 req.session.user = strippedUser;
 
@@ -242,7 +242,7 @@ exports.verifyCode = (req, res) => {
 exports.logout = async (req, res) => {
     try {
         req.session = null;
-        req.session.user = null;
+        // req.session.user = null;
 
         /*
         const userSocket = socketManager.getSocketFromUserID(req.user.u_id);
@@ -251,18 +251,19 @@ exports.logout = async (req, res) => {
             socketManager.removeUser(req.user, userSocket);
         }
         */
-        res.send({});
+        res.status(200).send({ message: "您已登出！" });
     } catch (err) {
-        this.next(err);
+        console.error(err);
+        res.status(500).send({ message: err.message });
     }
 };
 
+/*
 exports.populateCurrentUser = (req, res, next) => {
     // simply populate "req.user" for convenience
     req.user = req.session.user;
     next();
 }
-
 
 exports.ensureLoggedIn = (req, res, next) => {
     if (!req.user) {
@@ -271,3 +272,4 @@ exports.ensureLoggedIn = (req, res, next) => {
 
     next();
 }
+*/

@@ -33,6 +33,7 @@ const storyApi = require("./api/story_api");
 const userApi = require("./api/user_api");
 const registerApi = require("./api/register_api");
 const loginApi = require("./api/login_api");
+const logoutApi = require("./api/logout_api");
 const auth = require("./controllers/auth.controller");
 
 // socket stuff
@@ -74,7 +75,7 @@ app.use(
 );
 
 // this checks if the user is logged in, and populates "req.user"
-app.use(auth.populateCurrentUser);
+// app.use(auth.populateCurrentUser);
 
 // connect user-defined routes
 app.use("/api/activity", activityApi);
@@ -84,6 +85,7 @@ app.use("/api/story", storyApi);
 app.use("/api/user", userApi);
 app.use("/api/register", registerApi);
 app.use("/api/login", loginApi);
+app.use("/api/logout", logoutApi);
 
 // load the compiled react files, which will serve /index.html and /bundle.js
 const reactPath = path.resolve(__dirname, "..", "client", "dist");

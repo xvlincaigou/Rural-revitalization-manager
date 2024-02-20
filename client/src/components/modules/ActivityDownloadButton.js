@@ -1,17 +1,13 @@
 import React from "react";
+import axios from "axios";
 
 import "./ActivityButton.css";
 
 const ActivityDownloadButton = (props) => {
 
     const handleClick = () => {
-        fetch("/api/activity/certificate", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ uid: props.uid, aid: props.aid }),
-        }).then(response => {
+        axios.post("/api/activity/certificate", { uid: props.uid, aid: props.aid })
+            .then(response => {
                 if (!response.ok) {
                     // 请求失败，尝试解析错误信息
                     return response.json().then(error => Promise.reject(error));

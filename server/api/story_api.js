@@ -56,10 +56,31 @@ router.put("/global-settings", auth.verifyToken, auth.isSysAdmin, async (req, re
   }
 });
 
+// GET /api/story/stories-page-count
+router.get("/stories-page-count", (req, res) => {
+  let pageSize = 10;
+  // 获取帖子页数
+  Story.countDocuments({}, (err, count) => {
+    if (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+    res.status(200).json({ pageNum: Math.ceil(count / pageSize) });
+  });
+});
+
 // GET /api/story/stories
 router.get("/stories", (req, res) => {
+  let page = parseInt(req.query.page) || 1;
+  let pageSize = 10;
   // empty selector means get all documents
-  Story.find({}).then((stories) => res.send(stories));
+
+  // 分页功能
+  Story.find({})
+    .skip((page - 1) * pageSize)
+    .limit(pageSize)
+    .then((stories) => res.send(stories))
+    .catch(err => res.status(500).json(err));;
 });
 
 // POST /api/story

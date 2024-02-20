@@ -18,10 +18,28 @@ const fs = require("fs");
 const fontkit = require('fontkit'); // 导入 fontkit 库
 const path = require('path');
 
+// GET /api/activity/activities-page-count
+router.get("/activities-page-count", (req, res) => {
+  let pageSize = 10;
+  // 获取帖子页数
+  Activity.countDocuments({}, (err, count) => {
+    if (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+    res.status(200).json({ pageNum: Math.ceil(count / pageSize) });
+  });
+});
+
 // GET /api/activity
 router.get("/", auth.verifyToken, async (req, res) => {
-   // get all activities and sort by date
-   Activity.find({}).sort({ date: -1 })
+  let page = parseInt(req.query.page) || 1;
+  let pageSize = 10;
+  // get all activities and sort by date
+  Activity.find({})
+    .sort({ date: -1 })
+    .skip((page - 1) * pageSize)
+    .limit(pageSize)
     .then((activities) => res.send(activities))
     .catch((err) => res.status(404).send(err));
 });
