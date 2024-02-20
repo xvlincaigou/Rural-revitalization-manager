@@ -93,6 +93,7 @@ router.post("/unsubscribe", auth.verifyToken, async (req, res) => {
   }
 });
 
+
 // POST /api/activity/comment
 router.post("/comment", auth.verifyToken, async (req, res) => {
   try {
@@ -108,12 +109,14 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
     // Save the new activity to the database
     await newComment.save();
     activity.comments.push(newComment._id);
-    var new_score = 0;
-    activity.comments.forEach(function(comment) {
-      new_score += comment.rating;
-    });
+    let new_score = 0;
+    for(const comment_id of activity.comments) {
+      const one_comment = await ActivityComment.findById(comment_id);
+      new_score += one_comment.rating;
+    }
     activity.score = new_score / activity.comments.length;
     await activity.save();
+    res.status(200).json({ message: "Comment sent successfully." });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

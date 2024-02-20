@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import CatHappiness from "../modules/CatHappiness.js";
 import { get } from "../../utilities";
 import SingleActivity from "../modules/SingleActivity.js";
+import ManagedSinigleActivityInProfile from "../modules/ManagedSingleActivityInProfile.js";
 
 import "../../utilities.css";
 import "./Profile.css";
@@ -71,7 +72,7 @@ const Profile = (props) => {
             <h4 className="Profile-subTitle">我管理的活动</h4>
             {managedActivityList.length === 0 ? <div>没有活动</div> : 
               managedActivityList.map((activity) => (
-              <SingleActivity
+              <ManagedSinigleActivityInProfile
               key={`SingleActivity_${activity._id}`}
               _id={activity._id}
               name={activity.name}

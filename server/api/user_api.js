@@ -12,6 +12,9 @@ const auth = require("../middlewares/authJwt");
 // api endpoints: all these paths will be prefixed with "/api/"
 const router = express.Router();
 
+// import models so we can interact with the database
+const { StoryComment, ActivityComment, MemberComment } = require("../models/comment");
+
 // POST /api/user/tags
 router.post("/tags", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
   try {
@@ -170,6 +173,29 @@ router.get("/supervise_activities", auth.verifyToken, async (req, res) => {
     }
     
     res.status(200).json(activity_list);
+  } catch(err) {
+    res.status(400).json({message: err.message});
+  }
+});
+
+// post /api/user/comment
+router.post("/comment", auth.verifyToken, async (req, res) => {
+  try {
+    const {creator, activity_id, member_id, rating, comment} = req.body;
+    console.log(req.body);
+    const member = await User.findOne({u_id: member_id});
+    console.log(member);
+    const new_comment = new MemberComment({
+      creator: creator,
+      activity_id: activity_id,
+      member_id: member_id,
+      rating: rating,
+      comment: comment
+    });
+    await new_comment.save();
+    member.comment_received.push(new_comment._id);
+    await member.save();
+    res.status(200).json("Comment sent successfully.");
   } catch(err) {
     res.status(400).json({message: err.message});
   }

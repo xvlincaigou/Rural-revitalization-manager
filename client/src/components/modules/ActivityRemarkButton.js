@@ -42,9 +42,15 @@ const ActivityRemarkButton = (props) => {
                 return;
             }
         }
-        post('/api/activity/comment', {creator:props.creator, send_date: new Date(), activity_id: props.activity_id, rating: ratings[0], comment: reviews[0]});
+        post('/api/activity/comment', {creator:props.creator, send_date: new Date(), activity_id: props.activity_id, rating: ratings[0], comment: reviews[0]})
+        .then((res) => alert(res.message))
+        .catch((res) => console.log(res));
         for (let i = 1; i < ratings.length; i ++) {
-            //准备好那个api
+            if (ratings[i] !== - 1) {
+                post('/api/user/comment', {creator:props.creator, activity_id: props.activity_id, member_id: props.members[i - 1].u_id, rating: ratings[i], comment: reviews[i]})
+                .then((res) => console.log(res.message))
+                .catch((res) => console.log(res));
+            }
         }
         handleClose();
     };
