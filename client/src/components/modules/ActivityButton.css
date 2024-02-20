@@ -61,6 +61,32 @@
     align-items: center;
     justify-content: center;
     height: 100%;
+    width: 300px;
     background-color: #fff;
+    margin: 20px;
+    padding: 10px;
+  }
+
+  .Participant button {
     margin-bottom: 10px;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: var(--thupurple);
+    color: #fff;
+    cursor: pointer;
+    width: 80%;
+  }
+
+  .submitbutton {
+    margin-bottom: 10px;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: var(--thupurple);
+    color: #fff;
+    cursor: pointer;
+    width: 100%;
   }

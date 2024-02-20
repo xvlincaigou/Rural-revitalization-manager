@@ -18,12 +18,11 @@ const fs = require("fs");
 const fontkit = require('fontkit'); // 导入 fontkit 库
 const path = require('path');
 
-// GET /api/activity
 router.get("/", auth.verifyToken, async (req, res) => {
-   // get all activities and sort by date
-   Activity.find({}).sort({ date: -1 })
-    .then((activities) => res.send(activities))
-    .catch((err) => res.status(404).send(err));
+  // get all activities and sort by date
+  Activity.find({}).sort({ "date.sign_up": -1 })
+   .then((activities) => res.send(activities))
+   .catch((err) => res.status(404).send(err));
 });
 
 // POST /api/activity
@@ -54,6 +53,9 @@ router.post("/subscribe", auth.verifyToken, async (req, res) => {
     const activity = await Activity.findOne({ _id: aid });
     const user = await User.findOne({ u_id: uid });
     if (activity && user) {
+      if (activity.candidates.some(candidate => candidate.u_id === uid)) {
+        return res.status(200).json({message: "Subscribed already."});
+      }
       activity.candidates.push({u_id: uid, name: user.name});
       await activity.save();
       user.activities.push(aid);
@@ -126,12 +128,14 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
 router.post("/register", auth.verifyToken, async (req, res) => {
   try {
     const { email, activity_id, name } = req.body;
+    console.log(req.body);
     // Check if activity exists and if the registration date has not passed
     const activity = await Activity.findById(activity_id);
     if (!activity) {
       return res.status(404).json({ message: "没有找到活动" });
     }
 
+    console.log(activity.date.end);
     const candidate = {u_id: email, name: name};
     // Assuming ActivityRegistration model has fields: email, activity_id
     activity.members.push(candidate);

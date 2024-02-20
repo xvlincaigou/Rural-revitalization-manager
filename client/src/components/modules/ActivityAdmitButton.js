@@ -34,7 +34,7 @@ const ActivityAdmitButton = (props) => {
 
     const handleAdmitsChange = (event, index) => {
         const newAdmits = [...admits]; 
-        newAdmits[index] = event.target.value; 
+        newAdmits[index] = true; 
         setAdmits(newAdmits); 
     };
 
@@ -47,7 +47,7 @@ const ActivityAdmitButton = (props) => {
                     email: props.toAdmit[i].u_id,
                     name: props.toAdmit[i].name,
                 })
-                .then((res) => {console.log(res.message);})
+                .then((res) => {alert(res.message);})
                 .catch((err) => {console.log(err);});
             }
         }
@@ -60,7 +60,7 @@ const ActivityAdmitButton = (props) => {
             <Dialog open={open} onClose={handleClose}>
                 <>
                     {admitsUserInfo ? admitsUserInfo.map((member, index) => (
-                        <div key={index}>
+                        <div key={index} className="Participant">
                             <label>{member.name}</label>
                             <label>{member.u_id}</label>
                             <label>{member.phone_number}</label>
@@ -71,7 +71,7 @@ const ActivityAdmitButton = (props) => {
                             <button onClick={(event) => handleAdmitsChange(event, index)}>同意</button>
                         </div>
                     )) : null}
-                    <button type="submit" onClick={handleSubmit}>提交</button>
+                    <button type="submit" onClick={handleSubmit} className='submitbutton'>提交</button>
                 </>
             </Dialog>
         </div>
