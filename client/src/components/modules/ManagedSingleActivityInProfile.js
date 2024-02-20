@@ -5,11 +5,11 @@ import "./ActivityButton.css";
 import ActivityDownloadButton from './ActivityDownloadButton.js';
 import ActivityRemarkButton from './ActivityRemarkButton.js';
 import ActivityChangeButton from './ActivityChangeButton.js';
+import ActivityAdmitButton from './ActivityAdmitButton.js';
 
 const ManagedSingleActivityInProfile = (props) => {
-    const [button, setButton] = useState(false);
+    const [button, setButton] = useState(0);//0:可以修改信息，可以审核报名 1:可以审核报名 2:啥都不能干 3:可以评价和下载证书
     const [time, setTime] = useState(null);
-    const [users_admin, setUsers_admin] = useState(props.users_admin);
 
     useEffect(() => {
         const currentDateTime = new Date();
@@ -21,11 +21,13 @@ const ManagedSingleActivityInProfile = (props) => {
             setTime(<div className="Activity-held-time Activity-held-time-color1">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>);
         } else if (start_time > currentDateTime) {
             setTime(<div className="Activity-held-time Activity-held-time-color2">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>);
+            setButton(1);
         } else if (end_time > currentDateTime){
             setTime(<div className="Activity-held-time Activity-held-time-color3">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>);
+            setButton(2);
         } else {
             setTime(<div className="Activity-held-time Activity-held-time-color4">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>);
-            setButton(true);
+            setButton(3);
         }
     }, []);
 
@@ -51,12 +53,13 @@ const ManagedSingleActivityInProfile = (props) => {
             <div className="Activity-Content">{props.name}</div>
             <div className='button-container'>
             {
-                button ? <><ActivityDownloadButton uid={props.user.u_id} aid={props._id}/>
-                <ActivityRemarkButton creator={{u_id: props.user.u_id, name: props.user.name}} activity_id={props._id} members={users_admin}/>
-                <ActivityChangeButton a_id={props._id} start_time={props.start_time} end_time={props.end_time} 
-                latest_register_time={props.latest_register_time} location={props.location} information={props.information} name={props.name}/></> :
-                <><ActivityChangeButton a_id={props._id} start_time={props.start_time} end_time={props.end_time} 
-                latest_register_time={props.latest_register_time} location={props.location} information={props.information} name={props.name}/></>
+                button == 0 ? <><ActivityChangeButton a_id={props._id} start_time={props.start_time} end_time={props.end_time} 
+                latest_register_time={props.latest_register_time} location={props.location} information={props.information} name={props.name}/>
+                <ActivityAdmitButton toAdmit={props.users_signed_up.filter(element => !props.users_admin.includes(element))} activity_id={props._id}/></> :
+                button == 1 ? <ActivityAdmitButton toAdmit={props.users_signed_up.filter(element => !props.users_admin.includes(element))} activity_id={props._id}/> :
+                button == 2 ? null :
+                <><ActivityDownloadButton uid={props.user.u_id} aid={props._id}/>
+                <ActivityRemarkButton creator={{u_id: props.user.u_id, name: props.user.name}} activity_id={props._id} members={props.users_admin}/></> 
             }
             </div>
             <div className="Activity-infoSection">
@@ -79,7 +82,7 @@ const ManagedSingleActivityInProfile = (props) => {
                 </div>
                 <div className="Activity-infoBody">
                     <span>已被接受的用户 | </span>
-                    {users_admin.map((user) => (
+                    {props.users_admin.map((user) => (
                         <span>{user.name + "  "}</span>
                     ))}
                 </div>
