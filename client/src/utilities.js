@@ -1,3 +1,4 @@
+import axios from 'axios';
 /**
  * Utility functions to make API requests.
  * By importing this file, you can use the provided get and post functions.
@@ -8,6 +9,7 @@
  * e.g. get('/api/foo', { bar: 0 }).then(res => console.log(res))
  */
 
+/*
 // ex: formatParams({ some_key: "some_value", a: "b"}) => "some_key=some_value&a=b"
 function formatParams(params) {
   // iterate of all the keys of params as an array,
@@ -34,28 +36,24 @@ function convertToJSON(res) {
       });
     });
 }
+*/
 
 // Helper code to make a get request. Default parameter of empty JSON Object for params.
 // Returns a Promise to a JSON Object.
 export function get(endpoint, params = {}) {
-  const fullPath = endpoint + "?" + formatParams(params);
-  return fetch(fullPath)
-    .then(convertToJSON)
+  return axios.get(endpoint, { params })
+    .then(response => response.data)
     .catch((error) => {
       // give a useful error message
-      throw `GET request to ${fullPath} failed with error:\n${error}`;
+      throw `GET request to ${endpoint} failed with error:\n${error}`;
     });
 }
 
 // Helper code to make a post request. Default parameter of empty JSON Object for params.
 // Returns a Promise to a JSON Object.
 export function post(endpoint, params = {}) {
-  return fetch(endpoint, {
-    method: "post",
-    headers: { "Content-type": "application/json" },
-    body: JSON.stringify(params),
-  })
-    .then(convertToJSON) // convert result to JSON object
+  return axios.post(endpoint, params)
+    .then(response => response.data)
     .catch((error) => {
       // give a useful error message
       throw `POST request to ${endpoint} failed with error:\n${error}`;

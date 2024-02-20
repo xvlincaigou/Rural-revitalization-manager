@@ -19,7 +19,7 @@ const Feed = () => {
     document.title = "News Feed";
     get("/api/global/appdata").then((appDataObj) => {
       setAppData(appDataObj);
-    }).catch((err) => {console.log(err.message);});
+    }).catch((err) => { console.log(err.message); });
   }, []);
 
   const complaintReplyRate = appData.complaintReplyCount * 100 / appData.complaintCount;
@@ -28,8 +28,11 @@ const Feed = () => {
   return (
     <>
       <div className="Feed-subContainer u-textCenter">
+        
+      </div >
+      <div className="Feed-subContainer u-textCenter">
         <h4>{"活动总数"}</h4>
-        <div className="Feed-content">{appData.activityCount}</ div>
+        <div className="Feed-content">{appData.activityCount}</div>
       </div>
 
       <div className="Feed-subContainer u-textCenter">
@@ -47,12 +50,12 @@ const Feed = () => {
         <div className="Feed-content">{formattedRate}</div>
       </div>
 
-      <div class="link-container">
+      <div className="link-container">
         <h4>开发者主页：</h4>
-        <a class="link-item" href="https://github.com/xvlincaigou">许霖</a>
-        <a class="link-item" href="https://github.com/zhaochangjack">赵畅</a>
-        <a class="link-item" href="https://github.com/bbbpimasheep">刘明轩</a>
-        <a class="link-item" href="https://github.com/gsk-THU">关世开</a>
+        <a className="link-item" href="https://github.com/xvlincaigou">许霖</a>
+        <a className="link-item" href="https://github.com/zhaochangjack">赵畅</a>
+        <a className="link-item" href="https://github.com/bbbpimasheep">刘明轩</a>
+        <a className="link-item" href="https://github.com/gsk-THU">关世开</a>
       </div>
     </>
   );

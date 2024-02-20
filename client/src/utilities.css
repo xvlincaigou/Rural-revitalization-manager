@@ -88,3 +88,7 @@ form {
 .u-link:hover {
   color: var(--primary--dim);
 }
+
+.page-controls {
+  margin-top: var(--m);
+}

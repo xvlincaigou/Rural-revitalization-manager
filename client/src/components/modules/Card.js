@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import SingleStory from "./SingleStory.js";
 import SingleComment from "./SingleComment.js";
 import { get } from "../../utilities";
@@ -44,31 +45,24 @@ const Card = (props) => {
     if (props.user.role == 0) {
       alert("您没有权限！");  
     } else {
-      fetch("/api/story/pinned-state", {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({storyid: props._id, isPinned: !isPinned}),
-      })
-      .then(res => {alert(res.status == 200 ? `已经${isPinned ? "取消置顶" : "置顶"}，刷新后可查看` : "失败！"); setIsPinned(!isPinned);})
-      .catch((error) => console.error('Error:', error));
+      axios.patch("/api/story/pinned-state", { storyid: props._id, isPinned: !isPinned })
+        .then(res => {
+          alert(res.status == 200 ? `已经${isPinned ? "取消置顶" : "置顶"}，刷新后可查看` : "失败！");
+          setIsPinned(!isPinned);
+        })
+        .catch((error) => console.error('Error:', error));
     }
   }
 
   const handleDelete = () => {
     if (props.user.role == 0) {
-      fetch(`/api/story/${props._id}`, {
-        method: 'DELETE',
-      })
-      .then(res => {res.status == 200 ? alert("删除成功！") : alert("删除失败！")})
-      .catch((error) => console.error('Error:', error));
+      axios.delete(`/api/story/${props._id}`)
+        .then(res => { res.status == 200 ? alert("删除成功！") : alert("删除失败！") })
+        .catch((error) => console.error('Error:', error));
     } else {
-      fetch(`/api/story/deleteany/${props._id}`, {
-        method: 'DELETE',
-      })
-      .then(res => {res.status == 200 ? alert("删除成功！") : alert("删除失败！")})
-      .catch((error) => console.error('Error:', error));
+      axios.delete(`/api/story/deleteany/${props._id}`)
+        .then(res => { res.status == 200 ? alert("删除成功！") : alert("删除失败！") })
+        .catch((error) => console.error('Error:', error));
     }
   }
 
@@ -76,15 +70,12 @@ const Card = (props) => {
     if (props.user.role == 0) {
       alert("您没有权限！");  
     } else{
-      fetch("/api/story/reply-feature-enabled-state", {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({storyid: props._id, canBeReplied: !canBeReplied}),
-      })
-      .then(res => {alert(res.status == 200 ? `已经${canBeReplied ? "禁止评论" : "允许评论"}` : "失败！"); setCanBeReplied(!canBeReplied);})
-      .catch((error) => console.error('Error:', error));
+      axios.patch("/api/story/reply-feature-enabled-state", { storyid: props._id, canBeReplied: !canBeReplied })
+        .then(res => {
+          alert(res.status == 200 ? `已经${canBeReplied ? "禁止评论" : "允许评论"}` : "失败！");
+          setCanBeReplied(!canBeReplied);
+        })
+        .catch((error) => console.error('Error:', error));
     }
   }
 

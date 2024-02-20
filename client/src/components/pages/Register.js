@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './Register.css';
 import { post } from "../../utilities";
 
@@ -92,13 +93,19 @@ const Register = ({ upload }) => {
             id_number: identificationCard,
             password: password,
         };
-        post("/api/register", newUser).then(() => {
-            setStep(0);
-            alert("注册成功！请登录。");
-        }).catch((error) => {
-            setRegisterWarning(true);
-            alert(error);
-        });
+        axios.post("/api/register", newUser)
+            .then((response) => {
+                setStep(0);
+                alert("注册成功！请登录。");
+            })
+            .catch((error) => {
+                setRegisterWarning(true);
+                if (error.response) {
+                    alert(error.response.data.message); // 获取并显示 message
+                } else {
+                    alert(error);
+                }
+            });
     };
 
     const handleLogin = (event) => {
@@ -119,6 +126,8 @@ const Register = ({ upload }) => {
             post("/api/login/verifyCode", { u_id: email, code: verificationCode }).then((useremailObj) => {
                 if (useremailObj) {
                     upload(useremailObj);
+                    // 将useremailObj保存到本地
+                    localStorage.setItem("user", JSON.stringify(useremailObj));
                     setStep(2);
                 }
             }).catch((error) => {
@@ -177,7 +186,7 @@ const Register = ({ upload }) => {
         return (
             <div className="Register">
                 <form onSubmit={handleLogin}>
-                    {codeCDWarning ? <p className='warning-message'>发送验证码过于频繁，请稍后再试。</p> : <p>二步认证验证码已发送，请验证。验证码5分钟内有效。</p>}
+                    {codeCDWarning ? <p className='warning-message'>发送验证码过于频繁，请稍后再试。</p> : <p>二步认证验证码已发送，请验证。<br />验证码5分钟内有效。</p>}
                     <input type="text" placeholder="验证码" value={verificationCode} onChange={handleLoginVerificationCodeChange} required />
                     <button type="submit">提交</button>
                     <button onClick={handleSendCode}>重新获取验证码</button>
