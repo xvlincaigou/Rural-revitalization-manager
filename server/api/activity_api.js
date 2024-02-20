@@ -132,17 +132,12 @@ router.post("/register", auth.verifyToken, async (req, res) => {
       return res.status(404).json({ message: "没有找到活动" });
     }
 
-    const currentDate = new Date();
-    if (currentDate > activity.registrationEndDate) {
-      return res.status(400).json({ message: "已经超过报名截止日期" });
-    }
-
     const candidate = {u_id: email, name: name};
     // Assuming ActivityRegistration model has fields: email, activity_id
-    activity.candidates.push(candidate);
+    activity.members.push(candidate);
 
     await activity.save();
-    res.status(200).json({ message: "成功报名" });
+    res.status(200).json({ message: "接收" });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
