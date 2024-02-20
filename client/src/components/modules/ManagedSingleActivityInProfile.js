@@ -53,8 +53,10 @@ const ManagedSingleActivityInProfile = (props) => {
             {
                 button ? <><ActivityDownloadButton uid={props.user.u_id} aid={props._id}/>
                 <ActivityRemarkButton creator={{u_id: props.user.u_id, name: props.user.name}} activity_id={props._id} members={users_admin}/>
-                <ActivityChangeButton a_id={props._id}/></> :
-                <><ActivityChangeButton a_id={props._id}/></>
+                <ActivityChangeButton a_id={props._id} start_time={props.start_time} end_time={props.end_time} 
+                latest_register_time={props.latest_register_time} location={props.location} information={props.information} name={props.name}/></> :
+                <><ActivityChangeButton a_id={props._id} start_time={props.start_time} end_time={props.end_time} 
+                latest_register_time={props.latest_register_time} location={props.location} information={props.information} name={props.name}/></>
             }
             </div>
             <div className="Activity-infoSection">

@@ -213,26 +213,17 @@ router.post("/approve", auth.verifyToken, async (req, res) => {
 // POST /api/activity/update
 router.post("/update", auth.verifyToken, async (req, res) => {
   try {
-    const { new_name, new_abbreviation, new_location, new_start,
-      new_end, new_sign_up, new_capacity } = req.body;
     // Check if the activity exists
     const activity = await Activity.findById(req.body.activity_id);
     if (!activity) {
       return res.status(404).json({ message: "没有找到活动" });
     }
-    activity.name = new_name;
-    activity.abbreviation = new_abbreviation;
-    activity.location = new_location;
-    const newdate = {
-      start: new_start,
-      end: new_end,
-      sign_up: new_sign_up
-    }
-    activity.date = newdate;
-    activity.capacity = new_capacity;
+    activity.name = req.body.name;
+    activity.location = req.body.location;
+    activity.date = req.body.date;
+    activity.intro = req.body.intro;
     // Save the updated activity
     await activity.save();
-
     return res.status(200).json({ message: "成功更新活动信息" });
   } catch (err) {
     res.status(400).json({ message: err.message });

@@ -30,7 +30,7 @@ const ActivityAdmitButton = (props) => {
 
     return (
         <div>
-            <button className='ActivityButton' onClick={handleClickOpen}>评价</button>
+            <button className='ActivityButton' onClick={handleClickOpen}>审核报名</button>
             <Dialog open={open} onClose={handleClose}>
                 <>
                     {props.members.map((member, index) => (
