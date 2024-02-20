@@ -178,13 +178,11 @@ router.get("/supervise_activities", auth.verifyToken, async (req, res) => {
   }
 });
 
-// post /api/user/comment
+// POST api/user/comment
 router.post("/comment", auth.verifyToken, async (req, res) => {
   try {
     const {creator, activity_id, member_id, rating, comment} = req.body;
-    console.log(req.body);
     const member = await User.findOne({u_id: member_id});
-    console.log(member);
     const new_comment = new MemberComment({
       creator: creator,
       activity_id: activity_id,
@@ -194,6 +192,8 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
     });
     await new_comment.save();
     member.comment_received.push(new_comment._id);
+    const current_score = {score: rating, activity_id: activity_id};
+    member.previous_scores.push(current_score);
     await member.save();
     res.status(200).json("Comment sent successfully.");
   } catch(err) {

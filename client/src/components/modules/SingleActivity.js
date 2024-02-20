@@ -76,6 +76,7 @@ const SingleActivity = (props) => {
         <div className="Activity-container">
             {time}
             <div className="Activity-Content">{props.name}</div>
+            <div className="button-container">
             {
                 //用一个数字表示按钮被渲染的形态。10：不在里面；11：在里面；2，3，40：啥都不渲染；41：在里面
                 button == 10 ? <ActivityRegisterButton inOrOut={false} handleClick={handleClick}/> :
@@ -84,6 +85,7 @@ const SingleActivity = (props) => {
                 <ActivityRemarkButton creator={{u_id: props.user.u_id, name: props.user.name}} activity_id={props._id} members={props.users_admin}/></> :
                 null
             }
+            </div>
             <div className="Activity-infoSection">
                 <div className="Activity-infoBody">地点{" | " + props.location}</div>
                 <div className="Activity-infoBody">报名截止时间{" | " + convertToBeijingTime(props.latest_register_time)}</div>

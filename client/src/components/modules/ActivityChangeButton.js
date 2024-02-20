@@ -37,20 +37,24 @@ const ActivityChangeButton = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        console.log(location);
+        console.log(information);
+        console.log(start_time);
+        console.log(end_time);
         //post('/api/activity/comment', {creator:props.creator, send_date: new Date(), activity_id: props.activity_id, rating: rating, comment: review});
         handleClose();
     };
 
     return (
         <div>
-            <button className='ActivityButton' onClick={handleClickOpen}>评价</button>
+            <button className='ActivityButton' onClick={handleClickOpen}>修改活动信息</button>
             <Dialog open={open} onClose={handleClose}>
             <div className="ActivityRemark">
                     <form onSubmit={handleSubmit}>
-                        <input type="time" placeholder="开始时间" value={start_time} onChange={handleStart_TimeChange} />
-                        <input type="time" placeholder="结束" value={end_time} onChange={handleEnd_TimeChange} />
-                        <input type="text" placeholder="地点" value={location} onChange={handleLocationChange} />
-                        <input type="text" placeholder="信息" value={information} onChange={handleInformationChange} />
+                        <input type="datetime-local" placeholder="开始时间" onChange={handleStart_TimeChange} />
+                        <input type="datetime-local" placeholder="结束" onChange={handleEnd_TimeChange} />
+                        <input type="text" placeholder="地点" onChange={handleLocationChange} />
+                        <input type="text" placeholder="信息" onChange={handleInformationChange} />
                         <button type="submit">提交</button>
                     </form>
                 </div>

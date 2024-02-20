@@ -1,20 +1,17 @@
 .ActivityButton {
-    display: flex;
-    padding: 15px 20px;
-    font-size: 20px;
-    line-height: 10px;
-    align-items: center;
- 
-    text-decoration: none;
-    color: #ffffff;
-    background-color: var(--thupurple);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin: var(--xs) var(--m) var(--xs) var(--m);
-    height: 10px;
-    width: 100px;
+  font-family: "Open Sans";
+  font-size: 14px;
+  padding: var(--s) var(--m);
+  color: var(--primary);
+  border: var(--primary) 1px solid;
+  border-radius: 0 var(--xs) var(--xs) 0;
+  background: none;
+  transition: color 0.1s, background 0.1s;
+}
+
+.ActivityButton:hover {
+  color: var(--white);
+  background-color: var(--primary);
 }
 
 .ActivityButton.red {
@@ -50,35 +47,6 @@
   }
   
   .ActivityRemark form button {
-    margin-bottom: 10px;
-    margin-top: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    border: none;
-    background-color: var(--thupurple);
-    color: #fff;
-    cursor: pointer;
-  }
-  
-  .ActivityChange form {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
-    background-color: #fff;
-  }
-  
-  .ActivityChange form input {
-    margin-bottom: 10px;
-    margin-top: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-  }
-  
-  .ActivityChange form button {
     margin-bottom: 10px;
     margin-top: 10px;
     padding: 10px;

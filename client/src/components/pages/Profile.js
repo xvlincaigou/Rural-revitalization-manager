@@ -73,7 +73,7 @@ const Profile = (props) => {
             {managedActivityList.length === 0 ? <div>没有活动</div> : 
               managedActivityList.map((activity) => (
               <ManagedSinigleActivityInProfile
-              key={`SingleActivity_${activity._id}`}
+              key={`ManagedSinigleActivityInProfile_${activity._id}`}
               _id={activity._id}
               name={activity.name}
               location={activity.location}

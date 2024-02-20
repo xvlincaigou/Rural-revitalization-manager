@@ -4,15 +4,12 @@ import "./SingleActivity.css";
 import "./ActivityButton.css";
 import ActivityDownloadButton from './ActivityDownloadButton.js';
 import ActivityRemarkButton from './ActivityRemarkButton.js';
+import ActivityChangeButton from './ActivityChangeButton.js';
 
 const ManagedSingleActivityInProfile = (props) => {
     const [button, setButton] = useState(false);
     const [time, setTime] = useState(null);
     const [users_admin, setUsers_admin] = useState(props.users_admin);
-    const [location, setLocation] = useState(props.location);
-    const [information, setInformation] = useState(props.information);
-    const [start_time, setStart_time] = useState(props.start_time);
-    const [end_time, setEnd_time] = useState(props.end_time);
 
     useEffect(() => {
         const currentDateTime = new Date();
@@ -48,39 +45,18 @@ const ManagedSingleActivityInProfile = (props) => {
         return beijingTime;
     }
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        console.log(location);
-        console.log(information);
-        console.log(start_time);
-        console.log(end_time);
-    };
-
-    const handleLocationChange = (event) => {
-        setLocation(event.target.value);
-    }
-
-    const handleInformationChange = (event) => {
-        setInformation(event.target.value);
-    }
-
-    const handleStartTimeChange = (event) => {
-        setStart_time(event.target.value);
-    }
-
-    const handleEndTimeChange = (event) => {
-        setEnd_time(event.target.value);
-    }
-
     return (
         <div className="Activity-container">
             {time}
             <div className="Activity-Content">{props.name}</div>
+            <div className='button-container'>
             {
                 button ? <><ActivityDownloadButton uid={props.user.u_id} aid={props._id}/>
-                <ActivityRemarkButton creator={{u_id: props.user.u_id, name: props.user.name}} activity_id={props._id}/></> :
-                null
+                <ActivityRemarkButton creator={{u_id: props.user.u_id, name: props.user.name}} activity_id={props._id} members={users_admin}/>
+                <ActivityChangeButton a_id={props._id}/></> :
+                <><ActivityChangeButton a_id={props._id}/></>
             }
+            </div>
             <div className="Activity-infoSection">
                 <div className="Activity-infoBody">地点{" | " + props.location}</div>
                 <div className="Activity-infoBody">报名截止时间{" | " + convertToBeijingTime(props.latest_register_time)}</div>
@@ -106,13 +82,6 @@ const ManagedSingleActivityInProfile = (props) => {
                     ))}
                 </div>
             </div>
-            <form onSubmit={handleSubmit}>
-                <input type="datetime-local" placeholder="修改活动开始时间" value={props.start_time} onChange={handleStartTimeChange} required />
-                <input type="datetime-local" placeholder="修改活动结束时间" value={props.end_time} onChange={handleEndTimeChange} required />
-                <input type="text" placeholder="修改地点" value={props.location} onChange={handleLocationChange} required />
-                <input type="text" placeholder="修改活动描述" value={props.information} onChange={handleInformationChange} required />
-                <button type="submit">提交</button>
-            </form>
         </div>
     );
 };
