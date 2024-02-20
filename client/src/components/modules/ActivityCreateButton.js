@@ -1,7 +1,7 @@
 import React from 'react';
 import Papa from 'papaparse';
 
-const ActivityCreateButton = (props) => {
+const ActivityCreateButton = () => {
   const fileInputRef = React.useRef();
 
   const handleButtonClick = () => {
@@ -11,12 +11,12 @@ const ActivityCreateButton = (props) => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-        Papa.parse(file, {
-            complete: (results) => {
-              console.log(results.data);
-            },
-            header: true,
-        });
+      Papa.parse(file, {
+        complete: (results) => {
+          console.log(results.data);
+        },
+        header: true,
+      });
     }
   };
 
@@ -29,7 +29,7 @@ const ActivityCreateButton = (props) => {
         accept=".csv"
         onChange={handleFileChange}
       />
-      <button onClick={handleButtonClick}>打开.csv文件以创建活动</button>
+      <button onClick={handleButtonClick}>打开文件</button>
     </div>
   );
 }

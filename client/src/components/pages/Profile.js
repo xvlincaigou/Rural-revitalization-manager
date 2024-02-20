@@ -3,6 +3,7 @@ import CatHappiness from "../modules/CatHappiness.js";
 import { get } from "../../utilities";
 import SingleActivity from "../modules/SingleActivity.js";
 import ManagedSinigleActivityInProfile from "../modules/ManagedSingleActivityInProfile.js";
+import ActivityCreateButton from "../modules/ActivityCreateButton.js";
 
 import "../../utilities.css";
 import "./Profile.css";
@@ -92,6 +93,7 @@ const Profile = (props) => {
           ))}
           </div>
         </div>
+        <ActivityCreateButton/>
       </>
     );
 };
