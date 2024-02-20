@@ -53,7 +53,7 @@ router.post("/subscribe", auth.verifyToken, async (req, res) => {
     const activity = await Activity.findOne({ _id: aid });
     const user = await User.findOne({ u_id: uid });
     if (activity && user) {
-      if (activity.candidates.some(candidate => candidate.u_id === uid)) {
+      if (user.activities.some(a_id => a_id.toString() === aid.toString())) {
         return res.status(200).json({message: "Subscribed already."});
       }
       activity.candidates.push({u_id: uid, name: user.name});
