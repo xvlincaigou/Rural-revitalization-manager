@@ -9,13 +9,21 @@ import "./Profile.css";
 const Profile = (props) => {
 
   const [activityList, setActivityList] = useState([]);
+  const [managedActivityList, setManagedActivityList] = useState([]);
 
     useEffect(() => {
         document.title = "Profile Page";
-        get("/api/activity").then((res) => {//改为返回这个用户对应的活动
+        get("/api/user/participate_activities", {u_id: props.user.u_id, name:props.user.name}).then((res) => {//改为返回这个用户对应的活动
             setActivityList(res);
+            console.log(res);
         }).catch((error) => {
             console.log(error);
+        });
+        get("/api/user/supervise_activities", {u_id: props.user.u_id, name:props.user.name}).then((res) => {//改为返回这个用户对应的管理的活动
+          setManagedActivityList(res);
+          console.log(res);
+        }).catch((error) => {
+          console.log(error);
         });
     }, []);
 
@@ -29,7 +37,7 @@ const Profile = (props) => {
         >
           <div className="Profile-avatar" />
           <div className="Profile-subContainer u-textCenter">
-            <h4 className="Profile-subTitle">{"我参加的活动数"}</h4>
+            <h4 className="Profile-subTitle">{"我报名过的活动数"}</h4>
             <CatHappiness catHappiness={props.user.activities.length} />
           </div>
         </div>
@@ -61,6 +69,26 @@ const Profile = (props) => {
           </div>
         <div className="Profile-subContainer u-textCenter">
             <h4 className="Profile-subTitle">我管理的活动</h4>
+            {managedActivityList.length === 0 ? <div>没有活动</div> : 
+              managedActivityList.map((activity) => (
+              <SingleActivity
+              key={`SingleActivity_${activity._id}`}
+              _id={activity._id}
+              name={activity.name}
+              location={activity.location}
+              start_time={activity.date.start}
+              end_time={activity.date.end}
+              latest_register_time={activity.date.sign_up}
+              capacity={activity.capacity}
+              users_signed_up={activity.candidates}
+              users_admin={activity.members}
+              comments={activity.comments}
+              supervisors={activity.supervisors}
+              information={activity.intro}
+              average_score={activity.score}
+              user={props.user}
+              />
+          ))}
           </div>
         </div>
       </>

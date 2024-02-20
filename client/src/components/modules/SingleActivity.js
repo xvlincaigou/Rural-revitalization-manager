@@ -81,7 +81,7 @@ const SingleActivity = (props) => {
                 button == 10 ? <ActivityRegisterButton inOrOut={false} handleClick={handleClick}/> :
                 button == 11 ? <ActivityRegisterButton inOrOut={true} handleClick={handleClick}/> :
                 button == 41 ? <><ActivityDownloadButton uid={props.user.u_id} aid={props._id}/>
-                <ActivityRemarkButton creator={{u_id: props.user.u_id, name: props.user.name}} activity_id={props._id}/></> :
+                <ActivityRemarkButton creator={{u_id: props.user.u_id, name: props.user.name}} activity_id={props._id} members={props.users_admin}/></> :
                 null
             }
             <div className="Activity-infoSection">

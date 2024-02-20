@@ -3,6 +3,9 @@ const express = require("express");
 // import models so we can interact with the database
 const User = require("../models/user");
 
+// import models so we can interact with the database
+const Activity = require("../models/activity");
+
 // import authentication library
 const auth = require("../middlewares/authJwt");
 
@@ -120,6 +123,55 @@ router.post("/ban",auth.verifyToken, auth.isSysAdmin, async (req, res) => {
     res.status(200).json({ message: "成功更改用户封禁状态" });
   }catch (err) {
     res.status(400).json({ message: err.message });
+  }
+});
+
+router.get("/participate_activities", auth.verifyToken, async (req, res) => {
+  try {
+    const user = req.query;
+    const completeUser = await User.findOne({u_id: user.u_id});
+    const aid_list =  completeUser.activities;
+    var activity_list = [];
+    
+    for (const aid of aid_list) {
+      var activity = await Activity.findById(aid);
+      if (activity) {
+        if (activity.members.some(member => member.u_id === user.u_id) || 
+        activity.supervisors.some(supervisor => supervisor.u_id === user.u_id)) {
+          activity_list.push(activity);
+        }
+      } else {
+        return res.status(404).json({message: "Activity not found."});
+      }
+    }
+    
+    res.status(200).json(activity_list);
+  } catch(err) {
+    res.status(400).json({message: err.message});
+  }
+});
+
+router.get("/supervise_activities", auth.verifyToken, async (req, res) => {
+  try {
+    const user = req.query;
+    const completeUser = await User.findOne({u_id: user.u_id})
+    const aid_list = completeUser.activities;
+    var activity_list = [];
+    
+    for (const aid of aid_list) {
+      var activity = await Activity.findById(aid);
+      if (activity) {
+        if (activity.supervisors.some(supervisor => supervisor.u_id === user.u_id)) {
+          activity_list.push(activity);
+        }
+      } else {
+        return res.status(404).json({message: "Activity not found."});
+      }
+    }
+    
+    res.status(200).json(activity_list);
+  } catch(err) {
+    res.status(400).json({message: err.message});
   }
 });
 

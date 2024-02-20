@@ -98,7 +98,6 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
   try {
     const { creator, send_date, activity_id, rating, comment } = req.body;
     const activity = await Activity.findById(activity_id);
-    activity.comments.push(req.body._id);
     const newComment = new ActivityComment({
       creator: creator,
       send_date: send_date,
@@ -107,8 +106,14 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
       comment: comment
     });
     // Save the new activity to the database
-    await activity.save();
     await newComment.save();
+    activity.comments.push(newComment._id);
+    var new_score = 0;
+    activity.comments.forEach(function(comment) {
+      new_score += comment.rating;
+    });
+    activity.score = new_score / activity.comments.length;
+    await activity.save();
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -158,7 +163,7 @@ router.get("/registrants", auth.verifyToken, async (req, res) => {
     var responseInfo = [];
 
     for (let i = 0; i < candidates.size(); i++) {
-      const user = User.findById(candidates[i]);
+      const user = await User.findById(candidates[i]);
       if (user.banned !== 1) {
         responseInfo.push(user);
       }

@@ -4,10 +4,11 @@ import { Dialog } from '@material-ui/core';
 import { post } from '../../utilities.js';
 import './ActivityButton.css';
 
+//members
 const ActivityRemarkButton = (props) => {
     const [open, setOpen] = useState(false);
-    const [rating, setRating] = useState(0);
-    const [review, setReview] = useState('');
+    const [ratings, setRatings] = useState(new Array(props.members.length + 1).fill(- 1));
+    const [reviews, setReviews] = useState(new Array(props.members.length + 1).fill(''));
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -17,22 +18,34 @@ const ActivityRemarkButton = (props) => {
         setOpen(false);
     };
 
-    const handleRatingChange = (event) => {
-        setRating(event.target.value);
+    const handleRatingChange = (event, index) => {
+        const newRating = [...ratings]; 
+        newRating[index] = event.target.value; 
+        setRatings(newRating); 
     };
 
-    const handleReviewChange = (event) => {
-        setReview(event.target.value);
+    const handleReviewChange = (event, index) => {
+        const newReview = [...reviews]; 
+        newReview[index] = event.target.value; 
+        setReviews(newReview); 
     };
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        if (rating < 0 || rating > 10) {
-            alert('分数要在0到10之间！');
-            return;
+        for (let i = 0; i < ratings.length; i ++) {
+            if (reviews[i] !== '' && (ratings[i] < 0 || ratings[i] > 10)) { 
+                alert('分数应在0-10之间！');
+                return;
+            }
+            if ((ratings[i] === - 1 && reviews[i] !== '') || (ratings[i] !== - 1 && reviews[i] === '')) {
+                alert('如果有评分，就需要有评论；如果有评论，就需要有评分。');
+                return;
+            }
         }
-        post('/api/activity/comment', {creator:props.creator, send_date: new Date(), activity_id: props.activity_id, rating: rating, comment: review});
-        console.log(`Rating: ${rating}, Review: ${review}`);
+        post('/api/activity/comment', {creator:props.creator, send_date: new Date(), activity_id: props.activity_id, rating: ratings[0], comment: reviews[0]});
+        for (let i = 1; i < ratings.length; i ++) {
+            //准备好那个api
+        }
         handleClose();
     };
 
@@ -42,8 +55,14 @@ const ActivityRemarkButton = (props) => {
             <Dialog open={open} onClose={handleClose}>
             <div className="ActivityRemark">
                     <form onSubmit={handleSubmit}>
-                        <input type="number" placeholder="分数" value={rating} onChange={handleRatingChange} required />
-                        <input type="text" placeholder="评论" value={review} onChange={handleReviewChange} required />
+                        <input type="number" placeholder="活动分数" value={ratings[0]} onChange={(event) => {handleRatingChange(event, 0)}} required />
+                        <input type="text" placeholder="活动评论" value={reviews[0]} onChange={(event) => {handleReviewChange(event, 0)}} required />
+                        {props.members.map((member, index) => (
+                            <div key={index + 1}>
+                                <input type="number" placeholder={`${member.name}打分`} onChange={(event) => {handleRatingChange(event, index + 1)}}/>
+                                <input type="text" placeholder={`${member.name}评价`} onChange={(event) => {handleReviewChange(event, index + 1)}}/>
+                            </div>
+                        ))}
                         <button type="submit">提交</button>
                     </form>
                 </div>
