@@ -41,7 +41,9 @@ const ActivityChangeButton = (props) => {
         console.log(information);
         console.log(start_time);
         console.log(end_time);
-        //post('/api/activity/comment', {creator:props.creator, send_date: new Date(), activity_id: props.activity_id, rating: rating, comment: review});
+        post("/api/activity/update", {a_id: props.a_id, location: location, information: information, start_time: start_time, end_time: end_time})
+        .then((res) => {alert("修改成功")})
+        .catch((error) => {alert(error);});
         handleClose();
     };
 

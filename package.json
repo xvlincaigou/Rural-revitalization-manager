@@ -36,6 +36,7 @@
     "mongoose": "^5.11.9",
     "nodemailer": "^6.9.9",
     "nodemon": "^3.0.3",
+    "papaparse": "^5.4.1",
     "pdf-lib": "^1.17.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
