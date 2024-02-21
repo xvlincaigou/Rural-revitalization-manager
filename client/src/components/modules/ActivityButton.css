@@ -18,6 +18,14 @@
     background-color: red;
 }
   
+.ActivityCreateButton {
+  background-color: var(--thupurple);
+  color: #fff;
+  width: 100%;
+  padding: 8px;
+  margin-top: 10px;
+}
+
 .ActivityRemark {
     display: flex;
     flex-direction: column;
@@ -90,3 +98,5 @@
     cursor: pointer;
     width: 100%;
   }
+
+  
