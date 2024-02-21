@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import CatHappiness from "../modules/CatHappiness.js";
+import Happiness from "../modules/Happiness.js";
 import { get } from "../../utilities";
 import SingleActivity from "../modules/SingleActivity.js";
 import ManagedSinigleActivityInProfile from "../modules/ManagedSingleActivityInProfile.js";
@@ -40,7 +40,7 @@ const Profile = (props) => {
           <div className="Profile-avatar" />
           <div className="Profile-subContainer u-textCenter">
             <h4 className="Profile-subTitle">{"我报名过的活动数"}</h4>
-            <CatHappiness catHappiness={props.user.activities.length} />
+            <Happiness Happiness={props.user.activities.length} />
           </div>
         </div>
         <h1 className="Profile-name u-textCenter">{props.user.name}</h1>

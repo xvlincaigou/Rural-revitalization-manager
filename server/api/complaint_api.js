@@ -74,8 +74,6 @@ router.get("/reply/check", auth.verifyToken, async (req, res) => {
   try {
     const uid = req.query.uid;
     const complaints = await Complaint.find({ 'sender.u_id': uid, responsed: 1 });
-    // DEBUG
-    console.log(complaints);
     if (complaints.length === 0) {
       return res.status(404).json({ message: "还没有被回复的投诉" });
     }

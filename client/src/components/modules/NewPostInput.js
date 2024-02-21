@@ -92,19 +92,4 @@ const NewStory = (props) => {
   return <NewPostInput defaultText="发表你的帖子吧" onSubmit={addStory} />;
 };
 
-/**
- * New Message is a New Message component for messages
- *
- * Proptypes
- * @param {UserObject} recipient is the intended recipient
- */
-const NewMessage = (props) => {
-  const sendMessage = (value) => {
-    const body = { recipient: props.recipient, content: value };
-    post("/api/message", body);
-  };
-
-  return <NewPostInput defaultText="New Message" onSubmit={sendMessage} />;
-}
-
-export { NewComment, NewStory, NewMessage };
+export { NewComment, NewStory };
