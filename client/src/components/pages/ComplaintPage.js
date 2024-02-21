@@ -17,8 +17,19 @@ const ComplaintPage = (props) => {
     const [complaints, setComplaints] = useState([]);
 
     useEffect(() => {
-      document.title = "Complaint Page";
-    }, []);
+        if (props.user && props.user.role == 0) {
+            get("/api/complaint/reply/check", { uid: props.user.u_id })
+                .then((res) => {
+                    setReplies(res.complaints);
+                    console.log(res);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        } else if (props.user && props.user.role != 0) {
+            get("/api/complaint").then((res) => { setComplaints(res.complaint) }).catch((err) => { console.log(err) });
+        }
+    }, [props.user]);
 
     const handleInputChange = (event) => {
         setComplaint(event.target.value);
@@ -73,7 +84,6 @@ const ComplaintPage = (props) => {
     }
     
     if (props.user.role == 0) {
-        get("/api/complaint/reply/check", {uid: props.user.u_id}).then((res) => {setReplies(res.complaints);console.log(res)}).catch((err) => {console.log(err)});
         return (
             <>
             <div className="ComplaintPage">
@@ -102,7 +112,6 @@ const ComplaintPage = (props) => {
             </>
         );
     }
-    get ("/api/complaint").then((res) => {setComplaints(res.complaint)}).catch((err) => {console.log(err)});
     return (
         complaints.length == 0 ? <div>没有待回复的投诉</div> :
         complaints.map((complaint) => (
