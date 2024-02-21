@@ -32,4 +32,18 @@ router.get("/appdata", async (req, res) => {
   }
 });
 
+// GET /api/global/session
+router.get("/session", async (req, res) => {
+  try {
+    const user = req.session.user;
+    if (user) {
+      res.status(200).json({ user });
+    } else {
+      res.status(200).json({});
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 module.exports = router;

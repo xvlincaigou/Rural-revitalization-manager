@@ -161,7 +161,7 @@ router.delete("/:id", auth.verifyToken, async (req, res) => {
         console.log(err);
       } else {
         // DEBUG
-        console.log(storyToBeDeleted);
+        // console.log(storyToBeDeleted);
       }
     });
     if (!storyToBeDeleted) {
@@ -204,7 +204,7 @@ router.delete("/deleteany/:id", auth.verifyToken, auth.hasExecutiveManagerPrivil
         console.log(err);
       } else {
         // DEBUG
-        console.log(storyToBeDeleted);
+        // console.log(storyToBeDeleted);
       }
     });
     if (!storyToBeDeleted) {
@@ -244,7 +244,7 @@ router.patch("/pinned-state", auth.verifyToken, auth.hasExecutiveManagerPrivileg
         console.log(err);
       } else {
         // DEBUG
-        console.log(storyToBeEdited);
+        // console.log(storyToBeEdited);
       }
     });
     if (!storyToBeEdited) {
@@ -270,7 +270,7 @@ router.patch("/reply-feature-enabled-state", auth.verifyToken, auth.hasExecutive
         console.log(err);
       } else {
         // DEBUG
-        console.log(storyToBeEdited);
+        // console.log(storyToBeEdited);
       }
     });
     if (!storyToBeEdited) {
