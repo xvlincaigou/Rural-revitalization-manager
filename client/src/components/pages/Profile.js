@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import CatHappiness from "../modules/CatHappiness.js";
+import Happiness from "../modules/Happiness.js";
 import { get } from "../../utilities";
 import SingleActivity from "../modules/SingleActivity.js";
 import ManagedSinigleActivityInProfile from "../modules/ManagedSingleActivityInProfile.js";
+import ActivityCreateButton from "../modules/ActivityCreateButton.js";
 
 import "../../utilities.css";
 import "./Profile.css";
@@ -39,7 +40,7 @@ const Profile = (props) => {
           <div className="Profile-avatar" />
           <div className="Profile-subContainer u-textCenter">
             <h4 className="Profile-subTitle">{"我报名过的活动数"}</h4>
-            <CatHappiness catHappiness={props.user.activities.length} />
+            <Happiness Happiness={props.user.activities.length} />
           </div>
         </div>
         <h1 className="Profile-name u-textCenter">{props.user.name}</h1>
@@ -92,6 +93,29 @@ const Profile = (props) => {
           ))}
           </div>
         </div>
+        <ActivityCreateButton/>
+          <hr className="Profile-linejj" />
+          <div className="UserManage">
+          <h4 className="Profile-subTitle">用户管理</h4>
+          <div className="UserManageBlock">
+            <input type="email" placeholder="增删常务管理员，输入用户邮箱" />
+            <button>增加</button>
+            <button>删除</button>
+          </div>
+          <div className="UserManageBlock">
+            <input type="email" placeholder="修改用户信息，输入用户邮箱" />
+            <button>修改</button>
+          </div>
+          <div className="UserManageBlock">
+            <input type="email" placeholder="禁用或启用用户，输入用户邮箱" />
+            <button>禁用</button>
+            <button>启用</button>
+          </div>
+          <div className="UserManageBlock">
+            <input type="email" placeholder="删除用户，输入用户邮箱" />
+            <button>删除</button>
+          </div>
+          </div>
       </>
     );
 };

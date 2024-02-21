@@ -201,4 +201,44 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
   }
 });
 
+// GET api/user/information
+router.get("/information", auth.verifyToken, async (req, res) => {
+  try {
+    const user = await User.findOne({u_id: req.query.u_id});
+    if (!user) {
+      return res.status(404).json({message: "User not found."});
+    }
+
+    var activity_list = [];
+    for (const activity_id of user.activities) {
+      const activity = await Activity.findById(activity_id);
+      if (activity) {
+        if (activity.members.some(member => member.u_id === user.u_id) || 
+            activity.supervisors.some(supervisor => supervisor.u_id === user.u_id)) {
+          activity_list.push(activity);
+        }
+      } else {
+        return res.status(404).json({message: "Activity not found."});
+      }
+    }
+
+    var average_score = 0;
+    for (const remark of user.previous_scores) {
+      average_score += remark.score;
+    }
+    average_score /= user.previous_scores.length;
+
+    const feedback = {
+      name: user.name,
+      u_id: user.u_id,
+      phone_number: user.phone_number,
+      average_score: average_score,
+      activity_list: activity_list
+    };
+    res.status(200).json(feedback);
+  } catch(err) {
+    res.status(400).json({message: err.message});
+  }
+});
+
 module.exports = router;

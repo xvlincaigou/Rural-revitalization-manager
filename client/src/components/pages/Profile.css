@@ -51,8 +51,10 @@
 
 .Profile-subTitle {
   font-weight: 300;
-  font-size: 24px;
-  margin: var(--m) var(--s);
+  font-size: 30px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
 .Activity-container {
@@ -109,4 +111,43 @@
   margin: var(--xs) var(--m) var(--xs) var(--m);
   height: 10px;
   width: 100px;
+}
+
+.UserManage {
+  display: flex;
+  flex-direction: column;
+}
+
+.UserManageBlock {
+  width: 100%;
+  font-size: 20px;
+  display: flex;
+  flex-direction: row;
+}
+
+.UserManageBlock input {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 0;
+  margin-right: 0;
+  flex: 1;
+}
+
+.UserManageBlock button {
+  font-family: "Open Sans";
+  padding: var(--s) var(--m);
+  color: var(--primary);
+  border: var(--primary) 1px solid;
+  border-radius: 0 var(--xs) var(--xs) 0;
+  background: none;
+  transition: color 0.1s, background 0.1s;
+  height: 40px;
+  width: 60px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.UserManageBlock button:hover {
+  color: var(--white);
+  background-color: var(--primary);
 }

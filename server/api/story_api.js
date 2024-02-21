@@ -132,10 +132,7 @@ router.get("/comment", auth.verifyToken, async (req, res) => {
     const comment = await StoryComment.findById(req.query.commentid, (err, comment) => {
       if (err) {
         console.log(err);
-      } else {
-        // DEBUG
-        //console.log(comment);
-      }
+      } 
     });
     res.set('Content-Type', 'application/json');
     if (!comment) {
@@ -159,10 +156,7 @@ router.delete("/:id", auth.verifyToken, async (req, res) => {
     const storyToBeDeleted = await Story.findById(req.params.id, (err, storyToBeDeleted) => {
       if (err) {
         console.log(err);
-      } else {
-        // DEBUG
-        // console.log(storyToBeDeleted);
-      }
+      } 
     });
     if (!storyToBeDeleted) {
       return res.status(404).json({ message: "没有找到帖子。" });
@@ -202,9 +196,6 @@ router.delete("/deleteany/:id", auth.verifyToken, auth.hasExecutiveManagerPrivil
     const storyToBeDeleted = await Story.findById(req.params.id, (err, storyToBeDeleted) => {
       if (err) {
         console.log(err);
-      } else {
-        // DEBUG
-        // console.log(storyToBeDeleted);
       }
     });
     if (!storyToBeDeleted) {
@@ -242,9 +233,6 @@ router.patch("/pinned-state", auth.verifyToken, auth.hasExecutiveManagerPrivileg
     const storyToBeEdited = await Story.findById(req.body.storyid, (err, storyToBeEdited) => {
       if (err) {
         console.log(err);
-      } else {
-        // DEBUG
-        // console.log(storyToBeEdited);
       }
     });
     if (!storyToBeEdited) {
@@ -268,9 +256,6 @@ router.patch("/reply-feature-enabled-state", auth.verifyToken, auth.hasExecutive
     const storyToBeEdited = await Story.findById(req.body.storyid, (err, storyToBeEdited) => {
       if (err) {
         console.log(err);
-      } else {
-        // DEBUG
-        // console.log(storyToBeEdited);
       }
     });
     if (!storyToBeEdited) {

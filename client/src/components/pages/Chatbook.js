@@ -89,7 +89,7 @@ const Chatbook = (props) => {
       {permitted && props.user && <NewStory addNewStory={addNewStory} creator_id={props.user.u_id} creator_name={props.user.name} />}
       {storiesList}
       {props.user.role === 2 && <button className="LifeDeathButton" onClick={LifeorDeath}>{permitted ? "关闭发帖功能" : "开启发帖功能"}</button>}
-      <div className="page-controls">
+      {hasStories ? <div className="page-controls">
         <button onClick={() => changePage(page - 1)} disabled={page === 1}>上一页</button>
         <button onClick={() => changePage(page + 1)} disabled={page >= maxPage}>下一页</button>
         <select value={page} onChange={(e) => changePage(e.target.value)}>
@@ -99,7 +99,7 @@ const Chatbook = (props) => {
             </option>
           ))}
         </select>
-      </div>
+      </div> : null}
     </>
   );
 }

@@ -94,8 +94,8 @@ const ComplaintPage = (props) => {
                         <p className="reply-message">{reply.reply}</p>
                     </div>
                     <div className="complaint-section">
-                        <h3 className="complaint-content">投诉内容</h3>
-                        <span className="complaint-time">投诉时间</span>
+                        <h3 className="complaint-content">{reply.content}</h3>
+                        <span className="complaint-time">{reply.sender.timestamp}</span>
                     </div>
                 </div>
             ))}

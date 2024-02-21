@@ -72,6 +72,9 @@ router.post("/subscribe", auth.verifyToken, async (req, res) => {
     const activity = await Activity.findOne({ _id: aid });
     const user = await User.findOne({ u_id: uid });
     if (activity && user) {
+      if (user.activities.some(a_id => a_id.toString() === aid.toString())) {
+        return res.status(200).json({message: "Subscribed already."});
+      }
       activity.candidates.push({u_id: uid, name: user.name});
       await activity.save();
       user.activities.push(aid);
@@ -144,23 +147,20 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
 router.post("/register", auth.verifyToken, async (req, res) => {
   try {
     const { email, activity_id, name } = req.body;
+    console.log(req.body);
     // Check if activity exists and if the registration date has not passed
     const activity = await Activity.findById(activity_id);
     if (!activity) {
       return res.status(404).json({ message: "没有找到活动" });
     }
 
-    const currentDate = new Date();
-    if (currentDate > activity.registrationEndDate) {
-      return res.status(400).json({ message: "已经超过报名截止日期" });
-    }
-
+    console.log(activity.date.end);
     const candidate = {u_id: email, name: name};
     // Assuming ActivityRegistration model has fields: email, activity_id
-    activity.candidates.push(candidate);
+    activity.members.push(candidate);
 
     await activity.save();
-    res.status(200).json({ message: "成功报名" });
+    res.status(200).json({ message: "接收" });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

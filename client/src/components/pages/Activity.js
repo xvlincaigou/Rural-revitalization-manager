@@ -41,7 +41,8 @@ const Activity = (props) => {
     return (
         <>
             {activityList.length === 0 ? <div>没有活动</div> :
-            activityList.map((activity) => (
+            <>
+            {activityList.map((activity) => (
                 <SingleActivity
                     key={`SingleActivity_${activity._id}`}
                     _id={activity._id}
@@ -71,6 +72,8 @@ const Activity = (props) => {
                     ))}
                 </select>
             </div>
+            </>
+            }
         </>
     );
 }
