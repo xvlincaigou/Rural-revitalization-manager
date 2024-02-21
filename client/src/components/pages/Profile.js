@@ -94,6 +94,28 @@ const Profile = (props) => {
           </div>
         </div>
         <ActivityCreateButton/>
+          <hr className="Profile-linejj" />
+          <div className="UserManage">
+          <h4 className="Profile-subTitle">用户管理</h4>
+          <div className="UserManageBlock">
+            <input type="email" placeholder="增删常务管理员，输入用户邮箱" />
+            <button>增加</button>
+            <button>删除</button>
+          </div>
+          <div className="UserManageBlock">
+            <input type="email" placeholder="修改用户信息，输入用户邮箱" />
+            <button>修改</button>
+          </div>
+          <div className="UserManageBlock">
+            <input type="email" placeholder="禁用或启用用户，输入用户邮箱" />
+            <button>禁用</button>
+            <button>启用</button>
+          </div>
+          <div className="UserManageBlock">
+            <input type="email" placeholder="删除用户，输入用户邮箱" />
+            <button>删除</button>
+          </div>
+          </div>
       </>
     );
 };
