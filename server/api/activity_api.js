@@ -251,7 +251,7 @@ router.post("/update", auth.verifyToken, async (req, res) => {
 // POST /api/activity/create
 router.post("/create", auth.verifyToken, async (req, res) => {
   try {
-    const { name, location, date, capacity, intro } = req.body;
+    const { name, location, team, date, capacity, intro } = req.body;
     if (!name) {
       return res.status(404).json({message: "Invalid input."});
     }
@@ -259,6 +259,7 @@ router.post("/create", auth.verifyToken, async (req, res) => {
     const newActivity = new Activity({
       name: name,
       location: location,
+      team: team,
       date: date,
       capacity: capacity,
       intro: intro

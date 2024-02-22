@@ -8,6 +8,7 @@ const ActivitySchema = new mongoose.Schema({
         default: 0,
     },
     location: String,
+    team: String,
     date: {
         start: Date,
         end: Date,
