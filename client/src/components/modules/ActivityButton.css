@@ -99,4 +99,25 @@
     width: 100%;
   }
 
+  .ActivitySeeRemarkButtonDialog {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    padding: 5px;
+  }
+
+  .ActivitySeeRemarkButtonDialog h3 {
+    text-align: center;
+    margin: 10px;
+  }
+
+  .ActivitySeeRemarkButtonDialog label {
+    text-align: center;
+    margin: 6px;
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+
   

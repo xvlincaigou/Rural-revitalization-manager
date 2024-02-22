@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Happiness from "../modules/Happiness.js";
-import { get } from "../../utilities";
+import { get , post} from "../../utilities";
 import SingleActivity from "../modules/SingleActivity.js";
 import ManagedSinigleActivityInProfile from "../modules/ManagedSingleActivityInProfile.js";
 import ActivityCreateButton from "../modules/ActivityCreateButton.js";
@@ -13,21 +13,55 @@ const Profile = (props) => {
   const [activityList, setActivityList] = useState([]);
   const [managedActivityList, setManagedActivityList] = useState([]);
 
+  const [adminUpdateEmail, setAdminUpdateEmail] = useState("");
+  const [deleteUserEmail, setDeleteUserEmail] = useState("");
+
     useEffect(() => {
         document.title = "Profile Page";
         get("/api/user/participate_activities", {u_id: props.user.u_id, name:props.user.name}).then((res) => {//改为返回这个用户对应的活动
             setActivityList(res);
-            console.log(res);
         }).catch((error) => {
             console.log(error);
         });
         get("/api/user/supervise_activities", {u_id: props.user.u_id, name:props.user.name}).then((res) => {//改为返回这个用户对应的管理的活动
           setManagedActivityList(res);
-          console.log(res);
         }).catch((error) => {
           console.log(error);
         });
     }, []);
+
+    const handleAdminUpdate = (event) => {
+      setAdminUpdateEmail(event.target.value);
+    }
+
+    const adminUpdate = (new_state) => {
+      fetch('/api/user/manage_admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          u_id: adminUpdateEmail,
+          promotion: new_state,
+        }),
+      })
+      .then(res => alert(res))
+      .catch((error) => {
+        alert(error);
+      });
+    }
+
+    const handleDeleteUser = (event) => {
+      setDeleteUserEmail(event.target.value);
+    }
+
+    const deleteUser = () => {
+      post('/api/user/delete', {u_id: deleteUserEmail})
+      .then((res) => {alert(res)})
+      .catch((error) => {
+        alert(error);
+      });
+    }
 
     if (props.user === null) {
         return <div>请先登录</div>
@@ -98,9 +132,9 @@ const Profile = (props) => {
           <div className="UserManage">
           <h4 className="Profile-subTitle">用户管理</h4>
           <div className="UserManageBlock">
-            <input type="email" placeholder="增删常务管理员，输入用户邮箱" />
-            <button>增加</button>
-            <button>删除</button>
+            <input type="email" placeholder="增删常务管理员，输入用户邮箱" onChange={handleAdminUpdate}/>
+            <button onClick={() => adminUpdate(1)}>增加</button>
+            <button onClick={() => adminUpdate(0)}>删除</button>
           </div>
           <div className="UserManageBlock">
             <input type="email" placeholder="修改用户信息，输入用户邮箱" />
@@ -112,8 +146,8 @@ const Profile = (props) => {
             <button>启用</button>
           </div>
           <div className="UserManageBlock">
-            <input type="email" placeholder="删除用户，输入用户邮箱" />
-            <button>删除</button>
+            <input type="email" placeholder="删除用户，输入用户邮箱" onChange={handleDeleteUser}/>
+            <button onClick={deleteUser}>删除</button>
           </div>
           </div>
       </>

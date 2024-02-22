@@ -335,7 +335,7 @@ router.get("/fetch_comment", auth.verifyToken, auth.isSysAdmin, async (req, res)
       return res.status(404).json({message: "Activity not found."});
     }
     let comment_list = [];
-    for (const comment_id of activity.comment) {
+    for (const comment_id of activity.comments) {
       const comment = await ActivityComment.findById(comment_id);
       if (comment) {
         comment_list.push(comment);

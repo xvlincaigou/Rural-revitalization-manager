@@ -241,8 +241,8 @@ router.get("/information", auth.verifyToken, async (req, res) => {
   }
 });
 
-// PUSH /api/user/manage_admin
-router.push("/manage_admin", auth.verifyToken, async (req, res) => {
+// POST /api/user/manage_admin
+router.post("/manage_admin", auth.verifyToken, async (req, res) => {
   try {
     const {u_id, promotion} = req.body;
     const user = await User.findOne({u_id: u_id});
@@ -261,8 +261,8 @@ router.push("/manage_admin", auth.verifyToken, async (req, res) => {
   }
 });
 
-// PUSH /api/user/delete
-router.push("/delete", auth.verifyToken, async (req, res) => {
+// POST /api/user/delete
+router.post("/delete", auth.verifyToken, async (req, res) => {
   await User.findOneAndDelete({u_id: req.body.u_id}, function (err, user) {
     if (err) {
       return res.status(400).json({message: err.message});

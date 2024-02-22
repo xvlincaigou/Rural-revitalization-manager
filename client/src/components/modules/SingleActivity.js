@@ -5,6 +5,7 @@ import "./SingleActivity.css";
 import ActivityRegisterButton from "./ActivityRegisterButton.js";
 import ActivityRemarkButton from "./ActivityRemarkButton.js";
 import ActivityDownloadButton from "./ActivityDownloadButton.js";
+import ActivitySeeRemarkButton from "./ActivitySeeRemarkButton.js";
 import { post } from "../../utilities.js";
 
 const SingleActivity = (props) => {
@@ -85,6 +86,7 @@ const SingleActivity = (props) => {
                 <ActivityRemarkButton creator={{u_id: props.user.u_id, name: props.user.name}} activity_id={props._id} members={props.users_admin}/></> :
                 null
             }
+            <ActivitySeeRemarkButton activity_id={props._id}/>
             </div>
             <div className="Activity-infoSection">
                 <div className="Activity-infoBody">地点{" | " + props.location}</div>

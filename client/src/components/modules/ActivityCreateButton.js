@@ -32,10 +32,9 @@ const ActivityCreateButton = () => {
               capacity: activity.人数上限,
               intro: activity.描述
             };
-            console.log(requestToPost);
             post("/api/activity/create", requestToPost)
             .catch((err) => {
-              alert(err);
+              console.log(err);
               return;
             });
           }
@@ -57,6 +56,8 @@ const ActivityCreateButton = () => {
       <button onClick={handleButtonClick} className='ActivityCreateButton'>打开.csv文件以创建活动</button>
       <h6>时间请使用国际标准时间格式,例如：2021-01-01T00:00:00.000Z</h6>
       <h6>表头中应当按顺序排列这些信息：名称、描述、开始时间、结束时间、地点、报名截止日期、人数上限</h6>
+      <h6>在文件中千万不要使用英文的逗号，否则会导致解析错误！</h6>
+      <h6>用办公软件得把表格转化为.csv文件时不一定是UTF8编码，您可以用记事本打开.csv文件，然后选择用UTF8编码保存。否则在后台处理可能会出现乱码的问题</h6>
     </div>
   );
 }
