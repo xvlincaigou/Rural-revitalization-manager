@@ -59,10 +59,12 @@ const Card = (props) => {
       axios.delete(`/api/story/${props._id}`)
         .then(res => { res.status == 200 ? alert("删除成功！") : alert("删除失败！") })
         .catch((error) => console.error('Error:', error));
+      // window.location.reload();
     } else {
       axios.delete(`/api/story/deleteany/${props._id}`)
         .then(res => { res.status == 200 ? alert("删除成功！") : alert("删除失败！") })
         .catch((error) => console.error('Error:', error));
+      // window.location.reload();
     }
   }
 

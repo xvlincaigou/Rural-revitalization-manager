@@ -127,7 +127,7 @@ const Register = ({ upload }) => {
                 if (useremailObj) {
                     upload(useremailObj);
                     // 将useremailObj保存到本地
-                    localStorage.setItem("user", JSON.stringify(useremailObj));
+                    // localStorage.setItem("user", JSON.stringify(useremailObj));
                     setStep(2);
                 }
             }).catch((error) => {
@@ -140,13 +140,13 @@ const Register = ({ upload }) => {
     const handleSendCode = (e) => {
         e.preventDefault();
         setCodeCDWarning(false);
-        post("/api/login/requestCode", { u_id: email }).then((response) => {
-            if (response.message === "验证码已重新发送！") {
+        axios.post("/api/login/requestCode", { u_id: email }).then((response) => {
+            if (response.data.message === "验证码已重新发送！") {
                 setCodeSent(true);
             }
-            if (response.message === "距离上次发送验证码还不足一分钟，请稍后再试。") {
+            if (response.data.message === "距离上次发送验证码还不足1分钟，请稍后再试。") {
                 setCodeCDWarning(true);
-                setCodeSent(false);
+                // setCodeSent(false);
             }
         }).catch((error) => {
             console.error(error);
@@ -186,7 +186,8 @@ const Register = ({ upload }) => {
         return (
             <div className="Register">
                 <form onSubmit={handleLogin}>
-                    {codeCDWarning ? <p className='warning-message'>发送验证码过于频繁，请稍后再试。</p> : <p>二步认证验证码已发送，请验证。<br />验证码5分钟内有效。</p>}
+                    {codeSent ? <p>二步认证验证码已发送，请验证。<br />验证码5分钟内有效。</p> : null}
+                    {codeCDWarning ? <p className='warning-message'>发送验证码过于频繁，请稍后再试。</p> : null}
                     <input type="text" placeholder="验证码" value={verificationCode} onChange={handleLoginVerificationCodeChange} required />
                     <button type="submit">提交</button>
                     <button onClick={handleSendCode}>重新获取验证码</button>

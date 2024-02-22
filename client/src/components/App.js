@@ -22,7 +22,7 @@ const App = () => {
     if(!user) return;
     console.log("Logged out successfully!");
     setUser(null);
-    localStorage.removeItem('user');
+    // localStorage.removeItem('user');
     post("/api/logout").then((res) => {
       alert(res.message);
     }).catch((err) => {
@@ -42,8 +42,6 @@ const App = () => {
         // console.error("Axios error:", error);
         // 如果响应是错误的，检查错误消息
         if (error.response && (error.response.data.message === "令牌无效！" || error.response.data.message === "没有找到令牌！")) {
-          // 弹出警告窗口并提示用户登出
-          alert("登录已过期，请重新登录！");
           handleLogout();
         }
 
@@ -59,11 +57,14 @@ const App = () => {
   }, [handleLogout]);
 
   useEffect(() => {
-    // 从本地读取用户数据
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user) {
-      setUser(user);
-    }
+    // 从api获取用户数据
+    axios.get("/api/global/session").then((response) => {
+      if (response.data) {
+        setUser(response.data.user);
+      }
+    }).catch((error) => {
+      console.error(error);
+    });
   }, []);
 
   const logInPut = (val) => {
