@@ -17,20 +17,26 @@ const ActivityCreateButton = () => {
       Papa.parse(file, {
         complete: (results) => {
           for (const activity of results.data) {
+            const start_time = new Date(activity.开始时间);
+            const end_time = new Date(activity.结束时间);
+            const sign_up_time = new Date(activity.报名截止日期);
             const requestToPost = {
               name: activity.名称,
-              description: activity.描述,
-              startTime: activity.开始时间,
-              endTime: activity.结束时间,
               location: activity.地点,
-              deadline: activity.报名截止日期,
-              maxPeople: activity.人数上限,
+              date: {
+                start: start_time,
+                end: end_time,
+                sign_up: sign_up_time
+              },
+              capacity: activity.人数上限,
+              intro: activity.描述
             };
-            /*post("/api/activity/create", {})
+            console.log(requestToPost);
+            post("/api/activity/create", requestToPost)
             .catch((err) => {
               alert(err);
               return;
-            });*/
+            });
           }
         },
         header: true,

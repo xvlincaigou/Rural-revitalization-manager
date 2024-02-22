@@ -251,16 +251,17 @@ router.post("/update", auth.verifyToken, async (req, res) => {
 // POST /api/activity/create
 router.post("/create", auth.verifyToken, async (req, res) => {
   try {
-    const { name, abbreviation, location, date, capacity, supervisors } = req.body;
-
+    const { name, location, date, capacity, intro } = req.body;
+    if (!name) {
+      return res.status(404).json({message: "Invalid input."});
+    }
     // Create a new activity object
-    const newActivity = new Activity({//这里待完成！undo，需要确定activity数据库格式
+    const newActivity = new Activity({
       name: name,
-      abbreviation: abbreviation,
       location: location,
       date: date,
       capacity: capacity,
-      supervisors: supervisors
+      intro: intro
     });
 
     // Save the new activity to the database
