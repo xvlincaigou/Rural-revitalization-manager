@@ -241,4 +241,39 @@ router.get("/information", auth.verifyToken, async (req, res) => {
   }
 });
 
+// POST /api/user/manage_admin
+router.post("/manage_admin", auth.verifyToken, async (req, res) => {
+  try {
+    const {u_id, promotion} = req.body;
+    const user = await User.findOne({u_id: u_id});
+    if (!user) {
+      return res.status(404).json({message: "User not found."});
+    }
+    if (promotion === 1) {
+      user.role = 1;
+      await user.save();
+      return res.status(200).json({message: "User is now excutive administrator."});
+    }
+    user.role = 0;
+    res.status(200).json({message: "User is now common user."});
+  } catch (err) {
+    res.status(400).json({message: err.message});
+  }
+});
+
+// POST /api/user/delete
+router.post("/delete", auth.verifyToken, async (req, res) => {
+  await User.findOneAndDelete({u_id: req.body.u_id}, function (err, user) {
+    if (err) {
+      return res.status(400).json({message: err.message});
+    } else {
+      if (!user) {
+        return res.status(404).json({message: "User not found."});
+      } else {
+        res.status(200).json({message: "User deleted."});
+      }
+    }
+  });
+});
+
 module.exports = router;
