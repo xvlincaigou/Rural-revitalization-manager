@@ -251,7 +251,7 @@ router.post("/update", auth.verifyToken, async (req, res) => {
 // POST /api/activity/create
 router.post("/create", auth.verifyToken, async (req, res) => {
   try {
-    const { name, location, date, capacity, intro } = req.body;
+    const { name, location, team, date, capacity, intro } = req.body;
     if (!name) {
       return res.status(404).json({message: "Invalid input."});
     }
@@ -259,6 +259,7 @@ router.post("/create", auth.verifyToken, async (req, res) => {
     const newActivity = new Activity({
       name: name,
       location: location,
+      team: team,
       date: date,
       capacity: capacity,
       intro: intro
@@ -321,6 +322,51 @@ router.post("/admin", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
     // 保存更新后的活动信息
     await activity.save();
     res.status(200).json({ message: "成功更新管理员信息" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+// GET /api/activity/fetch_comment
+router.get("/fetch_comment", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
+  try {
+    const activity = await Activity.findById(req.query.activity_id);
+    if (!activity) {
+      return res.status(404).json({message: "Activity not found."});
+    }
+    let comment_list = [];
+    for (const comment_id of activity.comment) {
+      const comment = await ActivityComment.findById(comment_id);
+      if (comment) {
+        comment_list.push(comment);
+      }
+    }
+    res.status(200).json(comment_list);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+// GET /api/activity/member_comment
+router.get("/member_comment", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
+  try {
+    const comments = await MemberComment.find({activity_id: req.query.activity_id});
+    if (comments.length === 0) {
+      return res.status(404).json({message: "No comments from members."});
+    }
+    let comment_list = [];
+    for (const comment of comments) {
+      const object = await User.findOne({u_id: comment.member_id});
+      if (object) {
+        const name = object.name;
+        const comment_with_name = {
+          content: comment,
+          to_whom: name
+        };
+        comment_list.push(comment_with_name);
+      } 
+    }
+    res.status(200).json(comment_list);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

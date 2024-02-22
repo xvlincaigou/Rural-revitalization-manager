@@ -23,6 +23,7 @@ const ActivityCreateButton = () => {
             const requestToPost = {
               name: activity.名称,
               location: activity.地点,
+              team: activity.支队名称,
               date: {
                 start: start_time,
                 end: end_time,
