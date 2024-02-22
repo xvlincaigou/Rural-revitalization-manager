@@ -4,6 +4,7 @@ import { get , post} from "../../utilities";
 import SingleActivity from "../modules/SingleActivity.js";
 import ManagedSinigleActivityInProfile from "../modules/ManagedSingleActivityInProfile.js";
 import ActivityCreateButton from "../modules/ActivityCreateButton.js";
+import ActivityManagerSetButton from "../modules/ActivityManagerSetButton.js";
 
 import "../../utilities.css";
 import "./Profile.css";
@@ -15,6 +16,8 @@ const Profile = (props) => {
 
   const [adminUpdateEmail, setAdminUpdateEmail] = useState("");
   const [deleteUserEmail, setDeleteUserEmail] = useState("");
+  const [changeUserInfoEmail, setChangeUserInfoEmail] = useState("");
+  const [banUserEmail, setBanUserEmail] = useState("");
 
     useEffect(() => {
         document.title = "Profile Page";
@@ -61,6 +64,24 @@ const Profile = (props) => {
       .catch((error) => {
         alert(error);
       });
+    }
+
+    const handleChangeUserInfo = (event) => {
+      setChangeUserInfoEmail(event.target.value);
+    }
+
+    const changeUserInfo = () => {
+      console.log("change user info");
+    }
+
+    const handleBanUser = (event) => {
+      setBanUserEmail(event.target.value);
+    }
+
+    const banUser = (ban) => {
+      post('/api/user/ban', {uid: banUserEmail, ban: ban})
+      .then((res) => {alert(res)})
+      .catch((error) => {alert(error)});
     }
 
     if (props.user === null) {
@@ -128,6 +149,7 @@ const Profile = (props) => {
           </div>
         </div>
         <ActivityCreateButton/>
+        <ActivityManagerSetButton/>
           <hr className="Profile-linejj" />
           <div className="UserManage">
           <h4 className="Profile-subTitle">用户管理</h4>
@@ -137,13 +159,13 @@ const Profile = (props) => {
             <button onClick={() => adminUpdate(0)}>删除</button>
           </div>
           <div className="UserManageBlock">
-            <input type="email" placeholder="修改用户信息，输入用户邮箱" />
-            <button>修改</button>
+            <input type="email" placeholder="修改用户信息，输入用户邮箱" onChange={handleChangeUserInfo}/>
+            <button onClick={changeUserInfo}>修改</button>
           </div>
           <div className="UserManageBlock">
-            <input type="email" placeholder="禁用或启用用户，输入用户邮箱" />
-            <button>禁用</button>
-            <button>启用</button>
+            <input type="email" placeholder="禁用或启用用户，输入用户邮箱" onChange={handleBanUser}/>
+            <button onClick={() => banUser(1)}>禁用</button>
+            <button onClick={() => banUser(0)}>启用</button>
           </div>
           <div className="UserManageBlock">
             <input type="email" placeholder="删除用户，输入用户邮箱" onChange={handleDeleteUser}/>

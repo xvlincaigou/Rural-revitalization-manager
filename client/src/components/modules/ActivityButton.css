@@ -120,4 +120,10 @@
     margin-right: 15px;
   }
 
-  
+  .ActivityManagerSetButton {
+    background-color: var(--thupurple);
+    color: #fff;
+    width: 100%;
+    padding: 8px;
+    margin-top: 10px;
+  }
