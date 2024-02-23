@@ -34,7 +34,8 @@ const router = express.Router();
 router.get("/global-settings", auth.verifyToken, async (req, res) => {
   try {
     const settings = await Settings.findOne();
-    res.status(200).json({ settings });
+    const strippedSettings = {"settings": { storyPostingEnabled: settings.storyPostingEnabled }};
+    res.status(200).json(strippedSettings);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
