@@ -19,8 +19,9 @@ const ActivityManagerSetButton = () => {
           for (const line of results.data) {
             const activityName = line.活动名称;
             const managerEmail = line.活动管理员邮箱;
+            const action = "add";
             get('/api/activity/search_byname', {activity_name: activityName}).then((res) => {
-              post('/api/activity/admin', {activity_id: res.activity_id, admin_email: managerEmail, actiton: "add"})
+              post('/api/activity/admin', {activity_id: res.activity_id, admin_email: managerEmail, action: action})
               .then((res) => console.log(res))
               .catch((err) => console.log(err));
             })

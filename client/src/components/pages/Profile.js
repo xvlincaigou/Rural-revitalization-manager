@@ -5,6 +5,7 @@ import SingleActivity from "../modules/SingleActivity.js";
 import ManagedSinigleActivityInProfile from "../modules/ManagedSingleActivityInProfile.js";
 import ActivityCreateButton from "../modules/ActivityCreateButton.js";
 import ActivityManagerSetButton from "../modules/ActivityManagerSetButton.js";
+import UserInfoChangeButton from "../modules/UserInfoChangeButton.js";
 
 import "../../utilities.css";
 import "./Profile.css";
@@ -18,6 +19,7 @@ const Profile = (props) => {
   const [deleteUserEmail, setDeleteUserEmail] = useState("");
   const [changeUserInfoEmail, setChangeUserInfoEmail] = useState("");
   const [banUserEmail, setBanUserEmail] = useState("");
+  const [tagUSerEmail, setTagUserEmail] = useState("");
 
     useEffect(() => {
         document.title = "Profile Page";
@@ -70,10 +72,6 @@ const Profile = (props) => {
       setChangeUserInfoEmail(event.target.value);
     }
 
-    const changeUserInfo = () => {
-      console.log("change user info");
-    }
-
     const handleBanUser = (event) => {
       setBanUserEmail(event.target.value);
     }
@@ -82,6 +80,10 @@ const Profile = (props) => {
       post('/api/user/ban', {uid: banUserEmail, ban: ban})
       .then((res) => {alert(res)})
       .catch((error) => {alert(error)});
+    }
+
+    const handleTagUser = (event) => {
+      setTagUserEmail(event.target.value);
     }
 
     if (props.user === null) {
@@ -148,9 +150,11 @@ const Profile = (props) => {
           ))}
           </div>
         </div>
-        <ActivityCreateButton/>
-        <ActivityManagerSetButton/>
-          <hr className="Profile-linejj" />
+        {props.user.role == 0 ? null : <ActivityCreateButton/>}
+        {props.user.role == 2 ? <ActivityManagerSetButton/> : null}
+        {props.user.role == 2 ? 
+        <> 
+         <hr className="Profile-linejj" />
           <div className="UserManage">
           <h4 className="Profile-subTitle">用户管理</h4>
           <div className="UserManageBlock">
@@ -160,7 +164,7 @@ const Profile = (props) => {
           </div>
           <div className="UserManageBlock">
             <input type="email" placeholder="修改用户信息，输入用户邮箱" onChange={handleChangeUserInfo}/>
-            <button onClick={changeUserInfo}>修改</button>
+            <UserInfoChangeButton email={changeUserInfoEmail}>修改</UserInfoChangeButton>
           </div>
           <div className="UserManageBlock">
             <input type="email" placeholder="禁用或启用用户，输入用户邮箱" onChange={handleBanUser}/>
@@ -171,7 +175,12 @@ const Profile = (props) => {
             <input type="email" placeholder="删除用户，输入用户邮箱" onChange={handleDeleteUser}/>
             <button onClick={deleteUser}>删除</button>
           </div>
+          <div className="UserManageBlock">
+            <input type="email" placeholder="查看用户标签，输入用户邮箱" onChange={handleTagUser}/>
+            <button onClick={deleteUser}>查看</button>
           </div>
+          </div>
+          </> : null}
       </>
     );
 };
