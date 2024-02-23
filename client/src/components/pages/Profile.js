@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Happiness from "../modules/Happiness.js";
 import { get , post} from "../../utilities";
 import SingleActivity from "../modules/SingleActivity.js";
@@ -20,6 +21,7 @@ const Profile = (props) => {
   const [changeUserInfoEmail, setChangeUserInfoEmail] = useState("");
   const [banUserEmail, setBanUserEmail] = useState("");
   const [tagUSerEmail, setTagUserEmail] = useState("");
+  const [registerNumber, setRegisterNumber] = useState(0);
 
     useEffect(() => {
         document.title = "Profile Page";
@@ -84,6 +86,40 @@ const Profile = (props) => {
 
     const handleTagUser = (event) => {
       setTagUserEmail(event.target.value);
+    }
+
+    const handleRegisterNumber = (event) => {
+      setRegisterNumber(event.target.value);
+    }
+
+    const getRegisterNumber = () => {
+      if (registerNumber <= 0 || registerNumber > 10000) {
+        alert('输入的注册码数量过多或过少！');
+        return;
+      }
+      axios.post("/api/user/requst-registration-code", {count: registerNumber})
+            .then(response => {
+                if (response.status == 400 || response.status == 500) {
+                  throw new Error(response.data.error);
+                }
+                const blob = new Blob([response.data], { type: 'text/csv' });
+                return blob;
+            })
+            .then(blob => {
+                // 创建一个 Blob URL，并通过一个隐藏的 <a> 元素下载文件
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'registration_codes.csv');
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            })
+            .catch(error => {
+                // 显示错误信息
+                // alert(error.message || 'An error occurred');
+                console.log(error);
+            });
     }
 
     if (props.user === null) {
@@ -178,6 +214,10 @@ const Profile = (props) => {
           <div className="UserManageBlock">
             <input type="email" placeholder="查看用户标签，输入用户邮箱" onChange={handleTagUser}/>
             <button onClick={deleteUser}>查看</button>
+          </div>
+          <div className="UserManageBlock">
+            <input type="number" placeholder="你想获得多少个注册码？" onChange={handleRegisterNumber}/>
+            <button onClick={getRegisterNumber}>获取</button>
           </div>
           </div>
           </> : null}
