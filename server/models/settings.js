@@ -5,6 +5,10 @@ const settingsSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
+    availableRegistrationCodes: {
+        type: [String],
+        default: [],
+    },
 });
 
 module.exports = mongoose.model('settings', settingsSchema);

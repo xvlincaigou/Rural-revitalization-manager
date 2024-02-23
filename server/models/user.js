@@ -49,13 +49,14 @@ const UserSchema = new mongoose.Schema({
         type: {code: String, lastSent: Date, expiration: Date},
         default: { code: null, lastSent: null, expiration: null },
     },
-    /*
-    用户保护功能：有待讨论
-    isAccountFrozen: {
-        type: Boolean,
-        default: false
-    }
-    */
+    failedLoginAttempts: {
+        type: [Date],
+        default: [],
+    },
+    frozen: {
+        type: {frozen: Boolean, lastFrozen: Date},
+        default: {frozen: false, lastFrozen: null},
+    },
 });
 // 注册码应在用户进行注册时核验
 
