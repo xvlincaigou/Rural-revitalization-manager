@@ -320,7 +320,7 @@ router.post("/requst-registration-code", auth.verifyToken, auth.isSysAdmin, asyn
     const timestamp = new Date().getTime().toString();
     const outputPath = path.join(tempDir, `generated_registration_codes_${timestamp}.csv`);
     const stream = fs.createWriteStream(outputPath);
-    stream.write('注册码\n'); // 写入表头
+    stream.write('Registration codes\n'); // 写入表头
     for (let i = 0; i < count; i++) {
       let rawCode = "";
       rawCode += timestamp;
