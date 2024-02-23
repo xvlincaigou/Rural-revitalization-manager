@@ -4,6 +4,7 @@ import './Register.css';
 import { post } from "../../utilities";
 
 /**
+ * @param {string} registrationCode
  * @param {string} username
  * @param {string} mail
  * @param {string} phone
@@ -31,12 +32,18 @@ const Register = ({ upload }) => {
     const [phone, setPhone] = useState('');
     const [identificationCard, setIdentificationCard] = useState('');
     const [password, setPassword] = useState('');
-    const [registerCode, setRegisterCode] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [registrationCode, setRegistrationCode] = useState('');
     const [step, setStep] = useState(0);
     const [email, setEmail] = useState('');
     const [loginpassword, setLoginpassword] = useState('');
     const [verificationCode, setVerificationCode] = useState('');
     const [codeSent, setCodeSent] = useState(false);
+
+    const handleRegistrationCodeChange = (e) => {
+        setRegisterWarning(false);
+        setRegistrationCode(e.target.value);
+    };
 
     const handleUsernameChange = (e) => {
         setRegisterWarning(false);
@@ -63,8 +70,9 @@ const Register = ({ upload }) => {
         setPassword(e.target.value);
     };
 
-    const handleRegisterCodeChange = (e) => {
-        setRegisterCode(e.target.value);
+    const handleConfirmPasswordChange = (e) => {
+        setRegisterWarning(false);
+        setConfirmPassword(e.target.value);
     };
 
     const handleLoginEmailChange = (e) => {
@@ -86,7 +94,12 @@ const Register = ({ upload }) => {
 
     const handleRegister = (e) => {
         e.preventDefault();
+        if (password !== confirmPassword) {
+            alert("两次输入的密码不一致！");
+            return;
+        }
         const newUser = {
+            registration_code: registrationCode,
             name: username,
             u_id: mail,
             phone_number: phone,
@@ -111,16 +124,21 @@ const Register = ({ upload }) => {
     const handleLogin = (event) => {
         event.preventDefault();
         if (step === 0) {
-            post("/api/login", { u_id: email, password: loginpassword }).then((response) => {
-                if (response.message === "验证码已发送！") {
+            axios.post("/api/login", { u_id: email, password: loginpassword }).then((response) => {
+                if (response.data.message === "验证码已发送！") {
                     setCodeSent(true);
                     setStep(1);
                 } else {
+                    console.log(response.data.message);
                     setLoginWarning(true);
                 }
             }).catch((error) => {
-                console.error(error);
                 setLoginWarning(true);
+                if (error.response) {
+                    alert(error.response.data.message); // 获取并显示 message
+                } else {
+                    alert(error);
+                }
             });
         } else if (step === 1) {
             post("/api/login/verifyCode", { u_id: email, code: verificationCode }).then((useremailObj) => {
@@ -161,13 +179,31 @@ const Register = ({ upload }) => {
             <div>
                 <div className="Register">
                     <form onSubmit={handleRegister}>
+                        <input type="text" placeholder="注册码" value={registrationCode} onChange={handleRegistrationCodeChange} required />
                         <input type="text" placeholder="姓名" value={username} onChange={handleUsernameChange} required />
                         <input type="email" placeholder="邮箱" value={mail} onChange={handleMailChange} required />
                         <input type="tel" placeholder="电话" value={phone} onChange={handlePhoneChange} required />
                         <input type="text" placeholder="身份证" value={identificationCard} onChange={handleIndentificationCardChange} required />
-                        <input type="password" placeholder="设置密码" value={password} onChange={handlePasswordChange} required />
+                        <input
+                            type="password"
+                            placeholder="设置密码"
+                            value={password}
+                            onChange={handlePasswordChange}
+                            maxLength="20"
+                            pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$/" 
+                            required
+                        />
+                        <input
+                            type="password"
+                            placeholder="确认密码"
+                            value={confirmPassword}
+                            onChange={handleConfirmPasswordChange}
+                            maxLength="20"
+                            pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$/"
+                            required
+                        />
                         <button type="submit">注册</button>
-                        {registerWarning ? <p className='warning-message'>注册失败，可能是因为邮箱等信息已经被用于注册。请重试。</p> : null}
+                        {registerWarning ? <p className='warning-message'>注册失败，请重试。</p> : null}
                     </form>
                 </div>
                 <div className="Register">

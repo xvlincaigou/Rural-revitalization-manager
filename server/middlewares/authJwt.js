@@ -11,13 +11,28 @@ verifyToken = (req, res, next) => {
 
     jwt.verify(token,
         config.secret,
-        (err, decoded) => {
+        async (err, decoded) => {
             if (err) {
                 return res.status(401).send({
                     message: "令牌无效！",
                 });
             }
-            req.userId = decoded.id;
+            const decodedId = decoded.id;
+            req.userId = decodedId;
+            await User.findOne({ u_id: decodedId }).exec((err, user) => {
+                if (err) {
+                    res.status(500).send({ message: err });
+                    return;
+                }
+                if (!user) {
+                    res.status(403).send({ message: "用户不存在！" });
+                    return;
+                }
+                if(user.banned === 1) {
+                    res.status(403).send({ message: "用户已被封禁！" });
+                    return;
+                }
+            });
             next();
         });
 };
