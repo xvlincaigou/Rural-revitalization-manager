@@ -1,6 +1,5 @@
 import React , { useState , useEffect } from "react";
 
-import "../../utilities.css";
 import "./SingleActivity.css";
 import ActivityRegisterButton from "./ActivityRegisterButton.js";
 import ActivityRemarkButton from "./ActivityRemarkButton.js";
@@ -33,10 +32,23 @@ const SingleActivity = (props) => {
             setTime(<div className="Activity-held-time Activity-held-time-color3">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>);
             setButton(3);
         } else {//活动结束
+            console.log(props.start_time);
+            console.log(props.end_time);
+            console.log(props.latest_register_time);
+            console.log(currentDateTime);
+            console.log(props.users_signed_up);
             setTime(<div className="Activity-held-time Activity-held-time-color4">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>);
             let usersAdminIds = props.users_admin.map(user => user.u_id);
             let supervisorsIds = props.supervisors.map(user => user.u_id);
-            (supervisorsIds.includes(props.user.u_id) || usersAdminIds.includes(props.user.u_id)) ? setButton(41) : setButton(40);
+            if (props.user.role == 0 && !(supervisorsIds.includes(props.user.u_id) || usersAdminIds.includes(props.user.u_id))) {
+                setButton(40);
+            } else if (props.user.role == 0 && (supervisorsIds.includes(props.user.u_id) || usersAdminIds.includes(props.user.u_id))) {
+                setButton(41);
+            } else if (props.user.role != 0 && !(supervisorsIds.includes(props.user.u_id) || usersAdminIds.includes(props.user.u_id))) {
+                setButton(42);
+            } else {
+                setButton(43);
+            }
         }
     }, []);
 
@@ -79,14 +91,18 @@ const SingleActivity = (props) => {
             <div className="Activity-Content">{props.name}</div>
             <div className="button-container">
             {
-                //用一个数字表示按钮被渲染的形态。10：不在里面；11：在里面；2，3，40：啥都不渲染；41：在里面
+                //用一个数字表示按钮被渲染的形态。10：不在里面；11：在里面；2，3，40：啥都不渲染；41：在里面的普通用户；42：不在里面的管理员；43：在里面的管理员
                 button == 10 ? <ActivityRegisterButton inOrOut={false} handleClick={handleClick}/> :
                 button == 11 ? <ActivityRegisterButton inOrOut={true} handleClick={handleClick}/> :
+                button == 40 ? null :
                 button == 41 ? <><ActivityDownloadButton uid={props.user.u_id} aid={props._id}/>
                 <ActivityRemarkButton creator={{u_id: props.user.u_id, name: props.user.name}} activity_id={props._id} members={props.users_admin}/></> :
+                button == 42 ? <ActivitySeeRemarkButton activity_id={props._id}/> : 
+                button == 43 ? <><ActivityDownloadButton uid={props.user.u_id} aid={props._id}/>
+                <ActivityRemarkButton creator={{u_id: props.user.u_id, name: props.user.name}} activity_id={props._id} members={props.users_admin}/>
+                <ActivitySeeRemarkButton activity_id={props._id}/></> :
                 null
             }
-            <ActivitySeeRemarkButton activity_id={props._id}/>
             </div>
             <div className="Activity-infoSection">
                 <div className="Activity-infoBody">地点{" | " + props.location}</div>

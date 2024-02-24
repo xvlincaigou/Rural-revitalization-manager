@@ -18,8 +18,12 @@
 }
 
 .Activity-held-time-color3{
-    color: red;
+    color: var(--thupurple);
 }
+
+.Activity-held-time-color4{
+    color: red
+  }
 
 .Activity-Content {
   font-size: 50px;
