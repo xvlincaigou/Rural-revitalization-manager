@@ -372,6 +372,19 @@ router.get("/member_comment", auth.verifyToken, auth.isSysAdmin, async (req, res
   }
 });
 
+// GET /api/activity/search_byname
+router.get("/search_byname", auth.verifyToken, async (req, res) => {
+  try {
+    const activity = await Activity.findOne({name: req.query.activity_name});
+    if (!activity) {
+      return res.status(404).json({message: "Activity not found"});
+    }
+    res.status(200).json({activity_id: activity._id});
+  } catch(err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 // POST /api/activity/certificate
 // 请求中应包含：uid（用户邮箱，user中u_id）, aid（activity中_id）
 const generatingUsers = {};
