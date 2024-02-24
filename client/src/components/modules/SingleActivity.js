@@ -1,6 +1,6 @@
 import React , { useState , useEffect } from "react";
 
-import "./SingleActivity.css";
+import "./ActivityCard.css";
 import ActivityRegisterButton from "./ActivityRegisterButton.js";
 import ActivityRemarkButton from "./ActivityRemarkButton.js";
 import ActivityDownloadButton from "./ActivityDownloadButton.js";

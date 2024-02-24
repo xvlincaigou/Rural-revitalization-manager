@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Happiness from "../modules/Happiness.js";
 import { get , post} from "../../utilities";
 import SingleActivity from "../modules/SingleActivity.js";
 import ManagedSinigleActivityInProfile from "../modules/ManagedSingleActivityInProfile.js";
@@ -133,7 +132,7 @@ const Profile = (props) => {
           <div className="Profile-avatar" />
           <div className="Profile-subContainer u-textCenter">
             <h4 className="Profile-subTitle">{"我报名过的活动数"}</h4>
-            <Happiness Happiness={props.user.activities.length} />
+            <div className="Happiness-container">{props.user.activities.length}</div>
           </div>
         </div>
         <h1 className="Profile-name u-textCenter">{props.user.name}</h1>
@@ -220,7 +219,18 @@ const Profile = (props) => {
             <button onClick={getRegisterNumber}>获取</button>
           </div>
           </div>
-          </> : null}
+          </> : 
+          <> 
+          <hr className="Profile-linejj" />
+           <div className="UserManage">
+           <h4 className="Profile-subTitle">用户管理</h4>
+           <div className="UserManageBlock">
+             <input type="email" placeholder="查看用户标签，输入用户邮箱" onChange={handleTagUser}/>
+             <button onClick={deleteUser}>查看</button>
+           </div>
+           </div>
+           </>
+          }
       </>
     );
 };
