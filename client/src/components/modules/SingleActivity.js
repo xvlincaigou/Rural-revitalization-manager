@@ -32,11 +32,6 @@ const SingleActivity = (props) => {
             setTime(<div className="Activity-held-time Activity-held-time-color3">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>);
             setButton(3);
         } else {//活动结束
-            console.log(props.start_time);
-            console.log(props.end_time);
-            console.log(props.latest_register_time);
-            console.log(currentDateTime);
-            console.log(props.users_signed_up);
             setTime(<div className="Activity-held-time Activity-held-time-color4">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>);
             let usersAdminIds = props.users_admin.map(user => user.u_id);
             let supervisorsIds = props.supervisors.map(user => user.u_id);

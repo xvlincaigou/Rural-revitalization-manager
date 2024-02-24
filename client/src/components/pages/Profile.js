@@ -139,7 +139,7 @@ const Profile = (props) => {
         <hr className="Profile-linejj" />
         <div className="u-flex">
           <div className="Profile-subContainer u-textCenter">
-            <h4 className="Profile-subTitle">我报名的活动</h4>
+            <h4 className="Profile-subTitle">我参与的活动</h4>
             {activityList.length === 0 ? <div>没有活动</div> : 
               activityList.map((activity) => (
               <SingleActivity
