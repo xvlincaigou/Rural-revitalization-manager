@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+
+import { get } from "../../utilities.js";
 import "./Feed.css";
-import { get } from "../../utilities";
 
 /**
  * @typedef appData

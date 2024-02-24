@@ -59,7 +59,7 @@ const ActivityRemarkButton = (props) => {
         <div>
             <button className='ActivityButton' onClick={handleClickOpen}>评价</button>
             <Dialog open={open} onClose={handleClose}>
-            <div className="ActivityRemark">
+            <div className="ActivityDialogue">
                     <form onSubmit={handleSubmit}>
                         <input type="number" placeholder="活动分数" value={ratings[0]} onChange={(event) => {handleRatingChange(event, 0)}} required />
                         <input type="text" placeholder="活动评论" value={reviews[0]} onChange={(event) => {handleReviewChange(event, 0)}} required />

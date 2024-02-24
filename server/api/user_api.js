@@ -1,4 +1,8 @@
 const express = require("express");
+const config = require("../config/auth.config");
+const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 
 // import models so we can interact with the database
 const User = require("../models/user");
@@ -9,11 +13,25 @@ const Activity = require("../models/activity");
 // import authentication library
 const auth = require("../middlewares/authJwt");
 
+const Settings = require("../models/settings");
+
 // api endpoints: all these paths will be prefixed with "/api/"
 const router = express.Router();
 
 // import models so we can interact with the database
 const { StoryComment, ActivityComment, MemberComment } = require("../models/comment");
+
+// 初始化设置
+async function initializeSettings() {
+  const existingSettings = await Settings.findOne();
+
+  if (!existingSettings) {
+    const defaultSettings = new Settings();
+    await defaultSettings.save();
+  }
+}
+
+initializeSettings().catch(console.error);
 
 // POST /api/user/tags
 router.post("/tags", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
@@ -241,8 +259,8 @@ router.get("/information", auth.verifyToken, async (req, res) => {
   }
 });
 
-// PUSH /api/user/manage_admin
-router.push("/manage_admin", auth.verifyToken, async (req, res) => {
+// POST /api/user/manage_admin
+router.post("/manage_admin", auth.verifyToken, async (req, res) => {
   try {
     const {u_id, promotion} = req.body;
     const user = await User.findOne({u_id: u_id});
@@ -261,8 +279,8 @@ router.push("/manage_admin", auth.verifyToken, async (req, res) => {
   }
 });
 
-// PUSH /api/user/delete
-router.push("/delete", auth.verifyToken, async (req, res) => {
+// POST /api/user/delete
+router.post("/delete", auth.verifyToken, async (req, res) => {
   await User.findOneAndDelete({u_id: req.body.u_id}, function (err, user) {
     if (err) {
       return res.status(400).json({message: err.message});
@@ -274,6 +292,62 @@ router.push("/delete", auth.verifyToken, async (req, res) => {
       }
     }
   });
+});
+
+// POST /api/user/requst-registration-code
+// 生成用户注册码-需要系统管理员权限
+// 请求体形如：{ count: *需要生成的注册码数量，暂定最大10000个* }
+// 返回一个csv文件
+// 未知错误时返回400状态码和{ message: *错误信息* }
+router.post("/requst-registration-code", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
+  try {
+    const { count } = req.body;
+    const limit = 10000;
+    if (isNaN(count)) {
+      return res.status(400).json({ message: 'count 必须是一个数字。' });
+    }
+    if (count > limit) {
+      return res.status(400).json({ message: `您请求生成的注册码数量过多，上限为${limit}个，您请求了${count}个。` });
+    }
+    if (count < 1) {
+      return res.status(400).json({ message: `您请求生成的注册码数量过少，下限为1个，您请求了${count}个。` });
+    }
+    const settings = await Settings.findOne();
+    const tempDir = path.join(__dirname, '..', 'temp');
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir);
+    }
+    const timestamp = new Date().getTime().toString();
+    const outputPath = path.join(tempDir, `generated_registration_codes_${timestamp}.csv`);
+    const stream = fs.createWriteStream(outputPath);
+    stream.write('注册码\n'); // 写入表头
+    for (let i = 0; i < count; i++) {
+      let rawCode = "";
+      rawCode += timestamp;
+      rawCode += i.toString().padStart(6, "0");
+      const hmac = crypto.createHmac('sha256', config.secret);
+      hmac.update(rawCode);
+      const code = hmac.digest('hex');
+      // TODO: 将注册码写入数据库
+      settings.availableRegistrationCodes.push(code);
+      stream.write(`${code}\n`); // 写入一行数据
+    }
+    stream.end(() => {
+      fs.readFile(outputPath, async (err, data) => {
+        if (err) {
+          console.error('Error reading CSV file:', err);
+          res.status(500).send('在读取生成的CSV文件时发生错误。');
+        } else {
+          res.setHeader('Content-Type', 'text/csv');
+          res.setHeader('Content-Disposition', 'attachment; filename="registration_codes.csv"');
+          res.send(data);
+          await settings.save();
+        }
+      });
+    });
+  } catch (err) {
+    res.status(400).json({message: err.message});
+  }
 });
 
 module.exports = router;

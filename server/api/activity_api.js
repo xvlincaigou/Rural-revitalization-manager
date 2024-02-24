@@ -292,6 +292,19 @@ router.post("/delete", auth.verifyToken, async (req, res) => {
   }
 });
 
+// GET /api/activity/search_byname
+router.get("/search_byname", auth.verifyToken, async (req, res) => {
+  try {
+    const activity = await Activity.findOne({name: req.query.activity_name});
+    if (!activity) {
+      return res.status(404).json({message: "Activity not found"});
+    }
+    res.status(200).json({activity_id: activity._id});
+  } catch(err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 // POST /api/activity/admin
 router.post("/admin", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
   try {
@@ -335,7 +348,7 @@ router.get("/fetch_comment", auth.verifyToken, auth.isSysAdmin, async (req, res)
       return res.status(404).json({message: "Activity not found."});
     }
     let comment_list = [];
-    for (const comment_id of activity.comment) {
+    for (const comment_id of activity.comments) {
       const comment = await ActivityComment.findById(comment_id);
       if (comment) {
         comment_list.push(comment);
