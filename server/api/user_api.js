@@ -20,6 +20,7 @@ const router = express.Router();
 
 // import models so we can interact with the database
 const { StoryComment, ActivityComment, MemberComment } = require("../models/comment");
+const activity = require("../models/activity");
 
 // 初始化设置
 async function initializeSettings() {
@@ -36,9 +37,15 @@ initializeSettings().catch(console.error);
 // POST /api/user/tags
 router.post("/tags", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
   try {
-    const { u_id, tag, visibility, action } = req.body;
+    const { u_id, tag, visibility, action, role } = req.body;
     let message;
     let tagbag = { tag, visibility };
+
+    // 确认身份
+    if (role === 0) {
+      return res.status(400).json({message: "You are not allowed to modify tags!"});
+    }
+
     // 找到用户
     const user = await User.findById(u_id);
     if (!user) {
@@ -69,32 +76,51 @@ router.post("/tags", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async
   }
 });
 
-// POST /api/user/tags/visibility
-router.post("/tags/visibility", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
+// GET /api/user/tags
+router.post("/tags", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
   try {
-    const { user_id, tag, visibility } = req.body;
-
+    const { user_id, operator_id, role } = req.query;
     // 找到用户
     const user = await User.findOne(user_id);
+    // const operator = await User.findOne(operator_id);
     if (!user) {
       return res.status(404).json({ message: "未找到用户" });
     }
-
-    // 查找标签在用户模型中的索引
-    const tagIndex = user.tags.findIndex(entry => entry[0] === tag);
-
-    // 如果标签不存在于用户模型中，则添加新的标签及可见性信息
-    if (tagIndex === -1) {
-      user.tags.push({tag, visibility});
-    } else {
-      // 更新标签的可见性
-      user.tags[tagIndex].visibility = visibility;
+    let tag_list = [];
+    if (role === 2) {
+      user.tags.forEach(tagbag => {
+        tag_list.push(tagbag.tag);
+      });
+    } else if (role === 1) {
+      user.tags.forEach(tagbag => {
+        if (tagbag.visibility < 3) {
+          tag_list.push(tagbag.tag);
+        }
+      });
+    } else if (role === 0) {
+      let is_supervisor = 0;
+      for (const activity_id of user.activities) {
+        activity = await Activity.findById(activity_id);
+        if (activity.supervisors.some(supervisor => supervisor.u_id === operator_id)) {
+          is_supervisor = 1;
+          break;
+        }
+      }
+      if (is_supervisor === 1) {
+        user.tags.forEach(tagbag => {
+          if (tagbag.visibility < 2) {
+            tag_list.push(tagbag.tag);
+          }
+        });
+      } else {
+        user.tags.forEach(tagbag => {
+          if (tagbag.visibility < 1) {
+            tag_list.push(tagbag.tag);
+          }
+        });
+      }
     }
-
-    // 保存更新后的用户信息
-    await user.save();
-
-    res.status(200).json({ message: "成功更新标签可见性" });
+    res.status(200).json(tag_list);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -347,6 +373,30 @@ router.post("/requst-registration-code", auth.verifyToken, auth.isSysAdmin, asyn
     });
   } catch (err) {
     res.status(400).json({message: err.message});
+  }
+});
+
+// POST api/user/information
+router.post("/information", auth.verifyToken, async (req, res) => {
+  try {
+    const {u_id, phone_number, id_number, password} = req.body;
+    const update_fields = {}
+    if (phone_number.trim() !== "") {
+      update_fields.phone_number = phone_number;
+    }
+    if (id_number.trim() !== "") {
+      update_fields.id_number = id_number;
+    }
+    if (password.trim() !== "") {
+      update_fields.password = password;
+    }
+    if (Object.keys(update_fields).length === 0) {
+      return res.status(400).json({ message: "Everything is up to date." });
+    }
+    await User.findOneAndUpdate({u_id: u_id}, {$set: update_fields});
+    res.status(200).json({message: "Information updated successfully."});
+  } catch(err) {
+    res.status(500).json({message: err.message});
   }
 });
 
