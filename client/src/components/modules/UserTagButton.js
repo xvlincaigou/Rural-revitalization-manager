@@ -15,8 +15,7 @@ const UserTagButton = (props) => {
     const handleClickOpen = () => {
         get("/api/user/tags", {u_id: props.u_id, role: props.role, operator_id: props.operator_id})
         .then((res) => {
-            console.log(res);
-            setPreviousTags(res);
+            setPreviousTags(res.tag_list);
             setOpen(true);
         })
         .catch(error => alert(error));
@@ -63,11 +62,10 @@ const UserTagButton = (props) => {
                         <input type="number" onChange={handleVisibleChange} value={visible}/>
                         <button type="submit">提交</button>
                     </form>
-                </div>
-                {previousTags.length == 0 ? null : previousTags.map((tag) => {
-                    return <p>{tag.tag}</p>;
+                    {previousTags.length == 0 ? null : previousTags.map((tag) => {
+                    return <p>{tag}</p>;
                 })}
-                {console.log(previousTags)}
+                </div>
             </Dialog>
         </div>
     );

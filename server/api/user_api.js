@@ -77,7 +77,7 @@ router.post("/tags", auth.verifyToken, async (req, res) => {
 });
 
 // GET /api/user/tags
-router.get("/tags", auth.verifyToken, async (req, res) => {
+router.get("/tags", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
   try {
     const { u_id, operator_id, role } = req.query;
     // 找到用户
@@ -86,17 +86,18 @@ router.get("/tags", auth.verifyToken, async (req, res) => {
       return res.status(404).json({ message: "未找到用户" });
     }
     let tag_list = [];
-    if (role === 2) {
+    const role_num = parseInt(role);
+    if (role_num === 2) {
       user.tags.forEach(tagbag => {
         tag_list.push(tagbag.tag);
       });
-    } else if (role === 1) {
+    } else if (role_num === 1) {
       user.tags.forEach(tagbag => {
         if (tagbag.visibility < 3) {
           tag_list.push(tagbag.tag);
         }
       });
-    } else if (role === 0) {
+    } else if (role_num === 0) {
       let is_supervisor = 0;
       for (const activity_id of user.activities) {
         activity = await Activity.findById(activity_id);
@@ -119,8 +120,7 @@ router.get("/tags", auth.verifyToken, async (req, res) => {
         });
       }
     }
-    console.log(tag_list);
-    res.status(200).json(tag_list);
+    res.status(200).json({tag_list: tag_list});
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
