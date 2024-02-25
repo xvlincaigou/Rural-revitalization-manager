@@ -26,7 +26,7 @@
   margin-top: 10px;
 }
 
-.ActivityRemark {
+.ActivityDialogue {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -36,7 +36,7 @@
     margin-bottom: 10px;
   }
   
-  .ActivityRemark form {
+  .ActivityDialogue form {
     display: flex;
     flex-direction: column;
     width: 300px;
@@ -46,14 +46,14 @@
     background-color: #fff;
   }
   
-  .ActivityRemark form input {
+  .ActivityDialogue form input {
     margin: 10px;
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #ddd;
   }
   
-  .ActivityRemark form button {
+  .ActivityDialogue form button {
     margin: 10px;
     padding: 10px;
     border-radius: 5px;
@@ -63,7 +63,7 @@
     cursor: pointer;
   }
 
-  .Participant {
+  .ActivityAdmitDialogue {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -75,7 +75,7 @@
     padding: 10px;
   }
 
-  .Participant button {
+  .ActivityAdmitDialogue button {
     margin-bottom: 10px;
     margin-top: 10px;
     padding: 10px;
@@ -87,7 +87,7 @@
     width: 80%;
   }
 
-  .submitbutton {
+  .ActivityAdmitSubmitButton {
     margin-bottom: 10px;
     margin-top: 10px;
     padding: 10px;

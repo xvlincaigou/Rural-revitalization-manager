@@ -98,6 +98,9 @@ router.post("/unsubscribe", auth.verifyToken, async (req, res) => {
       const index = activity.candidates.findIndex((candidate) => candidate.u_id === uid);
       const _index = user.activities.indexOf(aid);
       if (index !== -1 && _index !== -1) {
+        if (activity.members.some(member => member.u_id === uid)) {
+          return res.status(200).json({message: "Already accepted, cannot resign."});
+        }
         activity.candidates.splice(index, 1);
         user.activities.splice(index, 1);
         await activity.save();
@@ -308,30 +311,31 @@ router.get("/search_byname", auth.verifyToken, async (req, res) => {
 // POST /api/activity/admin
 router.post("/admin", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
   try {
-    const { activity_id, admin_email, action } = req.body;
-
+    const { activity_id, admin_ids } = req.body;
     // 查找活动
     const activity = await Activity.findById(activity_id);
     if (!activity) {
       return res.status(404).json({ message: "未找到活动" });
     }
-
-    // 根据操作执行添加或删除活动管理员的操作
-    if (action === "add") {
-      // 添加活动管理员
-      activity.supervisors.push(admin_email);
-    } else if (action === "remove") {
-      // 删除活动管理员
-      const index = activity.supervisors.indexOf(admin_email);
+    for (const admin_info of activity.supervisors) {
+      const admin = await User.findOne({u_id: admin_info.u_id});
+      const index = admin.activities.indexOf(activity_id);
       if (index !== -1) {
-        activity.supervisors.splice(index, 1);
-      } else {
-        return res.status(404).json({ message: "未找到管理员" });
+        admin.activities.splice(index, 1);
       }
-    } else {
-      return res.status(400).json({ message: "非法操作" });
+      await admin.save();
     }
-
+    activity.supervisors = [];
+    for (const admin_id of admin_ids) {
+      const admin = await User.findOne({u_id: admin_id});
+      const admin_name = admin.name;
+      activity.supervisors.push({
+        u_id: admin_id,
+        name: admin_name
+      });
+      admin.activities.push(activity_id);
+      await admin.save();
+    }
     // 保存更新后的活动信息
     await activity.save();
     res.status(200).json({ message: "成功更新管理员信息" });
@@ -381,6 +385,19 @@ router.get("/member_comment", auth.verifyToken, auth.isSysAdmin, async (req, res
     }
     res.status(200).json(comment_list);
   } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+// GET /api/activity/search_byname
+router.get("/search_byname", auth.verifyToken, async (req, res) => {
+  try {
+    const activity = await Activity.findOne({name: req.query.activity_name});
+    if (!activity) {
+      return res.status(404).json({message: "Activity not found"});
+    }
+    res.status(200).json({activity_id: activity._id});
+  } catch(err) {
     res.status(400).json({ message: err.message });
   }
 });

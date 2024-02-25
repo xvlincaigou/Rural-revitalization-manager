@@ -86,7 +86,7 @@ const ActivityChangeButton = (props) => {
         <div>
             <button className='ActivityButton' onClick={handleClickOpen}>修改活动信息</button>
             <Dialog open={open} onClose={handleClose}>
-            <div className="ActivityRemark">
+            <div className="ActivityDialogue">
                     <form onSubmit={handleSubmit}>
                         <label>活动名称</label>
                         <input type="text" placeholder="活动名称" onChange={handleNameChange} value={name}/>

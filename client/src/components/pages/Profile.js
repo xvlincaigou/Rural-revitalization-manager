@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import Happiness from "../modules/Happiness.js";
+import axios from "axios";
 import { get , post} from "../../utilities";
 import SingleActivity from "../modules/SingleActivity.js";
 import ManagedSinigleActivityInProfile from "../modules/ManagedSingleActivityInProfile.js";
 import ActivityCreateButton from "../modules/ActivityCreateButton.js";
 import ActivityManagerSetButton from "../modules/ActivityManagerSetButton.js";
 import UserInfoChangeButton from "../modules/UserInfoChangeButton.js";
+import UserTagButton from "../modules/UserTagButton.js";
 
 import "../../utilities.css";
 import "./Profile.css";
@@ -20,6 +21,7 @@ const Profile = (props) => {
   const [changeUserInfoEmail, setChangeUserInfoEmail] = useState("");
   const [banUserEmail, setBanUserEmail] = useState("");
   const [tagUSerEmail, setTagUserEmail] = useState("");
+  const [registerNumber, setRegisterNumber] = useState(0);
 
     useEffect(() => {
         document.title = "Profile Page";
@@ -86,6 +88,40 @@ const Profile = (props) => {
       setTagUserEmail(event.target.value);
     }
 
+    const handleRegisterNumber = (event) => {
+      setRegisterNumber(event.target.value);
+    }
+
+    const getRegisterNumber = () => {
+      if (registerNumber <= 0 || registerNumber > 10000) {
+        alert('输入的注册码数量过多或过少！');
+        return;
+      }
+      axios.post("/api/user/requst-registration-code", {count: registerNumber})
+            .then(response => {
+                if (response.status == 400 || response.status == 500) {
+                  throw new Error(response.data.error);
+                }
+                const blob = new Blob([response.data], { type: 'text/csv' });
+                return blob;
+            })
+            .then(blob => {
+                // 创建一个 Blob URL，并通过一个隐藏的 <a> 元素下载文件
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'registration_codes.csv');
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            })
+            .catch(error => {
+                // 显示错误信息
+                // alert(error.message || 'An error occurred');
+                console.log(error);
+            });
+    }
+
     if (props.user === null) {
         return <div>请先登录</div>
     }
@@ -97,14 +133,14 @@ const Profile = (props) => {
           <div className="Profile-avatar" />
           <div className="Profile-subContainer u-textCenter">
             <h4 className="Profile-subTitle">{"我报名过的活动数"}</h4>
-            <Happiness Happiness={props.user.activities.length} />
+            <div className="Happiness-container">{props.user.activities.length}</div>
           </div>
         </div>
         <h1 className="Profile-name u-textCenter">{props.user.name}</h1>
         <hr className="Profile-linejj" />
         <div className="u-flex">
           <div className="Profile-subContainer u-textCenter">
-            <h4 className="Profile-subTitle">我报名的活动</h4>
+            <h4 className="Profile-subTitle">我参与的活动</h4>
             {activityList.length === 0 ? <div>没有活动</div> : 
               activityList.map((activity) => (
               <SingleActivity
@@ -177,10 +213,25 @@ const Profile = (props) => {
           </div>
           <div className="UserManageBlock">
             <input type="email" placeholder="查看用户标签，输入用户邮箱" onChange={handleTagUser}/>
-            <button onClick={deleteUser}>查看</button>
+            <UserTagButton role={props.user.role} u_id={tagUSerEmail} operator_id={props.user.u_id}/>
+          </div>
+          <div className="UserManageBlock">
+            <input type="number" placeholder="你想获得多少个注册码？" onChange={handleRegisterNumber}/>
+            <button onClick={getRegisterNumber}>获取</button>
           </div>
           </div>
-          </> : null}
+          </> : 
+          <> 
+          <hr className="Profile-linejj" />
+           <div className="UserManage">
+           <h4 className="Profile-subTitle">用户管理</h4>
+           <div className="UserManageBlock">
+             <input type="email" placeholder="查看用户标签，输入用户邮箱" onChange={handleTagUser}/>
+             <UserTagButton role={props.user.role} u_id={tagUSerEmail} operator_id={props.user.u_id}/>
+           </div>
+           </div>
+           </>
+          }
       </>
     );
 };

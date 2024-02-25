@@ -8,7 +8,7 @@ const ComplaintPage = (props) => {
     const [complaint, setComplaint] = useState('');
 
     //管理员将要发出的回复
-    const [reply, setReply] = useState('');
+    const [repliesToSend, setRepliesToSend] = useState([]);
 
     //用户得到的所有回复，实际上，这些reply数据本身还是complaint
     const [replies, setReplies] = useState([]);
@@ -21,7 +21,6 @@ const ComplaintPage = (props) => {
             get("/api/complaint/reply/check", { uid: props.user.u_id })
                 .then((res) => {
                     setReplies(res.complaints);
-                    console.log(res);
                 })
                 .catch((err) => {
                     console.log(err);
@@ -48,35 +47,49 @@ const ComplaintPage = (props) => {
                 } else {
                     alert('提交失败！');
                 }
-                console.log(res);
             });
         }
-        console.log('提交投诉:', complaint);
     }
 
-    const handleReplyInputChange = (event) => {
-        setReply(event.target.value);
+    const handleReplyInputChange = (event, index) => {
+        const newRepliesToSend = [...repliesToSend];
+        newRepliesToSend[index] = event.target.value;
+        setRepliesToSend(newRepliesToSend);
     }
 
-    const handleReplySubmit = (event) => {
+    const handleReplySubmit = (event, index) => {
         event.preventDefault();
-        if (reply.length > 200 || reply.length === 0) {
+        if (repliesToSend[index].length > 200 || repliesToSend[index].length === 0) {
             alert('字符数过多或过少！');
         } else {
             event.preventDefault();
             const complaintId = event.target.getAttribute("complaint_id");
-            post("/api/complaint/reply", {complaint_id: complaintId, reply: reply, recipient_id: props.user._id, recipient_name: props.user.name}).then((res) => {
+            post("/api/complaint/reply", {complaint_id: complaintId, reply: repliesToSend[index], recipient_id: props.user._id, recipient_name: props.user.name}).then((res) => {
                 if (res.message == "回复成功") {
                     alert('提交成功！');
-                    setReply('');
+                    setRepliesToSend(prevReplies => prevReplies.filter((reply, i) => i !== index));
                     setComplaints(prevComplaints => prevComplaints.filter(complaint => complaint.complaint_id !== complaintId));
                 } else {
                     alert('提交失败！');
                 }
-                console.log(res);
             }).catch((err) => {console.log(err)});
-            console.log('提交回复:', reply);
         }
+    }
+
+    const convertToBeijingTime = (isoString) => {
+        const date = new Date(isoString);
+      
+        const formatter = new Intl.DateTimeFormat('zh-CN', {
+          timeZone: 'Asia/Shanghai',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        const beijingTime = formatter.format(date);
+      
+        return beijingTime;
     }
 
     if (props.user == null) {
@@ -99,13 +112,13 @@ const ComplaintPage = (props) => {
             replies.map((reply) => (
                 <div className="complaint-box">
                     <div className="reply-section">
-                        <h2 className="reply-name">{reply.recipient.name}</h2>
-                        <span className="reply-time">{reply.recipient.timestamp}</span>
-                        <p className="reply-message">{reply.reply}</p>
+                        <p>{"回复者 | " + reply.recipient.name}</p>
+                        <p>{"回复时间 | " + convertToBeijingTime(reply.recipient.timestamp)}</p>
+                        <p>{"回复内容 | " + reply.reply}</p>
                     </div>
                     <div className="complaint-section">
-                        <h3 className="complaint-content">{reply.content}</h3>
-                        <span className="complaint-time">{reply.sender.timestamp}</span>
+                        <p>{"投诉内容 | " + reply.content}</p>
+                        <p>{"投诉时间 | " + convertToBeijingTime(reply.sender.timestamp)}</p>
                     </div>
                 </div>
             ))}
@@ -114,20 +127,20 @@ const ComplaintPage = (props) => {
     }
     return (
         complaints.length == 0 ? <div>没有待回复的投诉</div> :
-        complaints.map((complaint) => (
-            <div className="complaint-box">
+        complaints.map((complaint, index) => (
+            <div className="complaint-box" key={index}>
             <div className="ComplaintPage">
-                <form onSubmit={handleReplySubmit} complaint_id={complaint._id}>
+                <form onSubmit={(event) => handleReplySubmit(event, index)} complaint_id={complaint._id}>
                     <label>
                         回复内容（限制200个字符）:
-                        <textarea value={reply} onChange={handleReplyInputChange}/>
+                        <textarea value={repliesToSend[index]} onChange={(event) => handleReplyInputChange(event, index)}/>
                     </label>
                     <button type="submit">提交回复</button>
                 </form>
             </div>
             <div className="complaint-section">
-                <h3 className="complaint-content">{complaint.content}</h3>
-                <span className="complaint-time">{complaint.sender.timestamp + "    " + complaint.sender.name}</span>
+                <p>{complaint.content}</p>
+                <p>{convertToBeijingTime(complaint.sender.timestamp) + "    " + complaint.sender.name}</p>
             </div>
         </div>
         ))

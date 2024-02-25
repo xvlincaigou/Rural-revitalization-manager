@@ -60,7 +60,8 @@ const ActivityAdmitButton = (props) => {
             <Dialog open={open} onClose={handleClose}>
                 <>
                     {admitsUserInfo ? admitsUserInfo.map((member, index) => (
-                        <div key={index} className="Participant">
+                        member == undefined ? null :
+                        <div key={index} className="ActivityAdmitDialogue">
                             <label>{member.name}</label>
                             <label>{member.u_id}</label>
                             <label>{member.phone_number}</label>
@@ -71,7 +72,7 @@ const ActivityAdmitButton = (props) => {
                             <button onClick={(event) => handleAdmitsChange(event, index)}>同意</button>
                         </div>
                     )) : null}
-                    <button type="submit" onClick={handleSubmit} className='submitbutton'>提交</button>
+                    <button type="submit" onClick={handleSubmit} className='ActivityAdmitSubmitButton'>提交</button>
                 </>
             </Dialog>
         </div>

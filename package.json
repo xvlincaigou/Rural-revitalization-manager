@@ -1,5 +1,5 @@
 {
-  "name": "catbook-react",
+  "name": "rural-revitalization-manager",
   "version": "1.0.0",
   "description": "",
   "main": "server/server.js",
@@ -7,16 +7,26 @@
     "hotloader": "webpack serve --config ./webpack.config.js --mode development --port 5050",
     "start": "nodemon"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mit6148-workshops/catbook-react.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/mit6148-workshops/catbook-react/issues"
-  },
-  "homepage": "https://github.com/mit6148-workshops/catbook-react#readme",
+  "contributors": [
+    {
+      "name": "许霖",
+      "email": "l-xu22@mails.tsinghua.edu.cn",
+      "url": "https://github.com/xvlincaigou"
+    },
+    {
+      "name": "赵畅",
+      "url": "https://github.com/zhaochangjack"
+    },
+    {
+      "name": "刘明轩",
+      "url": "https://github.com/bbbpimasheep"
+    },
+    {
+      "name": "关世开",
+      "url": "https://github.com/gsk-THU"
+    }
+  ],
+  "license": "MIT",
   "engines": {
     "node": ">=18.x"
   },

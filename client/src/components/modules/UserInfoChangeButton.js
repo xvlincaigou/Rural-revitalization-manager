@@ -7,11 +7,9 @@ import "./UserButton.css";
 const UserInfoChangeButton = (props) => {
 
     const [open, setOpen] = useState(false);
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
-    const [id_number, setId_number] = useState('');
-    const [password, setPassword] = useState('');
+    const [phone, setPhone] = useState("");
+    const [id_number, setId_number] = useState("");
+    const [password, setPassword] = useState("");
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -19,14 +17,6 @@ const UserInfoChangeButton = (props) => {
 
     const handleClose = () => {
         setOpen(false);
-    };
-
-    const handleNameChange = (event) => {
-        setName(event.target.value);
-    };
-
-    const handleEmailChange = (event) => {
-        setEmail(event.target.value);
     };
 
     const handlePhoneChange = (event) => {
@@ -43,7 +33,9 @@ const UserInfoChangeButton = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        //
+        post("/api/user/information", {u_id: props.email, phone_number: phone, id_number: id_number, password: password})
+        .then(res => alert("修改成功"))
+        .catch(error => alert("error"));
         handleClose();
     };
 
@@ -53,10 +45,6 @@ const UserInfoChangeButton = (props) => {
             <Dialog open={open} onClose={handleClose}>
             <div className="UserDialog">
                     <form onSubmit={handleSubmit}>
-                        <label>新名字</label>
-                        <input type="text" onChange={handleNameChange} value={name}/>
-                        <label>新邮箱</label>
-                        <input type="text" onChange={handleEmailChange} value={email}/>
                         <label>新电话</label>
                         <input type="text" onChange={handlePhoneChange} value={phone}/>
                         <label>新身份证号码</label>

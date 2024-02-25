@@ -1,14 +1,10 @@
 import React, { useState, useEffect} from 'react';
-import './ManagedSingleActivityInProfile.css';
-import "./SingleActivity.css";
-import "./ActivityButton.css";
-import ActivityDownloadButton from './ActivityDownloadButton.js';
-import ActivityRemarkButton from './ActivityRemarkButton.js';
+import "./ActivityCard.css";
 import ActivityChangeButton from './ActivityChangeButton.js';
 import ActivityAdmitButton from './ActivityAdmitButton.js';
 
 const ManagedSingleActivityInProfile = (props) => {
-    const [button, setButton] = useState(0);//0:可以修改信息，可以审核报名 1:可以审核报名 2:啥都不能干 3:可以评价和下载证书
+    const [button, setButton] = useState(0);//0:可以修改信息，可以审核报名 1:可以审核报名 2:啥都不能干
     const [time, setTime] = useState(null);
 
     useEffect(() => {
@@ -27,7 +23,7 @@ const ManagedSingleActivityInProfile = (props) => {
             setButton(2);
         } else {
             setTime(<div className="Activity-held-time Activity-held-time-color4">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>);
-            setButton(3);
+            setButton(2);
         }
     }, []);
 
@@ -57,9 +53,7 @@ const ManagedSingleActivityInProfile = (props) => {
                 latest_register_time={props.latest_register_time} location={props.location} information={props.information} name={props.name}/>
                 <ActivityAdmitButton toAdmit={props.users_signed_up.filter(element => !props.users_admin.includes(element))} activity_id={props._id}/></> :
                 button == 1 ? <ActivityAdmitButton toAdmit={props.users_signed_up.filter(element => !props.users_admin.includes(element))} activity_id={props._id}/> :
-                button == 2 ? null :
-                <><ActivityDownloadButton uid={props.user.u_id} aid={props._id}/>
-                <ActivityRemarkButton creator={{u_id: props.user.u_id, name: props.user.name}} activity_id={props._id} members={props.users_admin}/></> 
+                null 
             }
             </div>
             <div className="Activity-infoSection">
