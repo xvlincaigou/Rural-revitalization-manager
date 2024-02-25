@@ -131,17 +131,17 @@ function generateVerificationCode() {
 async function sendCode(email, code) {
     return new Promise(async (resolve, reject) => {
         let transporter = nodemailer.createTransport({
-            host: 'ydmsk.xyz', // 你的 SMTP 服务器地址
+            host: 'smtp.163.com', // 你的 SMTP 服务器地址
             port: 465, // SMTP 服务器的端口，通常是 587 或 465
             secure: true, // 如果端口是 465，需要将这个选项设置为 true
             auth: {
-                user: 'potatores@ydmsk.xyz', // SMTP 服务器的用户名
-                pass: 'sbwzs233' // SMTP 服务器的密码
+                user: 'xczxthu_support@163.com', // SMTP 服务器的用户名
+                pass: 'WVQMKQUXELAQZOMB' // SMTP 服务器的密码
             }
         });
 
         let mailOptions = {
-            from: 'potatores@ydmsk.xyz', // 发件人地址
+            from: 'xczxthu_support@163.com', // 发件人地址
             to: email, // 收件人地址，可以是一个数组，表示多个收件人
             subject: '验证码', // 邮件主题
             text: `您的2FA验证码：${code}，5分钟内有效。` // 邮件内容

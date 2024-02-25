@@ -95,6 +95,7 @@ const Register = ({ upload }) => {
 
     const handleRegister = (e) => {
         e.preventDefault();
+        setRegisterWarning(false);
         const usernamePattern = /^[\u4e00-\u9fa5A-Za-z]+$/;
         const phoneNumberPattern = /^\d{11}$/;
         const idPattern = /^\d{17}[\dXx]$/
@@ -144,6 +145,7 @@ const Register = ({ upload }) => {
 
     const handleLogin = (event) => {
         event.preventDefault();
+        setLoginWarning(false);
         if (step === 0) {
             axios.post("/api/login", { u_id: email, password: loginpassword }).then((response) => {
                 if (response.data.message === "验证码已发送！") {
