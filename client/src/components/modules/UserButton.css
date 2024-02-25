@@ -27,13 +27,19 @@
     margin-bottom: 10px;
   }
   
+  .UserDialog p {
+    margin-left: 20%;
+    margin-right: 20%;
+    color: var(--thupurple);
+    text-align: center;
+  }
+
   .UserDialog form {
     display: flex;
     flex-direction: column;
     width: 300px;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
     background-color: #fff;
   }
   

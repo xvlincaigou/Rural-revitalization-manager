@@ -35,7 +35,7 @@ async function initializeSettings() {
 initializeSettings().catch(console.error);
 
 // POST /api/user/tags
-router.post("/tags", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
+router.post("/tags", auth.verifyToken, async (req, res) => {
   try {
     const { u_id, tag, visibility, action, role } = req.body;
     let message;
@@ -47,7 +47,7 @@ router.post("/tags", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async
     }
 
     // 找到用户
-    const user = await User.findById(u_id);
+    const user = await User.findOne({u_id: u_id});
     if (!user) {
       return res.status(404).json({ message: "未找到用户" });
     }
@@ -77,12 +77,11 @@ router.post("/tags", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async
 });
 
 // GET /api/user/tags
-router.post("/tags", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
+router.get("/tags", auth.verifyToken, async (req, res) => {
   try {
-    const { user_id, operator_id, role } = req.query;
+    const { u_id, operator_id, role } = req.query;
     // 找到用户
-    const user = await User.findOne(user_id);
-    // const operator = await User.findOne(operator_id);
+    const user = await User.findOne({u_id: u_id});
     if (!user) {
       return res.status(404).json({ message: "未找到用户" });
     }
@@ -120,6 +119,7 @@ router.post("/tags", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async
         });
       }
     }
+    console.log(tag_list);
     res.status(200).json(tag_list);
   } catch (err) {
     res.status(400).json({ message: err.message });

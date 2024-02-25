@@ -6,6 +6,7 @@ import ManagedSinigleActivityInProfile from "../modules/ManagedSingleActivityInP
 import ActivityCreateButton from "../modules/ActivityCreateButton.js";
 import ActivityManagerSetButton from "../modules/ActivityManagerSetButton.js";
 import UserInfoChangeButton from "../modules/UserInfoChangeButton.js";
+import UserTagButton from "../modules/UserTagButton.js";
 
 import "../../utilities.css";
 import "./Profile.css";
@@ -212,7 +213,7 @@ const Profile = (props) => {
           </div>
           <div className="UserManageBlock">
             <input type="email" placeholder="查看用户标签，输入用户邮箱" onChange={handleTagUser}/>
-            <button onClick={deleteUser}>查看</button>
+            <UserTagButton role={props.user.role} u_id={tagUSerEmail} operator_id={props.user.u_id}/>
           </div>
           <div className="UserManageBlock">
             <input type="number" placeholder="你想获得多少个注册码？" onChange={handleRegisterNumber}/>
@@ -226,7 +227,7 @@ const Profile = (props) => {
            <h4 className="Profile-subTitle">用户管理</h4>
            <div className="UserManageBlock">
              <input type="email" placeholder="查看用户标签，输入用户邮箱" onChange={handleTagUser}/>
-             <button onClick={deleteUser}>查看</button>
+             <UserTagButton role={props.user.role} u_id={tagUSerEmail} operator_id={props.user.u_id}/>
            </div>
            </div>
            </>
