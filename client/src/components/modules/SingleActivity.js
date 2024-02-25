@@ -20,7 +20,8 @@ const SingleActivity = (props) => {
         const latest_register_time = new Date(props.latest_register_time);
 
         let usersSignedUpIds = props.users_signed_up.map(user => user.u_id);
-        let inorout = usersSignedUpIds.includes(props.user.u_id);
+        const supervisorsIds = props.supervisors.map(user => user.u_id);
+        let inorout = usersSignedUpIds.includes(props.user.u_id) || supervisorsIds.includes(props.user.u_id);
 
         if (latest_register_time > currentDateTime) {//活动可以报名
             setTime(<div className="Activity-held-time Activity-held-time-color1">{convertToBeijingTime(props.start_time) + " ~ " + convertToBeijingTime(props.end_time)}</div>);

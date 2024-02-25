@@ -317,9 +317,24 @@ router.post("/admin", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
     if (!activity) {
       return res.status(404).json({ message: "未找到活动" });
     }
-    activity.supervisors.length = 0;
+    for (const admin_info of activity.supervisors) {
+      const admin = await User.findOne({u_id: admin_info.u_id});
+      const index = admin.activities.indexOf(activity_id);
+      if (index !== -1) {
+        admin.activities.splice(index, 1);
+      }
+      await admin.save();
+    }
+    activity.supervisors = [];
     for (const admin_id of admin_ids) {
-      activity.supervisors.push(admin_id);
+      const admin = await User.findOne({u_id: admin_id});
+      const admin_name = admin.name;
+      activity.supervisors.push({
+        u_id: admin_id,
+        name: admin_name
+      });
+      admin.activities.push(activity_id);
+      await admin.save();
     }
     // 保存更新后的活动信息
     await activity.save();
