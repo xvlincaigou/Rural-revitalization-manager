@@ -126,37 +126,6 @@ router.get("/tags", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async 
   }
 });
 
-// POST /api/user/admin
-router.post("/admin", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
-  try {
-    const { admin_email, action } = req.body;
-
-    // 查找常务管理员
-    const adminUser = await Admin.findOne({ u_id: admin_email });
-    if (!adminUser) {
-      return res.status(404).json({ message: "未找到常务管理员" });
-    }
-
-    // 根据操作执行添加或删除常务管理员的操作
-    if (action === "add") {
-      // 添加常务管理员角色
-      adminUser.role = 1; // 常務
-      await adminUser.save();
-      res.status(200).json({ message: "成功添加常务管理员" });
-    } else if (action === "remove") {
-      // 删除常务管理员角色
-      adminUser.role = 0;
-      await adminUser.save();
-      res.status(200).json({ message: "成功删除常务管理员" });
-    } else {
-      res.status(400).json({ message: "非法操作" });
-    }
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-// undo：启用或禁用用户等：需要在数据库方面进行改动支持，在user里添加一个是否封禁的属性。
-
 // POST /api/user/ban
 router.post("/ban",auth.verifyToken, auth.isSysAdmin, async (req, res) => {
   try{

@@ -42,7 +42,7 @@ const Activity = (props) => {
         <>
             {activityList.length === 0 ? <div>没有活动</div> :
             <>
-            <SearchActivity />
+            <SearchActivity user={props.user}/>
             {activityList.map((activity) => (
                 <SingleActivity
                     key={`SingleActivity_${activity._id}`}

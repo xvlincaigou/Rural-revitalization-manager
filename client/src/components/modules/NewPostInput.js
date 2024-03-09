@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 
 import "./NewPostInput.css";
-import { post } from "../../utilities";
+import { post , get } from "../../utilities";
+import SingleActivity from "./SingleActivity.js";
 
 /**
  * New Post is a parent component for all input components
@@ -93,15 +94,43 @@ const NewStory = (props) => {
 };
 
 const SearchActivity = (props) => {
+
+  const [activity, setActivity] = useState(null);
+
   const search = (value) => {
-    /*const body = {creator_id: props.creator_id, creator_name: props.creator_name, title: null, content: value };
-    post("/api/story", body).then((story) => {
-      // display this story on the screen
-      props.addNewStory(story);
-    }).catch((error) => {console.log(error);});*/
+    if (!value) {
+      alert("不能为空！");
+      return;
+    }
+    const body = {activity_name: value};
+    get("/api/activity/search_activity", body).then((activity) => {
+      setActivity(
+        <SingleActivity
+          _id={activity._id}
+          name={activity.name}
+          location={activity.location}
+          start_time={activity.date.start}
+          end_time={activity.date.end}
+          latest_register_time={activity.date.sign_up}
+          capacity={activity.capacity}
+          users_signed_up={activity.candidates}
+          users_admin={activity.members}
+          comments={activity.comments}
+          supervisors={activity.supervisors}
+          information={activity.intro}
+          average_score={activity.score}
+          user={props.user}
+      />
+      );
+    }).catch((error) => {alert(error);});
   };
 
-  return <NewPostInput defaultText="搜索" onSubmit={search} />;
+  return (
+    <>
+      <NewPostInput defaultText="搜索" onSubmit={search} />
+      {activity}
+    </>
+  );
 };
 
 export { NewComment, NewStory , SearchActivity};

@@ -148,88 +148,28 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
 
 // POST /api/activity/register
 router.post("/register", auth.verifyToken, async (req, res) => {
-  try {
+   try {
     const { email, activity_id, name } = req.body;
-    console.log(req.body);
     // Check if activity exists and if the registration date has not passed
     const activity = await Activity.findById(activity_id);
     if (!activity) {
-      return res.status(404).json({ message: "没有找到活动" });
+     return res.status(404).json({ message: "没有找到活动" });
     }
-
-    console.log(activity.date.end);
+  
     const candidate = {u_id: email, name: name};
     // Assuming ActivityRegistration model has fields: email, activity_id
-    activity.members.push(candidate);
-
-    await activity.save();
-    res.status(200).json({ message: "接收" });
-  } catch (err) {
+    if(activity.capacity==activity.members.length){
+     res.status(200).json({message:"成员数目超过限制"});
+    }
+    else{
+     activity.members.push(candidate);
+     await activity.save();
+     res.status(200).json({ message: "接收" });
+    }
+   } catch (err) {
     res.status(400).json({ message: err.message });
-  }
-});
-
-// GET /api/activity/registrants
-router.get("/registrants", auth.verifyToken, async (req, res) => {
-  try {
-    const { activity_id } = req.query;
-
-    // Assuming you want to find registrants by their email
-    const activity = await Activity.findById(activity_id);
-    if (!activity) {
-      return res.status(404).json({ message: "没有此活动" });
-    }
-    const candidates = activity.candidates;
-
-    // Find activity registrations associated with the user
-    // const telephone = [];
-    // const name = [];
-    var responseInfo = [];
-
-    for (let i = 0; i < candidates.size(); i++) {
-      const user = await User.findById(candidates[i]);
-      if (user.banned !== 1) {
-        responseInfo.push(user);
-      }
-    }
-
-    // Construct response with user's basic information and registrations
-    res.status(200).json(responseInfo);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
-// POST /api/activity/approve
-router.post("/approve", auth.verifyToken, async (req, res) => {
-  try {
-    const { u_id, accept, activity_id } = req.body;
-    const Activity_id = activity_id;
-
-    // Check if the activity exists
-    const activity = await Activity.findById(Activity_id);
-    if (!activity) {
-      return res.status(404).json({ message: "没有找到活动" });
-    }
-
-    // Find the user by email
-    const user = await User.findOne({ u_id: u_id });
-    if (!user) {
-      return res.status(404).json({ message: "没有找到用户" });
-    }
-
-    if (accept) {
-      // Add the user to the participants list of the activity
-      activity.members.push(user.u_id);
-      await activity.save();
-      return res.status(200).json({ message: "同意用户报名活动" });
-    } else {
-      return res.status(200).json({ message: "拒绝用户报名活动" });
-    }
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
+   }
+  });
 
 // POST /api/activity/update
 router.post("/update", auth.verifyToken, async (req, res) => {
@@ -276,25 +216,6 @@ router.post("/create", auth.verifyToken, async (req, res) => {
   }
 });
 
-// POST /api/activity/delete
-router.post("/delete", auth.verifyToken, async (req, res) => {
-  try {
-    const activity_id = req.body.activity_id;
-
-    // Check if the activity exists
-    const activity = await Activity.findById(activity_id);
-    if (!activity) {
-      return res.status(404).json({ message: "没有找到活动" });
-    }
-
-    // Delete the activity
-    await Activity.findByIdAndDelete(activity_id);
-    return res.status(200).json({ message: "成功删除活动" });
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
 // GET /api/activity/search_byname
 router.get("/search_byname", auth.verifyToken, async (req, res) => {
   try {
@@ -307,6 +228,19 @@ router.get("/search_byname", auth.verifyToken, async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
+// GET /api/activity/search_activity
+router.get("/search_activity", auth.verifyToken, async (req, res) => {
+     try {
+       const activity = await Activity.findOne({name: req.query.activity_name});
+       if (!activity) {
+          return res.status(404).json({message: "Activity not found"});
+       }
+       res.status(200).json(activity);
+     } catch(err) {
+       res.status(400).json({ message: err.message });
+     }
+  });
 
 // POST /api/activity/admin
 router.post("/admin", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
@@ -385,19 +319,6 @@ router.get("/member_comment", auth.verifyToken, auth.isSysAdmin, async (req, res
     }
     res.status(200).json(comment_list);
   } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
-// GET /api/activity/search_byname
-router.get("/search_byname", auth.verifyToken, async (req, res) => {
-  try {
-    const activity = await Activity.findOne({name: req.query.activity_name});
-    if (!activity) {
-      return res.status(404).json({message: "Activity not found"});
-    }
-    res.status(200).json({activity_id: activity._id});
-  } catch(err) {
     res.status(400).json({ message: err.message });
   }
 });
