@@ -127,14 +127,14 @@ router.get("/tags", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async 
 });
 
 // POST /api/user/ban
-router.post("/ban",auth.verifyToken, auth.isSysAdmin, async (req, res) => {
+router.post("/ban", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
   try{
-    const {uid,ban}=req.body;
-    const user=await User.findById(uid)
+    const {uid, ban}=req.body;
+    const user = await User.findOne({u_id: uid})
     if (!user) {
       return res.status(404).json({ message: "未找到用户" });
     }
-    user.ban=ban;
+    user.ban = ban;
     await user.save();
     res.status(200).json({ message: "成功更改用户封禁状态" });
   }catch (err) {
@@ -361,6 +361,10 @@ router.post("/information", auth.verifyToken, async (req, res) => {
     }
     if (Object.keys(update_fields).length === 0) {
       return res.status(400).json({ message: "Everything is up to date." });
+    }
+    const user = await User.findOne({u_id: u_id});
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
     }
     await User.findOneAndUpdate({u_id: u_id}, {$set: update_fields});
     res.status(200).json({message: "Information updated successfully."});

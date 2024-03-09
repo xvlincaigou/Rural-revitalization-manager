@@ -51,7 +51,7 @@ const UserTagButton = (props) => {
 
     return (
         <div>
-            <button className='UserButton' onClick={handleClickOpen}>查看</button>
+            <button className='UserButton' onClick={handleClickOpen}>查看和添加</button>
             <Dialog open={open} onClose={handleClose}>
             <div className="UserDialog">
                 <p>{"可见值：0：任何人可见 1：活动管理员可见 2：常务管理员可见 3：仅系统管理员可见"}</p>

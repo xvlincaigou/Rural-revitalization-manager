@@ -92,7 +92,7 @@ router.post("/subscribe", auth.verifyToken, async (req, res) => {
 router.post("/unsubscribe", auth.verifyToken, async (req, res) => {
   try {
     const { uid, aid } = req.body;
-    const activity = await Activity.findOne({ _id: aid });
+    const activity = await Activity.findById(aid);
     const user = await User.findOne({ u_id: uid });
     if (activity && user) {
       const index = activity.candidates.findIndex((candidate) => candidate.u_id === uid);
@@ -148,28 +148,31 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
 
 // POST /api/activity/register
 router.post("/register", auth.verifyToken, async (req, res) => {
-   try {
-    const { email, activity_id, name } = req.body;
-    // Check if activity exists and if the registration date has not passed
-    const activity = await Activity.findById(activity_id);
-    if (!activity) {
+  try {
+   const { email, activity_id, name } = req.body;
+   // Check if activity exists and if the registration date has not passed
+   const activity = await Activity.findById(activity_id);
+   if (!activity) {
      return res.status(404).json({ message: "没有找到活动" });
-    }
-  
-    const candidate = {u_id: email, name: name};
-    // Assuming ActivityRegistration model has fields: email, activity_id
-    if(activity.capacity==activity.members.length){
+   }
+ 
+   const candidate = {u_id: email, name: name};
+   // Assuming ActivityRegistration model has fields: email, activity_id
+   if(activity.capacity == activity.members.length){
      res.status(200).json({message:"成员数目超过限制"});
-    }
-    else{
+   }
+   else{
+     if (activity.candidates.some(c => c.u_id === email)) {
+       return res.status(500).json({ message: "已经接受该成员的报名" });
+     }
      activity.members.push(candidate);
      await activity.save();
      res.status(200).json({ message: "接收" });
-    }
-   } catch (err) {
-    res.status(400).json({ message: err.message });
    }
-  });
+  } catch (err) {
+   res.status(400).json({ message: err.message });
+  }
+ });
 
 // POST /api/activity/update
 router.post("/update", auth.verifyToken, async (req, res) => {

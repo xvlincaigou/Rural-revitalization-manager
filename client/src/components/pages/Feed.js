@@ -23,8 +23,12 @@ const Feed = () => {
     }).catch((err) => { console.log(err.message); });
   }, []);
 
-  const complaintReplyRate = appData.complaintReplyCount * 100 / appData.complaintCount;
-  const formattedRate = complaintReplyRate.toFixed(2) + "%";
+
+  let formattedRate = "100.00%";
+  if (appData.complaintCount !== 0) {
+    const complaintReplyRate = appData.complaintReplyCount * 100 / appData.complaintCount;
+    formattedRate = complaintReplyRate.toFixed(2) + "%";
+  }
 
   return (
     <>
