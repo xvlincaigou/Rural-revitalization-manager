@@ -64,7 +64,7 @@ const Profile = (props) => {
 
     const deleteUser = () => {
       post('/api/user/delete', {u_id: deleteUserEmail})
-      .then((res) => {alert(res)})
+      .then((res) => {alert(res.message)})
       .catch((error) => {
         alert(error);
       });
@@ -216,7 +216,7 @@ const Profile = (props) => {
             <UserTagButton role={props.user.role} u_id={tagUSerEmail} operator_id={props.user.u_id}/>
           </div>
           <div className="UserManageBlock">
-            <input type="number" placeholder="你想获得多少个注册码？" onChange={handleRegisterNumber}/>
+            <input type="number" placeholder="请输入您想获取的注册码数量，最大10000个。" onChange={handleRegisterNumber}/>
             <button onClick={getRegisterNumber}>获取</button>
           </div>
           </div>

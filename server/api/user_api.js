@@ -43,11 +43,11 @@ router.post("/tags", auth.verifyToken, async (req, res) => {
 
     // 确认身份
     if (role === 0) {
-      return res.status(400).json({message: "You are not allowed to modify tags!"});
+      return res.status(400).json({ message: "You are not allowed to modify tags!" });
     }
 
     // 找到用户
-    const user = await User.findOne({u_id: u_id});
+    const user = await User.findOne({ u_id: u_id });
     if (!user) {
       return res.status(404).json({ message: "未找到用户" });
     }
@@ -81,7 +81,7 @@ router.get("/tags", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async 
   try {
     const { u_id, operator_id, role } = req.query;
     // 找到用户
-    const user = await User.findOne({u_id: u_id});
+    const user = await User.findOne({ u_id: u_id });
     if (!user) {
       return res.status(404).json({ message: "未找到用户" });
     }
@@ -120,24 +120,24 @@ router.get("/tags", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async 
         });
       }
     }
-    res.status(200).json({tag_list: tag_list});
+    res.status(200).json({ tag_list: tag_list });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
 
 // POST /api/user/ban
-router.post("/ban",auth.verifyToken, auth.isSysAdmin, async (req, res) => {
-  try{
-    const {uid,ban}=req.body;
-    const user=await User.findById(uid)
+router.post("/ban", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
+  try {
+    const { uid, ban } = req.body;
+    const user = await User.findById(uid)
     if (!user) {
       return res.status(404).json({ message: "未找到用户" });
     }
-    user.ban=ban;
+    user.ban = ban;
     await user.save();
     res.status(200).json({ message: "成功更改用户封禁状态" });
-  }catch (err) {
+  } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
@@ -145,35 +145,35 @@ router.post("/ban",auth.verifyToken, auth.isSysAdmin, async (req, res) => {
 router.get("/participate_activities", auth.verifyToken, async (req, res) => {
   try {
     const user = req.query;
-    const completeUser = await User.findOne({u_id: user.u_id});
-    const aid_list =  completeUser.activities;
+    const completeUser = await User.findOne({ u_id: user.u_id });
+    const aid_list = completeUser.activities;
     var activity_list = [];
-    
+
     for (const aid of aid_list) {
       var activity = await Activity.findById(aid);
       if (activity) {
-        if (activity.members.some(member => member.u_id === user.u_id) || 
-        activity.supervisors.some(supervisor => supervisor.u_id === user.u_id)) {
+        if (activity.members.some(member => member.u_id === user.u_id) ||
+          activity.supervisors.some(supervisor => supervisor.u_id === user.u_id)) {
           activity_list.push(activity);
         }
       } else {
-        return res.status(404).json({message: "Activity not found."});
+        return res.status(404).json({ message: "Activity not found." });
       }
     }
-    
+
     res.status(200).json(activity_list);
-  } catch(err) {
-    res.status(400).json({message: err.message});
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 });
 
 router.get("/supervise_activities", auth.verifyToken, async (req, res) => {
   try {
     const user = req.query;
-    const completeUser = await User.findOne({u_id: user.u_id})
+    const completeUser = await User.findOne({ u_id: user.u_id })
     const aid_list = completeUser.activities;
     var activity_list = [];
-    
+
     for (const aid of aid_list) {
       var activity = await Activity.findById(aid);
       if (activity) {
@@ -181,21 +181,21 @@ router.get("/supervise_activities", auth.verifyToken, async (req, res) => {
           activity_list.push(activity);
         }
       } else {
-        return res.status(404).json({message: "Activity not found."});
+        return res.status(404).json({ message: "Activity not found." });
       }
     }
-    
+
     res.status(200).json(activity_list);
-  } catch(err) {
-    res.status(400).json({message: err.message});
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 });
 
 // POST api/user/comment
 router.post("/comment", auth.verifyToken, async (req, res) => {
   try {
-    const {creator, activity_id, member_id, rating, comment} = req.body;
-    const member = await User.findOne({u_id: member_id});
+    const { creator, activity_id, member_id, rating, comment } = req.body;
+    const member = await User.findOne({ u_id: member_id });
     const new_comment = new MemberComment({
       creator: creator,
       activity_id: activity_id,
@@ -205,33 +205,33 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
     });
     await new_comment.save();
     member.comment_received.push(new_comment._id);
-    const current_score = {score: rating, activity_id: activity_id};
+    const current_score = { score: rating, activity_id: activity_id };
     member.previous_scores.push(current_score);
     await member.save();
     res.status(200).json("Comment sent successfully.");
-  } catch(err) {
-    res.status(400).json({message: err.message});
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 });
 
 // GET api/user/information
 router.get("/information", auth.verifyToken, async (req, res) => {
   try {
-    const user = await User.findOne({u_id: req.query.u_id});
+    const user = await User.findOne({ u_id: req.query.u_id });
     if (!user) {
-      return res.status(404).json({message: "User not found."});
+      return res.status(404).json({ message: "User not found." });
     }
 
     var activity_list = [];
     for (const activity_id of user.activities) {
       const activity = await Activity.findById(activity_id);
       if (activity) {
-        if (activity.members.some(member => member.u_id === user.u_id) || 
-            activity.supervisors.some(supervisor => supervisor.u_id === user.u_id)) {
+        if (activity.members.some(member => member.u_id === user.u_id) ||
+          activity.supervisors.some(supervisor => supervisor.u_id === user.u_id)) {
           activity_list.push(activity);
         }
       } else {
-        return res.status(404).json({message: "Activity not found."});
+        return res.status(404).json({ message: "Activity not found." });
       }
     }
 
@@ -249,44 +249,43 @@ router.get("/information", auth.verifyToken, async (req, res) => {
       activity_list: activity_list
     };
     res.status(200).json(feedback);
-  } catch(err) {
-    res.status(400).json({message: err.message});
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 });
 
 // POST /api/user/manage_admin
 router.post("/manage_admin", auth.verifyToken, async (req, res) => {
   try {
-    const {u_id, promotion} = req.body;
-    const user = await User.findOne({u_id: u_id});
+    const { u_id, promotion } = req.body;
+    const user = await User.findOne({ u_id: u_id });
     if (!user) {
-      return res.status(404).json({message: "User not found."});
+      return res.status(404).json({ message: "User not found." });
     }
     if (promotion === 1) {
       user.role = 1;
       await user.save();
-      return res.status(200).json({message: "User is now excutive administrator."});
+      return res.status(200).json({ message: "User is now excutive administrator." });
     }
     user.role = 0;
-    res.status(200).json({message: "User is now common user."});
+    res.status(200).json({ message: "User is now common user." });
   } catch (err) {
-    res.status(400).json({message: err.message});
+    res.status(400).json({ message: err.message });
   }
 });
 
 // POST /api/user/delete
 router.post("/delete", auth.verifyToken, async (req, res) => {
-  await User.findOneAndDelete({u_id: req.body.u_id}, function (err, user) {
-    if (err) {
-      return res.status(400).json({message: err.message});
-    } else {
-      if (!user) {
-        return res.status(404).json({message: "User not found."});
-      } else {
-        res.status(200).json({message: "User deleted."});
-      }
+  try {
+    const user = await User.findOneAndDelete({ u_id: req.body.u_id });
+    if (!user) {
+      return res.status(404).json({ message: "没有找到用户。" });
+    } else { 
+      return res.status(200).json({ message: "用户已删除。" });
     }
-  });
+  } catch (err) {
+    return res.status(400).json({ message: err.message });
+  }
 });
 
 // POST /api/user/requst-registration-code
@@ -341,14 +340,14 @@ router.post("/requst-registration-code", auth.verifyToken, auth.isSysAdmin, asyn
       });
     });
   } catch (err) {
-    res.status(400).json({message: err.message});
+    res.status(400).json({ message: err.message });
   }
 });
 
 // POST api/user/information
 router.post("/information", auth.verifyToken, async (req, res) => {
   try {
-    const {u_id, phone_number, id_number, password} = req.body;
+    const { u_id, phone_number, id_number, password } = req.body;
     const update_fields = {}
     if (phone_number.trim() !== "") {
       update_fields.phone_number = phone_number;
@@ -362,10 +361,10 @@ router.post("/information", auth.verifyToken, async (req, res) => {
     if (Object.keys(update_fields).length === 0) {
       return res.status(400).json({ message: "Everything is up to date." });
     }
-    await User.findOneAndUpdate({u_id: u_id}, {$set: update_fields});
-    res.status(200).json({message: "Information updated successfully."});
-  } catch(err) {
-    res.status(500).json({message: err.message});
+    await User.findOneAndUpdate({ u_id: u_id }, { $set: update_fields });
+    res.status(200).json({ message: "Information updated successfully." });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
 

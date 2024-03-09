@@ -71,7 +71,7 @@ exports.register = async (req, res) => {
             const usernamePattern = /^[\u4e00-\u9fa5A-Za-z]+$/;
             const idPattern = /^\d{17}[\dXx]$/
             const phoneNumberPattern = /^\d{11}$/;
-            const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$/;
+            const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=])[A-Za-z\d@#$%^&+=]{8,20}$/;
 
             if (!validator.isEmail(u_id)) {
                 return res.status(400).send({ message: "电子邮件格式无效。" });
@@ -213,6 +213,7 @@ exports.login = (req, res) => {
                 const verificationCode = generateVerificationCode();
                 let expirationDate = new Date();
                 expirationDate.setMinutes(expirationDate.getMinutes() + 5);
+                let backupCode = user.verificationCode;
                 user.verificationCode = {
                     code: verificationCode,
                     lastSent: new Date(),
@@ -223,8 +224,10 @@ exports.login = (req, res) => {
                 sendCode(user.u_id, verificationCode).then(() => {
                     res.status(200).send({ message: "验证码已发送！" });
                 })
-                    .catch((error) => {
+                    .catch(async (error) => {
                         console.error(error);
+                        user.verificationCode = backupCode;
+                        await user.save();
                         res.status(500).send({ message: "验证码发送失败！" });
                     });
             } else {

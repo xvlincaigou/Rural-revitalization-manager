@@ -323,6 +323,213 @@ router.get("/member_comment", auth.verifyToken, auth.isSysAdmin, async (req, res
   }
 });
 
+function teamNameToId(name) {
+  switch (name) {
+    case "福建浦城":
+      return 1;
+    case "福建三明":
+      return 2;
+    case "福建永定":
+      return 3;
+    case "福建福鼎":
+      return 4;
+    case "福建宁德":
+      return 5;
+    case "福建福州":
+      return 6;
+    case "福建集美":
+      return 7;
+    case "浙江岱山":
+      return 8;
+    case "浙江淳安":
+      return 9;
+    case "浙江椒江":
+      return 10;
+    case "浙江绍兴":
+      return 11;
+    case "江西龙南":
+      return 12;
+    case "江西婺源":
+      return 13;
+    case "江苏高淳":
+      return 14;
+    case "江苏阜宁":
+      return 15;
+    case "江苏苏州":
+      return 16;
+    case "安徽南陵":
+      return 17;
+    case "安徽霍山":
+      return 18;
+    case "安徽涡阳":
+      return 19;
+    case "安徽滁州":
+      return 20;
+    case "安徽合肥":
+      return 21;
+    case "安徽黄山":
+      return 22;
+    case "山东文登":
+      return 23;
+    case "山东济宁":
+      return 24;
+    case "山东新泰":
+      return 25;
+    case "山东莱芜":
+      return 26;
+    case "山东阳谷":
+      return 27;
+    case "山东青岛（平度）":
+      return 28;
+    case "山东青岛（胶州）":
+      return 29;
+    case "河南三门峡":
+      return 30;
+    case "河南鸡公山":
+      return 31;
+    case "河南新蔡":
+      return 32;
+    case "河南辉县":
+      return 33;
+    case "河南兰考":
+      return 34;
+    case "湖北赤壁":
+      return 35;
+    case "湖北五峰":
+      return 36;
+    case "湖北宜昌":
+      return 37;
+    case "湖南大通湖":
+      return 38;
+    case "湖南麻阳":
+      return 39;
+    case "湖南慈利":
+      return 40;
+    case "湖南溆浦":
+      return 41;
+    case "湖南湘乡":
+      return 42;
+    case "湖南湘阴":
+      return 43;
+    case "北京密云":
+      return 44;
+    case "内蒙古达拉特":
+      return 45;
+    case "天津宝坻":
+      return 46;
+    case "山西和顺":
+      return 47;
+    case "山西大同":
+      return 48;
+    case "山西临汾":
+      return 49;
+    case "山西阳泉":
+      return 50;
+    case "河北信都":
+      return 51;
+    case "河北青龙":
+      return 52;
+    case "河北承德":
+      return 53;
+    case "河北雄安":
+      return 54;
+    case "河北唐山":
+      return 55;
+    case "贵州铜仁":
+      return 56;
+    case "贵州清镇":
+      return 57;
+    case "贵州榕江":
+      return 58;
+    case "贵州道真":
+      return 59;
+    case "云南南涧":
+      return 60;
+    case "云南腾冲":
+      return 61;
+    case "四川荣县":
+      return 62;
+    case "四川理县":
+      return 63;
+    case "四川古蔺":
+      return 64;
+    case "四川西充":
+      return 65;
+    case "四川德阳":
+      return 66;
+    case "四川眉山":
+      return 67;
+    case "西藏墨脱":
+      return 68;
+    case "重庆荣昌":
+      return 69;
+    case "重庆綦江":
+      return 70;
+    case "重庆酉阳":
+      return 71;
+    case "甘肃临潭":
+      return 72;
+    case "甘肃瓜州":
+      return 73;
+    case "甘肃临夏":
+      return 74;
+    case "甘肃渭源":
+      return 75;
+    case "陕西王益":
+      return 76;
+    case "陕西清涧":
+      return 77;
+    case "陕西蒲城":
+      return 78;
+    case "陕西西咸":
+      return 79;
+    case "宁夏原州":
+      return 80;
+    case "宁夏银川":
+      return 81;
+    case "宁夏惠农":
+      return 82;
+    case "新疆哈巴河":
+      return 83;
+    case "青海海西":
+      return 84;
+    case "青海湟中":
+      return 85;
+    case "广东从化":
+      return 86;
+    case "广东连南":
+      return 87;
+    case "广西扶绥":
+      return 88;
+    case "广西兴宾":
+      return 89;
+    case "广西河池":
+      return 90;
+    case "广西三江":
+      return 91;
+    case "海南澄迈":
+      return 92;
+    case "黑龙江甘南":
+      return 93;
+    case "黑龙江方正":
+      return 94;
+    case "黑龙江牡丹江":
+      return 95;
+    case "辽宁鞍山":
+      return 96;
+    case "辽宁沈阳":
+      return 97;
+    case "辽宁锦州":
+      return 98;
+    case "辽宁营口":
+      return 99;
+    case "吉林敦化":
+      return 100;
+    default:
+      return 0;
+  }
+}
+
 // POST /api/activity/certificate
 // 请求中应包含：uid（用户邮箱，user中u_id）, aid（activity中_id）
 const generatingUsers = {};
@@ -549,10 +756,11 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
       sn += "09";
     }
 
-    // TODO: 支队编号
-    sn += activity.abbreviation.toString();
+    // TODO: 支队编号：如何获取？
+    let id = teamNameToId(activity.team).toString();
+    id = id.padStart(2, "0");
+    sn += id;
 
-    // TODO: 队员序列号
     var userIndex = (activity.candidates.indexOf(user.u_id) + 1).toString();
     userIndex = userIndex.padStart(2, "0"); // 活动人数应小于99人
     sn += userIndex;
