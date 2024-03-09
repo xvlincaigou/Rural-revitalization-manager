@@ -3,6 +3,7 @@ import { get } from "../../utilities";
 
 import "../../utilities.css";
 import SingleActivity from "../modules/SingleActivity.js";
+import { SearchActivity } from "../modules/NewPostInput.js";
 
 const Activity = (props) => {
     const [page, setPage] = useState(1);
@@ -25,7 +26,6 @@ const Activity = (props) => {
         document.title = "Activity";
         get("/api/activity", { page }).then((res) => {
             setActivityList(res);
-            // console.log(activityList);
         }).catch((error) => {
             console.log(error);
         });
@@ -42,6 +42,7 @@ const Activity = (props) => {
         <>
             {activityList.length === 0 ? <div>没有活动</div> :
             <>
+            <SearchActivity />
             {activityList.map((activity) => (
                 <SingleActivity
                     key={`SingleActivity_${activity._id}`}

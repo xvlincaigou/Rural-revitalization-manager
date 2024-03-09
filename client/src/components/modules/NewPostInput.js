@@ -92,4 +92,16 @@ const NewStory = (props) => {
   return <NewPostInput defaultText="发表你的帖子吧" onSubmit={addStory} />;
 };
 
-export { NewComment, NewStory };
+const SearchActivity = (props) => {
+  const search = (value) => {
+    /*const body = {creator_id: props.creator_id, creator_name: props.creator_name, title: null, content: value };
+    post("/api/story", body).then((story) => {
+      // display this story on the screen
+      props.addNewStory(story);
+    }).catch((error) => {console.log(error);});*/
+  };
+
+  return <NewPostInput defaultText="搜索" onSubmit={search} />;
+};
+
+export { NewComment, NewStory , SearchActivity};
