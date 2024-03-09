@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Register.css';
 import { post } from "../../utilities";
+import PasswordChecklist from "react-password-checklist";
 
 /**
  * @param {string} registrationCode
@@ -94,8 +95,29 @@ const Register = ({ upload }) => {
 
     const handleRegister = (e) => {
         e.preventDefault();
+        setRegisterWarning(false);
+        const usernamePattern = /^[\u4e00-\u9fa5A-Za-z]+$/;
+        const phoneNumberPattern = /^\d{11}$/;
+        const idPattern = /^\d{17}[\dXx]$/
+        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$/;
         if (password !== confirmPassword) {
             alert("两次输入的密码不一致！");
+            return;
+        }
+        if (!usernamePattern.test(username)) {
+            alert("姓名格式错误。");
+            return;
+        }
+        if (!phoneNumberPattern.test(phone)) {
+            alert("电话号码格式错误。");
+            return;
+        }
+        if (!idPattern.test(identificationCard)) {
+            alert("身份证号码格式错误。");
+            return;
+        }
+        if (!passwordPattern.test(password)) {
+            alert("您设置的密码不符合要求。");
             return;
         }
         const newUser = {
@@ -123,6 +145,7 @@ const Register = ({ upload }) => {
 
     const handleLogin = (event) => {
         event.preventDefault();
+        setLoginWarning(false);
         if (step === 0) {
             axios.post("/api/login", { u_id: email, password: loginpassword }).then((response) => {
                 if (response.data.message === "验证码已发送！") {
@@ -178,11 +201,20 @@ const Register = ({ upload }) => {
         return (
             <div>
                 <div className="Register">
+                    <form onSubmit={handleLogin}>
+                        <input type="email" placeholder="邮箱" value={email} onChange={handleLoginEmailChange} required />
+                        <input type="password" placeholder="密码" value={loginpassword} onChange={handleLoginPasswordChange} required />
+                        <button type="submit">登录</button>
+                        {loginWarning ? <p className='warning-message'>登录失败，请重试。</p> : null}
+                    </form>
+                </div>
+                <div className="Register">
                     <form onSubmit={handleRegister}>
                         <input type="text" placeholder="注册码" value={registrationCode} onChange={handleRegistrationCodeChange} required />
                         <input type="text" placeholder="姓名" value={username} onChange={handleUsernameChange} required />
                         <input type="email" placeholder="邮箱" value={mail} onChange={handleMailChange} required />
-                        <input type="tel" placeholder="电话" value={phone} onChange={handlePhoneChange} required />
+                        <input type="tel" placeholder="电话号码" value={phone} onChange={handlePhoneChange} required />
+                        <small>请填写您常用的手机号码，应为11位数字。</small>
                         <input type="text" placeholder="身份证" value={identificationCard} onChange={handleIndentificationCardChange} required />
                         <input
                             type="password"
@@ -190,7 +222,6 @@ const Register = ({ upload }) => {
                             value={password}
                             onChange={handlePasswordChange}
                             maxLength="20"
-                            pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$/" 
                             required
                         />
                         <input
@@ -199,19 +230,25 @@ const Register = ({ upload }) => {
                             value={confirmPassword}
                             onChange={handleConfirmPasswordChange}
                             maxLength="20"
-                            pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$/"
                             required
+                        />
+                        <PasswordChecklist
+                            rules={["match", "minLength", "maxLength", "capital", "lowercase", "number"]}
+                            minLength={8}
+                            maxLength={20}
+                            value={password}
+                            valueAgain={confirmPassword}
+                            messages={{
+                                minLength: "密码应包含至少8个字符。",
+                                maxLength: "密码不应超过20个字符。",
+                                number: "密码应包含至少一个数字。",
+                                capital: "密码应包含至少一个大写字母。",
+                                match: "两次输入的密码应当一致。",
+                                lowercase: "密码应包含至少一个小写字母。",
+                            }}
                         />
                         <button type="submit">注册</button>
                         {registerWarning ? <p className='warning-message'>注册失败，请重试。</p> : null}
-                    </form>
-                </div>
-                <div className="Register">
-                    <form onSubmit={handleLogin}>
-                        <input type="email" placeholder="邮箱" value={email} onChange={handleLoginEmailChange} required />
-                        <input type="password" placeholder="密码" value={loginpassword} onChange={handleLoginPasswordChange} required />
-                        <button type="submit">登录</button>
-                        {loginWarning ? <p className='warning-message'>登录失败，请重试。</p> : null}
                     </form>
                 </div>
             </div>

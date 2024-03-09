@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const validator = require('validator');
 
 // 初始化设置
 async function initializeSettings() {
@@ -21,16 +22,17 @@ initializeSettings().catch(console.error);
 
 exports.register = async (req, res) => {
     try {
+        const { registration_code, name, u_id, phone_number, id_number, password } = req.body;
         const settings = await Settings.findOne();
         // 注册码核验
         // 检验req.body.registration_code是否在settings.availableRegistrationCodes中
-        if (settings.availableRegistrationCodes && !settings.availableRegistrationCodes.includes(req.body.registration_code)) {
+        if (settings.availableRegistrationCodes && !settings.availableRegistrationCodes.includes(registration_code)) {
             return res.status(403).send({ message: "注册码无效！" });
         }
 
         // 删除已使用的注册码
-        if (settings.availableRegistrationCodes && settings.availableRegistrationCodes.includes(req.body.registration_code)) {
-            settings.availableRegistrationCodes = settings.availableRegistrationCodes.filter(code => code !== req.body.registration_code);
+        if (settings.availableRegistrationCodes && settings.availableRegistrationCodes.includes(registration_code)) {
+            settings.availableRegistrationCodes = settings.availableRegistrationCodes.filter(code => code !== registration_code);
             await settings.save();
         }
 
@@ -39,9 +41,9 @@ exports.register = async (req, res) => {
         User.findOne({
             $or: [
                 // { name: req.body.name },
-                { u_id: req.body.u_id },
-                { phone_number: req.body.phone_number },
-                { id_number: req.body.id_number }
+                { u_id: u_id },
+                { phone_number: phone_number },
+                { id_number: id_number }
             ]
         }, (err, existingUser) => {
             if (err) {
@@ -51,13 +53,13 @@ exports.register = async (req, res) => {
             if (existingUser) {
                 // 构建一个包含重复字段的数组
                 const duplicateFields = [];
-                if (existingUser.u_id === req.body.u_id) {
+                if (existingUser.u_id === u_id) {
                     duplicateFields.push('电子邮件');
                 }
-                if (existingUser.phone_number === req.body.phone_number) {
+                if (existingUser.phone_number === phone_number) {
                     duplicateFields.push('电话号码');
                 }
-                if (existingUser.id_number === req.body.id_number) {
+                if (existingUser.id_number === id_number) {
                     duplicateFields.push('身份证号');
                 }
 
@@ -65,27 +67,51 @@ exports.register = async (req, res) => {
                 return res.status(400).send({ message: `以下字段重复：${duplicateFields.join('，')}。` });
             }
 
+            // 校验数据合法性
+            const usernamePattern = /^[\u4e00-\u9fa5A-Za-z]+$/;
+            const idPattern = /^\d{17}[\dXx]$/
+            const phoneNumberPattern = /^\d{11}$/;
+            const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$/;
+
+            if (!validator.isEmail(u_id)) {
+                return res.status(400).send({ message: "电子邮件格式无效。" });
+            }
+
+            if (!usernamePattern.test(name)) {
+                return res.status(400).send({ message: "姓名格式无效。" });
+            }
+
+            if (!phoneNumberPattern.test(phone_number)) {
+                return res.status(400).send({ message: "电话号码格式无效。" });
+            }
+
+            if (!idPattern.test(id_number)) {
+                return res.status(400).send({ message: "身份证号格式无效。" });
+            }
+
+            if (!passwordPattern.test(password)) {
+                return res.status(400).send({ message: "密码格式不符合要求。" });
+            }
+
             // 如果用户名、电子邮件、电话号码和身份证号都不存在重复，继续创建用户
             const user = new User({
-                name: req.body.name,
-                u_id: req.body.u_id,
-                phone_number: req.body.phone_number,
-                id_number: req.body.id_number, // TODO: 沟通敏感信息安全性问题
-                password: bcrypt.hashSync(req.body.password, 8),
+                name: name,
+                u_id: u_id,
+                phone_number: phone_number,
+                id_number: id_number, // TODO: 沟通敏感信息安全性问题
+                password: bcrypt.hashSync(password, 8),
             });
 
             user.save((err, user) => {
                 if (err) {
-                    res.status(500).send({ message: err });
-                    return;
+                    return res.status(500).send({ message: err });
                 }
 
                 if (req.body.role) {
                     user.role = req.body.role;
                     user.save((err) => {
                         if (err) {
-                            res.status(500).send({ message: err });
-                            return;
+                            return res.status(500).send({ message: err });
                         }
                     });
                 }
@@ -105,17 +131,17 @@ function generateVerificationCode() {
 async function sendCode(email, code) {
     return new Promise(async (resolve, reject) => {
         let transporter = nodemailer.createTransport({
-            host: 'ydmsk.xyz', // 你的 SMTP 服务器地址
+            host: 'smtp.163.com', // 你的 SMTP 服务器地址
             port: 465, // SMTP 服务器的端口，通常是 587 或 465
             secure: true, // 如果端口是 465，需要将这个选项设置为 true
             auth: {
-                user: 'potatores@ydmsk.xyz', // SMTP 服务器的用户名
-                pass: 'sbwzs233' // SMTP 服务器的密码
+                user: 'xczxthu_support@163.com', // SMTP 服务器的用户名
+                pass: 'WVQMKQUXELAQZOMB' // SMTP 服务器的密码
             }
         });
 
         let mailOptions = {
-            from: 'potatores@ydmsk.xyz', // 发件人地址
+            from: 'xczxthu_support@163.com', // 发件人地址
             to: email, // 收件人地址，可以是一个数组，表示多个收件人
             subject: '验证码', // 邮件主题
             text: `您的2FA验证码：${code}，5分钟内有效。` // 邮件内容
@@ -161,7 +187,7 @@ exports.login = (req, res) => {
                 user.password
             );
 
-            if (user.banned === 1) { 
+            if (user.banned === 1) {
                 return res.status(403).send({ message: "您已被封禁，请联系管理员！" });
             }
 
