@@ -23,6 +23,8 @@ const Profile = (props) => {
   const [tagUSerEmail, setTagUserEmail] = useState("");
   const [registerNumber, setRegisterNumber] = useState(0);
 
+  const [length, setLength] = useState(0);
+
     useEffect(() => {
         document.title = "Profile Page";
         get("/api/user/participate_activities", {u_id: props.user.u_id, name:props.user.name}).then((res) => {//改为返回这个用户对应的活动
@@ -32,6 +34,11 @@ const Profile = (props) => {
         });
         get("/api/user/supervise_activities", {u_id: props.user.u_id, name:props.user.name}).then((res) => {//改为返回这个用户对应的管理的活动
           setManagedActivityList(res);
+        }).catch((error) => {
+          console.log(error);
+        });
+        get("/api/user/activity_number", {u_id: props.user.u_id}).then((res) => {
+          setLength(res.activity_number);
         }).catch((error) => {
           console.log(error);
         });
@@ -133,7 +140,7 @@ const Profile = (props) => {
           <div className="Profile-avatar" />
           <div className="Profile-subContainer u-textCenter">
             <h4 className="Profile-subTitle">{"我报名过的活动数"}</h4>
-            <div className="Happiness-container">{props.user.activities.length}</div>
+            <div className="Happiness-container">{length}</div>
           </div>
         </div>
         <h1 className="Profile-name u-textCenter">{props.user.name}</h1>

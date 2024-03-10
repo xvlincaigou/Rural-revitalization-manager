@@ -345,6 +345,20 @@ router.post("/requst-registration-code", auth.verifyToken, auth.isSysAdmin, asyn
   }
 });
 
+// GET api/user/activity_number
+router.get("/activity_number", auth.verifyToken, async (req, res) => {
+  try {
+    const user = await User.findOne({u_id: req.query.u_id});
+    if (!user) {
+      return res.status(404).json({message: "User not found."});
+    }
+    const activity_number = user.activities.length;
+    res.status(200).json({activity_number: activity_number});
+  } catch(err) {
+    res.status(400).json({message: err.message});
+  }
+});
+
 // POST api/user/information
 router.post("/information", auth.verifyToken, async (req, res) => {
   try {
