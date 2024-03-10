@@ -47,8 +47,8 @@ const ActivityAdmitButton = (props) => {
                     email: props.toAdmit[i].u_id,
                     name: props.toAdmit[i].name,
                 })
-                .then((res) => {alert(res.message);})
-                .catch((err) => {console.log(err);});
+                .then((res) => {console.log(res.message);})
+                .catch((err) => {alert(err);});
             }
         }
         handleClose();
@@ -69,6 +69,7 @@ const ActivityAdmitButton = (props) => {
                             {member.activity_list.map((activity) => (
                                 <label>{activity.name}</label>
                             ))}
+                            {admits[index] ? <label color='green'>同意</label> : null}
                             <button onClick={(event) => handleAdmitsChange(event, index)}>同意</button>
                         </div>
                     )) : null}

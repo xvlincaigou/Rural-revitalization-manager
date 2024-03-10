@@ -84,7 +84,11 @@
     background-color: var(--thupurple);
     color: #fff;
     cursor: pointer;
-    width: 80%;
+    width: 100%;
+  }
+
+  .ActivityAdmitDialogue button :hover {
+    background-color: var(--thupurple);
   }
 
   .ActivityAdmitSubmitButton {

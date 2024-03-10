@@ -155,14 +155,13 @@ router.post("/register", auth.verifyToken, async (req, res) => {
    if (!activity) {
      return res.status(404).json({ message: "没有找到活动" });
    }
- 
    const candidate = {u_id: email, name: name};
    // Assuming ActivityRegistration model has fields: email, activity_id
    if(activity.capacity == activity.members.length){
      res.status(200).json({message:"成员数目超过限制"});
    }
    else{
-     if (activity.candidates.some(c => c.u_id === email)) {
+     if (activity.members.some(c => c.u_id === email)) {
        return res.status(500).json({ message: "已经接受该成员的报名" });
      }
      activity.members.push(candidate);
