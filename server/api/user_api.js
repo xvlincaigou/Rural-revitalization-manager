@@ -268,6 +268,7 @@ router.post("/manage_admin", auth.verifyToken, async (req, res) => {
       return res.status(200).json({message: "User is now excutive administrator."});
     }
     user.role = 0;
+    await user.save();
     res.status(200).json({message: "User is now common user."});
   } catch (err) {
     res.status(400).json({message: err.message});
