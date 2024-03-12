@@ -5,6 +5,7 @@ import { post } from "../../utilities";
 import PasswordChecklist from "react-password-checklist";
 
 /**
+ * // 注册的数据
  * @param {string} registrationCode
  * @param {string} username
  * @param {string} mail
@@ -13,6 +14,7 @@ import PasswordChecklist from "react-password-checklist";
  * @param {string} password
  * @param {string} registerCode
  * @param {boolean} step
+ * // 登录的数据
  * @param {string} email
  * @param {string} loginpassword
  * @param {string} warning

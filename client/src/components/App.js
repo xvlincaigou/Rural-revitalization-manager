@@ -15,7 +15,10 @@ import { post } from "../utilities";
 import "../utilities.css";
 import "./App.css";
 
+//这是整个项目的根组件
+
 const App = () => {
+  //这是一个状态，用来存储用户的信息
   const [user, setUser] = useState(null);
 
   const handleLogout = () => {
@@ -63,7 +66,7 @@ const App = () => {
   }, [handleLogout]);
 
   useEffect(() => {
-    // 从api获取用户数据
+    // 从api获取数据
     axios
       .get("/api/global/session")
       .then((response) => {
@@ -80,6 +83,7 @@ const App = () => {
     setUser(val);
   };
 
+  //返回一个组件，这个组件包含了整个项目的所有页面，可以在page里面找到
   return (
     <>
       <NavBar user={user} handleLogout={handleLogout} />
