@@ -129,12 +129,12 @@ router.get("/tags", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async 
 // POST /api/user/ban
 router.post("/ban", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
   try{
-    const {uid, ban}=req.body;
+    const {uid, banned}=req.body;
     const user = await User.findOne({u_id: uid})
     if (!user) {
       return res.status(404).json({ message: "未找到用户" });
     }
-    user.ban = ban;
+    user.banned = banned;
     await user.save();
     res.status(200).json({ message: "成功更改用户封禁状态" });
   }catch (err) {

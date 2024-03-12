@@ -49,19 +49,10 @@ const Profile = (props) => {
     }
 
     const adminUpdate = (new_state) => {
-      fetch('/api/user/manage_admin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          u_id: adminUpdateEmail,
-          promotion: new_state,
-        }),
-      })
-      .then(res => alert(res))
+      post('/api/user/manage_admin', {u_id: adminUpdateEmail, promotion: new_state})
+      .then(res => alert(res.message))
       .catch((error) => {
-        alert(error);
+        alert(error.message);
       });
     }
 
@@ -85,10 +76,10 @@ const Profile = (props) => {
       setBanUserEmail(event.target.value);
     }
 
-    const banUser = (ban) => {
-      post('/api/user/ban', {uid: banUserEmail, ban: ban})
-      .then((res) => {alert(res)})
-      .catch((error) => {alert(error)});
+    const banUser = (banned) => {
+      post('/api/user/ban', {uid: banUserEmail, banned: banned})
+      .then((res) => {alert(res.message)})
+      .catch((error) => {alert(error.message)});
     }
 
     const handleTagUser = (event) => {
