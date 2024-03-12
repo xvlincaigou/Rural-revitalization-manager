@@ -10,31 +10,31 @@ import "./Feed.css";
  * @property { number } userCount
  * @property { number } complaintCount
  * @property { number } complaintReplyCount
- * @returns 
+ * @returns
  */
 const Feed = () => {
-
   const [appData, setAppData] = useState({});
 
   useEffect(() => {
     document.title = "News Feed";
-    get("/api/global/appdata").then((appDataObj) => {
-      setAppData(appDataObj);
-    }).catch((err) => { console.log(err.message); });
+    get("/api/global/appdata")
+      .then((appDataObj) => {
+        setAppData(appDataObj);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
   }, []);
-
 
   let formattedRate = "100.00%";
   if (appData.complaintCount !== 0) {
-    const complaintReplyRate = appData.complaintReplyCount * 100 / appData.complaintCount;
+    const complaintReplyRate = (appData.complaintReplyCount * 100) / appData.complaintCount;
     formattedRate = complaintReplyRate.toFixed(2) + "%";
   }
 
   return (
     <>
-      <div className="Feed-subContainer u-textCenter">
-        
-      </div >
+      <div className="Feed-subContainer u-textCenter"></div>
       <div className="Feed-subContainer u-textCenter">
         <h4>{"活动总数"}</h4>
         <div className="Feed-content">{appData.activityCount}</div>
@@ -57,10 +57,18 @@ const Feed = () => {
 
       <div className="link-container">
         <h4>开发者主页：</h4>
-        <a className="link-item" href="https://github.com/xvlincaigou">许霖</a>
-        <a className="link-item" href="https://github.com/zhaochangjack">赵畅</a>
-        <a className="link-item" href="https://github.com/bbbpimasheep">刘明轩</a>
-        <a className="link-item" href="https://github.com/gsk-THU">关世开</a>
+        <a className="link-item" href="https://github.com/xvlincaigou">
+          许霖
+        </a>
+        <a className="link-item" href="https://github.com/zhaochangjack">
+          赵畅
+        </a>
+        <a className="link-item" href="https://github.com/bbbpimasheep">
+          刘明轩
+        </a>
+        <a className="link-item" href="https://github.com/gsk-THU">
+          关世开
+        </a>
       </div>
     </>
   );

@@ -14,9 +14,9 @@ import "./SingleUser.css";
 const SingleUser = (props) => {
   return (
     <div
-      className={`SingleUser-container u-pointer ${props.active ?
-        "SingleUser-container--active" : ""
-        }`}
+      className={`SingleUser-container u-pointer ${
+        props.active ? "SingleUser-container--active" : ""
+      }`}
       onClick={() => {
         props.setActiveUser(props.user);
       }}
@@ -24,6 +24,6 @@ const SingleUser = (props) => {
       {props.user.name}
     </div>
   );
-}
+};
 
 export default SingleUser;

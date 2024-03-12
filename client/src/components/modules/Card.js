@@ -26,15 +26,16 @@ const Card = (props) => {
 
   useEffect(() => {
     const commentPromises = props.commentids.map((commentid) =>
-      get("/api/story/comment", {commentid: commentid})
-      .catch(error => console.error('Error fetching comment:', error))
-    )
+      get("/api/story/comment", { commentid: commentid }).catch((error) =>
+        console.error("Error fetching comment:", error)
+      )
+    );
 
     Promise.all(commentPromises)
-      .then(commentResponses => {
-        setComments(commentResponses.map(response => response.comment));
+      .then((commentResponses) => {
+        setComments(commentResponses.map((response) => response.comment));
       })
-      .catch(error => console.error('Error fetching comments:', error));
+      .catch((error) => console.error("Error fetching comments:", error));
   }, []);
 
   const addNewComment = (commentObj) => {
@@ -43,43 +44,56 @@ const Card = (props) => {
 
   const handleTop = () => {
     if (props.user.role == 0) {
-      alert("您没有权限！");  
+      alert("您没有权限！");
     } else {
-      axios.patch("/api/story/pinned-state", { storyid: props._id, isPinned: !isPinned })
-        .then(res => {
-          alert(res.status == 200 ? `已经${isPinned ? "取消置顶" : "置顶"}，刷新后可查看` : "失败！");
+      axios
+        .patch("/api/story/pinned-state", { storyid: props._id, isPinned: !isPinned })
+        .then((res) => {
+          alert(
+            res.status == 200 ? `已经${isPinned ? "取消置顶" : "置顶"}，刷新后可查看` : "失败！"
+          );
           setIsPinned(!isPinned);
         })
-        .catch((error) => console.error('Error:', error));
+        .catch((error) => console.error("Error:", error));
     }
-  }
+  };
 
   const handleDelete = () => {
     if (props.user.role == 0) {
-      axios.delete(`/api/story/${props._id}`)
-        .then(res => { res.status == 200 ? alert("删除成功！") : alert("删除失败！") })
-        .catch((error) => console.error('Error:', error));
+      axios
+        .delete(`/api/story/${props._id}`)
+        .then((res) => {
+          res.status == 200 ? alert("删除成功！") : alert("删除失败！");
+        })
+        .catch((error) => console.error("Error:", error));
       // window.location.reload();
     } else {
-      axios.delete(`/api/story/deleteany/${props._id}`)
-        .then(res => { res.status == 200 ? alert("删除成功！") : alert("删除失败！") })
-        .catch((error) => console.error('Error:', error));
+      axios
+        .delete(`/api/story/deleteany/${props._id}`)
+        .then((res) => {
+          res.status == 200 ? alert("删除成功！") : alert("删除失败！");
+        })
+        .catch((error) => console.error("Error:", error));
       // window.location.reload();
     }
-  }
+  };
 
   const handleBan = () => {
     if (props.user.role == 0) {
-      alert("您没有权限！");  
-    } else{
-      axios.patch("/api/story/reply-feature-enabled-state", { storyid: props._id, canBeReplied: !canBeReplied })
-        .then(res => {
+      alert("您没有权限！");
+    } else {
+      axios
+        .patch("/api/story/reply-feature-enabled-state", {
+          storyid: props._id,
+          canBeReplied: !canBeReplied,
+        })
+        .then((res) => {
           alert(res.status == 200 ? `已经${canBeReplied ? "禁止评论" : "允许评论"}` : "失败！");
           setCanBeReplied(!canBeReplied);
         })
-        .catch((error) => console.error('Error:', error));
+        .catch((error) => console.error("Error:", error));
     }
-  }
+  };
 
   return (
     <div className="Card-container">
@@ -90,22 +104,28 @@ const Card = (props) => {
         content={props.content}
       />
       <div className="button-container">
-        <StoryControlButton text={isPinned ? "取消置顶" : "置顶"} handleClick={handleTop}/>
-        <StoryControlButton text="删帖" handleClick={handleDelete}/>
-        <StoryControlButton text={canBeReplied ? "禁止评论" : "允许评论"} handleClick={handleBan}/>
-      </ div>
+        <StoryControlButton text={isPinned ? "取消置顶" : "置顶"} handleClick={handleTop} />
+        <StoryControlButton text="删帖" handleClick={handleDelete} />
+        <StoryControlButton text={canBeReplied ? "禁止评论" : "允许评论"} handleClick={handleBan} />
+      </div>
       <div className="Card-commentSection">
         <div className="story-comments">
-          {comments.map((comment) => 
-            (<SingleComment
+          {comments.map((comment) => (
+            <SingleComment
               key={`SingleComment_${comment._id}`}
               _id={comment._id}
-              creator={comment.creator || {name:'' , u_id:''}}
+              creator={comment.creator || { name: "", u_id: "" }}
               content={comment.comment}
             />
-          )
-          )}
-         {canBeReplied ? <NewComment storyId={props._id} send_date={new Date()} addNewComment={addNewComment} creator={props.user}/> : null}
+          ))}
+          {canBeReplied ? (
+            <NewComment
+              storyId={props._id}
+              send_date={new Date()}
+              addNewComment={addNewComment}
+              creator={props.user}
+            />
+          ) : null}
         </div>
       </div>
     </div>

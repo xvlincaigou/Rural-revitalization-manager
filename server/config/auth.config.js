@@ -1,3 +1,3 @@
 module.exports = {
-    secret: "NB:9~>~UKfw#Gunp~,r^"
+  secret: "NB:9~>~UKfw#Gunp~,r^",
 };

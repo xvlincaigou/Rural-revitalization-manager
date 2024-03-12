@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 /**
  * Utility functions to make API requests.
  * By importing this file, you can use the provided get and post functions.
@@ -41,8 +41,9 @@ function convertToJSON(res) {
 // Helper code to make a get request. Default parameter of empty JSON Object for params.
 // Returns a Promise to a JSON Object.
 export function get(endpoint, params = {}) {
-  return axios.get(endpoint, { params })
-    .then(response => response.data)
+  return axios
+    .get(endpoint, { params })
+    .then((response) => response.data)
     .catch((error) => {
       // give a useful error message
       throw `GET request to ${endpoint} failed with error:\n${error}`;
@@ -52,8 +53,9 @@ export function get(endpoint, params = {}) {
 // Helper code to make a post request. Default parameter of empty JSON Object for params.
 // Returns a Promise to a JSON Object.
 export function post(endpoint, params = {}) {
-  return axios.post(endpoint, params)
-    .then(response => response.data)
+  return axios
+    .post(endpoint, params)
+    .then((response) => response.data)
     .catch((error) => {
       // give a useful error message
       throw `POST request to ${endpoint} failed with error:\n${error}`;

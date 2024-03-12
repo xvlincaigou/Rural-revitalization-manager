@@ -5,7 +5,7 @@ import React from "react";
  * @typedef creator
  * @param {string} name
  * @param {string} u_id
- * 
+ *
  * Proptypes
  * @param {creator} creator
  * @param {string} content of the comment
@@ -13,9 +13,7 @@ import React from "react";
 const SingleComment = (props) => {
   return (
     <div className="Card-commentBody">
-      <div className="u-link u-bold">
-        {props.creator.name}
-      </ div>
+      <div className="u-link u-bold">{props.creator.name}</div>
       <span>{" | " + props.content}</span>
     </div>
   );

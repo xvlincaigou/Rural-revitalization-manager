@@ -17,12 +17,12 @@
   color: #00ff00;
 }
 
-.Activity-held-time-color3{
-    color: var(--thupurple);
+.Activity-held-time-color3 {
+  color: var(--thupurple);
 }
 
-.Activity-held-time-color4{
-    color: red;
+.Activity-held-time-color4 {
+  color: red;
 }
 
 .Activity-Content {

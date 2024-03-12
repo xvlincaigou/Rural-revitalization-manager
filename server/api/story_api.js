@@ -34,7 +34,7 @@ const router = express.Router();
 router.get("/global-settings", auth.verifyToken, async (req, res) => {
   try {
     const settings = await Settings.findOne();
-    const strippedSettings = {"settings": { storyPostingEnabled: settings.storyPostingEnabled }};
+    const strippedSettings = { settings: { storyPostingEnabled: settings.storyPostingEnabled } };
     res.status(200).json(strippedSettings);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -51,7 +51,9 @@ router.put("/global-settings", auth.verifyToken, auth.isSysAdmin, async (req, re
     const settings = await Settings.findOne();
     settings.storyPostingEnabled = req.body.storyPostingEnabled;
     await settings.save();
-    res.status(200).json({ message: `帖子发布功能开启状态已修改为${req.body.storyPostingEnabled}。` });
+    res
+      .status(200)
+      .json({ message: `帖子发布功能开启状态已修改为${req.body.storyPostingEnabled}。` });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -81,7 +83,7 @@ router.get("/stories", (req, res) => {
     .skip((page - 1) * pageSize)
     .limit(pageSize)
     .then((stories) => res.send(stories))
-    .catch(err => res.status(500).json(err));;
+    .catch((err) => res.status(500).json(err));
 });
 
 // POST /api/story
@@ -116,7 +118,7 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
       creator: creator,
       send_date: send_date,
       story_id: story_id,
-      comment: comment
+      comment: comment,
     });
     // Save the new activity to the database
     story.comments.push(newComment._id);
@@ -133,9 +135,9 @@ router.get("/comment", auth.verifyToken, async (req, res) => {
     const comment = await StoryComment.findById(req.query.commentid, (err, comment) => {
       if (err) {
         console.log(err);
-      } 
+      }
     });
-    res.set('Content-Type', 'application/json');
+    res.set("Content-Type", "application/json");
     if (!comment) {
       return res.status(404).json({ message: "Comment not found." });
     }
@@ -157,7 +159,7 @@ router.delete("/:id", auth.verifyToken, async (req, res) => {
     const storyToBeDeleted = await Story.findById(req.params.id, (err, storyToBeDeleted) => {
       if (err) {
         console.log(err);
-      } 
+      }
     });
     if (!storyToBeDeleted) {
       return res.status(404).json({ message: "没有找到帖子。" });
@@ -167,7 +169,7 @@ router.delete("/:id", auth.verifyToken, async (req, res) => {
     }
     let jsonToBeReturned = {
       story: storyToBeDeleted,
-      comments: []
+      comments: [],
     };
     for (let i = 0; i < storyToBeDeleted.comments.length; i++) {
       await StoryComment.findByIdAndDelete(storyToBeDeleted.comments[i]).then((err, comment) => {
@@ -192,36 +194,41 @@ router.delete("/:id", auth.verifyToken, async (req, res) => {
 // 未找到帖子时返回404状态码和{ message: "没有找到帖子。" }
 // 未知错误时返回400状态码和{ message: *错误信息* }
 // DELETE /api/story/deleteany/:id
-router.delete("/deleteany/:id", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
-  try {
-    const storyToBeDeleted = await Story.findById(req.params.id, (err, storyToBeDeleted) => {
-      if (err) {
-        console.log(err);
-      }
-    });
-    if (!storyToBeDeleted) {
-      return res.status(404).json({ message: "没有找到帖子。" });
-    }
-    let jsonToBeReturned = {
-      story: storyToBeDeleted,
-      comments: []
-    };
-    for (let i = 0; i < storyToBeDeleted.comments.length; i++) {
-      await StoryComment.findByIdAndDelete(storyToBeDeleted.comments[i]).then((err, comment) => {
+router.delete(
+  "/deleteany/:id",
+  auth.verifyToken,
+  auth.hasExecutiveManagerPrivileges,
+  async (req, res) => {
+    try {
+      const storyToBeDeleted = await Story.findById(req.params.id, (err, storyToBeDeleted) => {
         if (err) {
           console.log(err);
         }
-        jsonToBeReturned.comments.push(comment);
       });
+      if (!storyToBeDeleted) {
+        return res.status(404).json({ message: "没有找到帖子。" });
+      }
+      let jsonToBeReturned = {
+        story: storyToBeDeleted,
+        comments: [],
+      };
+      for (let i = 0; i < storyToBeDeleted.comments.length; i++) {
+        await StoryComment.findByIdAndDelete(storyToBeDeleted.comments[i]).then((err, comment) => {
+          if (err) {
+            console.log(err);
+          }
+          jsonToBeReturned.comments.push(comment);
+        });
+      }
+      await storyToBeDeleted.deleteOne({ story_id: storyToBeDeleted._id }).then(() => {
+        jsonToBeReturned.message = "帖子已删除。";
+        res.status(200).json(jsonToBeReturned);
+      });
+    } catch (err) {
+      res.status(400).json({ message: err.message });
     }
-    await storyToBeDeleted.deleteOne({ story_id: storyToBeDeleted._id }).then(() => {
-      jsonToBeReturned.message = "帖子已删除。";
-      res.status(200).json(jsonToBeReturned);
-    });
-  } catch (err) {
-    res.status(400).json({ message: err.message });
   }
-});
+);
 
 // 修改帖子置顶状态-需要常务管理员以上的权限
 // 请求体形如：{ storyid: *story的_id*, isPinned: *true/false* }
@@ -229,22 +236,36 @@ router.delete("/deleteany/:id", auth.verifyToken, auth.hasExecutiveManagerPrivil
 // 未找到帖子时返回404状态码和{ message: "没有找到帖子。" }
 // 未知错误时返回400状态码和{ message: *错误信息* }
 // PATCH /api/story/pinned-state
-router.patch("/pinned-state", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
-  try {
-    const storyToBeEdited = await Story.findById(req.body.storyid, (err, storyToBeEdited) => {
-      if (err) {
-        console.log(err);
+router.patch(
+  "/pinned-state",
+  auth.verifyToken,
+  auth.hasExecutiveManagerPrivileges,
+  async (req, res) => {
+    try {
+      const storyToBeEdited = await Story.findById(req.body.storyid, (err, storyToBeEdited) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+      if (!storyToBeEdited) {
+        return res.status(404).json({ message: "没有找到帖子。" });
       }
-    });
-    if (!storyToBeEdited) {
-      return res.status(404).json({ message: "没有找到帖子。" });
+      storyToBeEdited.isPinned = req.body.isPinned;
+      await storyToBeEdited
+        .save()
+        .then(() =>
+          res
+            .status(200)
+            .json({
+              story: storyToBeEdited,
+              message: `_id为${req.body.storyid}的帖子的置顶状态已被修改为${req.body.isPinned}。`,
+            })
+        );
+    } catch (err) {
+      res.status(400).json({ message: err.message });
     }
-    storyToBeEdited.isPinned = req.body.isPinned;
-    await storyToBeEdited.save().then(() => res.status(200).json({ story: storyToBeEdited, message: `_id为${req.body.storyid}的帖子的置顶状态已被修改为${req.body.isPinned}。` }));
-  } catch (err) {
-    res.status(400).json({ message: err.message });
   }
-});
+);
 
 // 修改指定帖子回复功能开启状态-需要常务管理员以上的权限
 // 请求体形如：{ storyid: *story的_id*, canBeReplied: *true/false* }
@@ -252,21 +273,34 @@ router.patch("/pinned-state", auth.verifyToken, auth.hasExecutiveManagerPrivileg
 // 未找到帖子时返回404状态码和{ message: "没有找到帖子。" }
 // 未知错误时返回400状态码和{ message: *错误信息* }
 // PATCH /api/story/reply-feature-enabled-state
-router.patch("/reply-feature-enabled-state", auth.verifyToken, auth.hasExecutiveManagerPrivileges, async (req, res) => {
-  try {
-    const storyToBeEdited = await Story.findById(req.body.storyid, (err, storyToBeEdited) => {
-      if (err) {
-        console.log(err);
+router.patch(
+  "/reply-feature-enabled-state",
+  auth.verifyToken,
+  auth.hasExecutiveManagerPrivileges,
+  async (req, res) => {
+    try {
+      const storyToBeEdited = await Story.findById(req.body.storyid, (err, storyToBeEdited) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+      if (!storyToBeEdited) {
+        return res.status(404).json({ message: "没有找到帖子。" });
       }
-    });
-    if (!storyToBeEdited) {
-      return res.status(404).json({ message: "没有找到帖子。" });
+      storyToBeEdited.canBeReplied = req.body.canBeReplied;
+      await storyToBeEdited
+        .save()
+        .then(() =>
+          res
+            .status(200)
+            .json({
+              message: `_id为${req.body.storyid}的帖子的回复功能开启状态已被修改为${req.body.canBeReplied}。`,
+            })
+        );
+    } catch (err) {
+      res.status(400).json({ message: err.message });
     }
-    storyToBeEdited.canBeReplied = req.body.canBeReplied;
-    await storyToBeEdited.save().then(() => res.status(200).json({ message: `_id为${req.body.storyid}的帖子的回复功能开启状态已被修改为${req.body.canBeReplied}。` }));
-  } catch (err) {
-    res.status(400).json({ message: err.message });
   }
-});
+);
 
 module.exports = router;

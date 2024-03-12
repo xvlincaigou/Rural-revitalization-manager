@@ -12,9 +12,7 @@ import React from "react";
 const SingleStory = (props) => {
   return (
     <div className="Card-story">
-      <div className="u-link u-bold">
-       {props.creator_name}
-      </div>
+      <div className="u-link u-bold">{props.creator_name}</div>
       <p className="Card-storyContent">{props.content}</p>
     </div>
   );
