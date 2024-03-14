@@ -15,8 +15,8 @@ const router = express.Router();
 // 用于生成证书
 const { PDFDocument, degrees, rgb } = require("pdf-lib");
 const fs = require("fs");
-const fontkit = require('fontkit'); // 导入 fontkit 库
-const path = require('path');
+const fontkit = require("fontkit"); // 导入 fontkit 库
+const path = require("path");
 
 // GET /api/activity/activities-page-count
 router.get("/activities-page-count", (req, res) => {
@@ -55,7 +55,7 @@ router.post("/", auth.verifyToken, async (req, res) => {
       location: location,
       date: date,
       capacity: capacity,
-      supervisors: supervisors
+      supervisors: supervisors,
     });
 
     await newActivity.save();
@@ -72,10 +72,10 @@ router.post("/subscribe", auth.verifyToken, async (req, res) => {
     const activity = await Activity.findOne({ _id: aid });
     const user = await User.findOne({ u_id: uid });
     if (activity && user) {
-      if (user.activities.some(a_id => a_id.toString() === aid.toString())) {
-        return res.status(200).json({message: "Subscribed already."});
+      if (user.activities.some((a_id) => a_id.toString() === aid.toString())) {
+        return res.status(200).json({ message: "Subscribed already." });
       }
-      activity.candidates.push({u_id: uid, name: user.name});
+      activity.candidates.push({ u_id: uid, name: user.name });
       await activity.save();
       user.activities.push(aid);
       await user.save();
@@ -92,14 +92,14 @@ router.post("/subscribe", auth.verifyToken, async (req, res) => {
 router.post("/unsubscribe", auth.verifyToken, async (req, res) => {
   try {
     const { uid, aid } = req.body;
-    const activity = await Activity.findOne({ _id: aid });
+    const activity = await Activity.findById(aid);
     const user = await User.findOne({ u_id: uid });
     if (activity && user) {
       const index = activity.candidates.findIndex((candidate) => candidate.u_id === uid);
       const _index = user.activities.indexOf(aid);
       if (index !== -1 && _index !== -1) {
-        if (activity.members.some(member => member.u_id === uid)) {
-          return res.status(200).json({message: "Already accepted, cannot resign."});
+        if (activity.members.some((member) => member.u_id === uid)) {
+          return res.status(200).json({ message: "Already accepted, cannot resign." });
         }
         activity.candidates.splice(index, 1);
         user.activities.splice(index, 1);
@@ -117,7 +117,6 @@ router.post("/unsubscribe", auth.verifyToken, async (req, res) => {
   }
 });
 
-
 // POST /api/activity/comment
 router.post("/comment", auth.verifyToken, async (req, res) => {
   try {
@@ -128,13 +127,13 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
       send_date: send_date,
       activity_id: activity_id,
       rating: rating,
-      comment: comment
+      comment: comment,
     });
     // Save the new activity to the database
     await newComment.save();
     activity.comments.push(newComment._id);
     let new_score = 0;
-    for(const comment_id of activity.comments) {
+    for (const comment_id of activity.comments) {
       const one_comment = await ActivityComment.findById(comment_id);
       new_score += one_comment.rating;
     }
@@ -148,28 +147,29 @@ router.post("/comment", auth.verifyToken, async (req, res) => {
 
 // POST /api/activity/register
 router.post("/register", auth.verifyToken, async (req, res) => {
-   try {
+  try {
     const { email, activity_id, name } = req.body;
     // Check if activity exists and if the registration date has not passed
     const activity = await Activity.findById(activity_id);
     if (!activity) {
-     return res.status(404).json({ message: "没有找到活动" });
+      return res.status(404).json({ message: "没有找到活动" });
     }
-  
-    const candidate = {u_id: email, name: name};
+    const candidate = { u_id: email, name: name };
     // Assuming ActivityRegistration model has fields: email, activity_id
-    if(activity.capacity==activity.members.length){
-     res.status(200).json({message:"成员数目超过限制"});
+    if (activity.capacity == activity.members.length) {
+      res.status(200).json({ message: "成员数目超过限制" });
+    } else {
+      if (activity.members.some((c) => c.u_id === email)) {
+        return res.status(500).json({ message: "已经接受该成员的报名" });
+      }
+      activity.members.push(candidate);
+      await activity.save();
+      res.status(200).json({ message: "接收" });
     }
-    else{
-     activity.members.push(candidate);
-     await activity.save();
-     res.status(200).json({ message: "接收" });
-    }
-   } catch (err) {
+  } catch (err) {
     res.status(400).json({ message: err.message });
-   }
-  });
+  }
+});
 
 // POST /api/activity/update
 router.post("/update", auth.verifyToken, async (req, res) => {
@@ -196,7 +196,7 @@ router.post("/create", auth.verifyToken, async (req, res) => {
   try {
     const { name, location, team, date, capacity, intro } = req.body;
     if (!name) {
-      return res.status(404).json({message: "Invalid input."});
+      return res.status(404).json({ message: "Invalid input." });
     }
     // Create a new activity object
     const newActivity = new Activity({
@@ -205,7 +205,7 @@ router.post("/create", auth.verifyToken, async (req, res) => {
       team: team,
       date: date,
       capacity: capacity,
-      intro: intro
+      intro: intro,
     });
 
     // Save the new activity to the database
@@ -219,28 +219,28 @@ router.post("/create", auth.verifyToken, async (req, res) => {
 // GET /api/activity/search_byname
 router.get("/search_byname", auth.verifyToken, async (req, res) => {
   try {
-    const activity = await Activity.findOne({name: req.query.activity_name});
+    const activity = await Activity.findOne({ name: req.query.activity_name });
     if (!activity) {
-      return res.status(404).json({message: "Activity not found"});
+      return res.status(404).json({ message: "Activity not found" });
     }
-    res.status(200).json({activity_id: activity._id});
-  } catch(err) {
+    res.status(200).json({ activity_id: activity._id });
+  } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
 
 // GET /api/activity/search_activity
 router.get("/search_activity", auth.verifyToken, async (req, res) => {
-     try {
-       const activity = await Activity.findOne({name: req.query.activity_name});
-       if (!activity) {
-          return res.status(404).json({message: "Activity not found"});
-       }
-       res.status(200).json(activity);
-     } catch(err) {
-       res.status(400).json({ message: err.message });
-     }
-  });
+  try {
+    const activity = await Activity.findOne({ name: req.query.activity_name });
+    if (!activity) {
+      return res.status(404).json({ message: "Activity not found" });
+    }
+    res.status(200).json(activity);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
 
 // POST /api/activity/admin
 router.post("/admin", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
@@ -252,7 +252,7 @@ router.post("/admin", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
       return res.status(404).json({ message: "未找到活动" });
     }
     for (const admin_info of activity.supervisors) {
-      const admin = await User.findOne({u_id: admin_info.u_id});
+      const admin = await User.findOne({ u_id: admin_info.u_id });
       const index = admin.activities.indexOf(activity_id);
       if (index !== -1) {
         admin.activities.splice(index, 1);
@@ -261,11 +261,11 @@ router.post("/admin", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
     }
     activity.supervisors = [];
     for (const admin_id of admin_ids) {
-      const admin = await User.findOne({u_id: admin_id});
+      const admin = await User.findOne({ u_id: admin_id });
       const admin_name = admin.name;
       activity.supervisors.push({
         u_id: admin_id,
-        name: admin_name
+        name: admin_name,
       });
       admin.activities.push(activity_id);
       await admin.save();
@@ -283,7 +283,7 @@ router.get("/fetch_comment", auth.verifyToken, auth.isSysAdmin, async (req, res)
   try {
     const activity = await Activity.findById(req.query.activity_id);
     if (!activity) {
-      return res.status(404).json({message: "Activity not found."});
+      return res.status(404).json({ message: "Activity not found." });
     }
     let comment_list = [];
     for (const comment_id of activity.comments) {
@@ -301,21 +301,21 @@ router.get("/fetch_comment", auth.verifyToken, auth.isSysAdmin, async (req, res)
 // GET /api/activity/member_comment
 router.get("/member_comment", auth.verifyToken, auth.isSysAdmin, async (req, res) => {
   try {
-    const comments = await MemberComment.find({activity_id: req.query.activity_id});
+    const comments = await MemberComment.find({ activity_id: req.query.activity_id });
     if (comments.length === 0) {
-      return res.status(404).json({message: "No comments from members."});
+      return res.status(404).json({ message: "No comments from members." });
     }
     let comment_list = [];
     for (const comment of comments) {
-      const object = await User.findOne({u_id: comment.member_id});
+      const object = await User.findOne({ u_id: comment.member_id });
       if (object) {
         const name = object.name;
         const comment_with_name = {
           content: comment,
-          to_whom: name
+          to_whom: name,
         };
         comment_list.push(comment_with_name);
-      } 
+      }
     }
     res.status(200).json(comment_list);
   } catch (err) {
@@ -539,15 +539,15 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
     const { uid, aid } = req.body;
     // DEBUG
     console.log("uid: ", uid);
-    console.log("aid:" , aid);
+    console.log("aid:", aid);
     console.log(req.body);
     const user = await User.findOne({ u_id: uid });
     const activity = await Activity.findOne({ _id: aid });
     if (!user) {
-      return res.status(400).json({ message: "没有找到用户！" })
+      return res.status(400).json({ message: "没有找到用户！" });
     }
     if (!activity) {
-      return res.status(400).json({ message: "没有找到活动！" })
+      return res.status(400).json({ message: "没有找到活动！" });
     }
 
     // 检查用户是否在生成列表中
@@ -560,8 +560,8 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
     generatingUsers[uid] = true;
 
     // 读取证书模板
-    const assetsDir = path.join(__dirname, '..', 'assets');
-    const templatePath = path.join(assetsDir, 'certificate_template.pdf');
+    const assetsDir = path.join(__dirname, "..", "assets");
+    const templatePath = path.join(assetsDir, "certificate_template.pdf");
     const templateBytes = fs.readFileSync(templatePath);
 
     // 创建一个新的 PDF 文档
@@ -831,7 +831,7 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
     const pdfBytes = await pdfDoc.save();
 
     // 将生成的 PDF 字节写入文件
-    const tempDir = path.join(__dirname, '..', 'temp');
+    const tempDir = path.join(__dirname, "..", "temp");
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir);
     }
@@ -845,11 +845,11 @@ router.post("/certificate", auth.verifyToken, async (req, res) => {
     // 发送生成的 PDF 文件给前端
     fs.readFile(outputPath, (err, data) => {
       if (err) {
-        console.error('Error reading PDF file:', err);
-        res.status(500).send('在读取证书PDF文件时发生错误。');
+        console.error("Error reading PDF file:", err);
+        res.status(500).send("在读取证书PDF文件时发生错误。");
       } else {
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'attachment; filename="certificate.pdf"');
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", 'attachment; filename="certificate.pdf"');
         res.send(data);
       }
     });

@@ -13,17 +13,20 @@ const router = express.Router();
 router.post("/", auth.verifyToken, async (req, res) => {
   try {
     const { sender, content } = req.body;
-    const newComplaint = new Complaint({
-      sender: sender,
-      recipient: {
-        u_id: "",
-        name: "",
-        timestamp: ""
+    const newComplaint = new Complaint(
+      {
+        sender: sender,
+        recipient: {
+          u_id: "",
+          name: "",
+          timestamp: "",
+        },
+        content: content,
+        reply: "",
+        responsed: 0,
       },
-      content: content,
-      reply: "",
-      responsed: 0
-    }, { versionKey: false });
+      { versionKey: false }
+    );
     await newComplaint.save();
     delete newComplaint.__v;
     await newComplaint.save();
@@ -59,8 +62,8 @@ router.post("/reply", auth.verifyToken, async (req, res) => {
     complaint.recipient = {
       u_id: recipient_id,
       name: recipient_name,
-      timestamp: currentDate
-    }
+      timestamp: currentDate,
+    };
     await complaint.save();
     res.status(200).json({ message: "回复成功" });
   } catch (err) {
@@ -73,7 +76,7 @@ router.post("/reply", auth.verifyToken, async (req, res) => {
 router.get("/reply/check", auth.verifyToken, async (req, res) => {
   try {
     const uid = req.query.uid;
-    const complaints = await Complaint.find({ 'sender.u_id': uid, responsed: 1 });
+    const complaints = await Complaint.find({ "sender.u_id": uid, responsed: 1 });
     if (complaints.length === 0) {
       return res.status(404).json({ message: "还没有被回复的投诉" });
     }

@@ -1,7 +1,7 @@
-import React from 'react';
-import Papa from 'papaparse';
+import React from "react";
+import Papa from "papaparse";
 
-import { post } from '../../utilities.js';
+import { post } from "../../utilities.js";
 import "./ActivityButton.css";
 
 const ActivityCreateButton = () => {
@@ -27,13 +27,12 @@ const ActivityCreateButton = () => {
               date: {
                 start: start_time,
                 end: end_time,
-                sign_up: sign_up_time
+                sign_up: sign_up_time,
               },
               capacity: activity.人数上限,
-              intro: activity.描述
+              intro: activity.描述,
             };
-            post("/api/activity/create", requestToPost)
-            .catch((err) => {
+            post("/api/activity/create", requestToPost).catch((err) => {
               console.log(err);
               return;
             });
@@ -49,17 +48,23 @@ const ActivityCreateButton = () => {
       <input
         type="file"
         ref={fileInputRef}
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
         accept=".csv"
         onChange={handleFileChange}
       />
-      <button onClick={handleButtonClick} className='ActivityCreateButton'>打开.csv文件以创建活动</button>
+      <button onClick={handleButtonClick} className="ActivityCreateButton">
+        打开.csv文件以创建活动
+      </button>
       <h6>时间请使用国际标准时间格式,例如：2021-01-01T00:00:00.000Z</h6>
-      <h6>表头中应当按顺序排列这些信息：名称、描述、开始时间、结束时间、地点、报名截止日期、人数上限、支队名称</h6>
+      <h6>
+        表头中应当按顺序排列这些信息：名称、描述、开始时间、结束时间、地点、报名截止日期、人数上限、支队名称
+      </h6>
       <h6>在文件中千万不要使用英文的逗号，否则会导致解析错误！</h6>
-      <h6>用办公软件把表格转化为.csv文件时不一定是UTF8编码，您可以用记事本打开.csv文件，然后选择用UTF8编码保存。否则在后台处理可能会出现乱码的问题</h6>
+      <h6>
+        用办公软件把表格转化为.csv文件时不一定是UTF8编码，您可以用记事本打开.csv文件，然后选择用UTF8编码保存。否则在后台处理可能会出现乱码的问题
+      </h6>
     </div>
   );
-}
+};
 
 export default ActivityCreateButton;

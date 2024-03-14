@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import "./NewPostInput.css";
-import { post , get } from "../../utilities";
+import { post, get } from "../../utilities";
 import SingleActivity from "./SingleActivity.js";
 
 /**
@@ -61,15 +61,21 @@ const NewPostInput = (props) => {
  */
 const NewComment = (props) => {
   const addComment = (value) => {
-    const body = { creator: props.creator, 
+    const body = {
+      creator: props.creator,
       send_date: props.send_date,
       story_id: props.storyId,
-      comment: value};
-      console.log(body);
-    post("/api/story/comment", body).then((comment) => {
-      // display this comment on the screen
-      props.addNewComment(comment);
-    }).catch((error) => {console.log(error);});
+      comment: value,
+    };
+    console.log(body);
+    post("/api/story/comment", body)
+      .then((comment) => {
+        // display this comment on the screen
+        props.addNewComment(comment);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return <NewPostInput defaultText="发表你的评论吧" onSubmit={addComment} />;
@@ -83,18 +89,26 @@ const NewComment = (props) => {
  */
 const NewStory = (props) => {
   const addStory = (value) => {
-    const body = {creator_id: props.creator_id, creator_name: props.creator_name, title: null, content: value };
-    post("/api/story", body).then((story) => {
-      // display this story on the screen
-      props.addNewStory(story);
-    }).catch((error) => {console.log(error);});
+    const body = {
+      creator_id: props.creator_id,
+      creator_name: props.creator_name,
+      title: null,
+      content: value,
+    };
+    post("/api/story", body)
+      .then((story) => {
+        // display this story on the screen
+        props.addNewStory(story);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return <NewPostInput defaultText="发表你的帖子吧" onSubmit={addStory} />;
 };
 
 const SearchActivity = (props) => {
-
   const [activity, setActivity] = useState(null);
 
   const search = (value) => {
@@ -102,27 +116,31 @@ const SearchActivity = (props) => {
       alert("不能为空！");
       return;
     }
-    const body = {activity_name: value};
-    get("/api/activity/search_activity", body).then((activity) => {
-      setActivity(
-        <SingleActivity
-          _id={activity._id}
-          name={activity.name}
-          location={activity.location}
-          start_time={activity.date.start}
-          end_time={activity.date.end}
-          latest_register_time={activity.date.sign_up}
-          capacity={activity.capacity}
-          users_signed_up={activity.candidates}
-          users_admin={activity.members}
-          comments={activity.comments}
-          supervisors={activity.supervisors}
-          information={activity.intro}
-          average_score={activity.score}
-          user={props.user}
-      />
-      );
-    }).catch((error) => {alert(error);});
+    const body = { activity_name: value };
+    get("/api/activity/search_activity", body)
+      .then((activity) => {
+        setActivity(
+          <SingleActivity
+            _id={activity._id}
+            name={activity.name}
+            location={activity.location}
+            start_time={activity.date.start}
+            end_time={activity.date.end}
+            latest_register_time={activity.date.sign_up}
+            capacity={activity.capacity}
+            users_signed_up={activity.candidates}
+            users_admin={activity.members}
+            comments={activity.comments}
+            supervisors={activity.supervisors}
+            information={activity.intro}
+            average_score={activity.score}
+            user={props.user}
+          />
+        );
+      })
+      .catch((error) => {
+        alert(error);
+      });
   };
 
   return (
@@ -133,4 +151,4 @@ const SearchActivity = (props) => {
   );
 };
 
-export { NewComment, NewStory , SearchActivity};
+export { NewComment, NewStory, SearchActivity };

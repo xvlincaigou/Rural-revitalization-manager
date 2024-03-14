@@ -15,9 +15,9 @@
 }
 
 .ActivityButton.red {
-    background-color: red;
+  background-color: red;
 }
-  
+
 .ActivityCreateButton {
   background-color: var(--thupurple);
   color: #fff;
@@ -27,103 +27,107 @@
 }
 
 .ActivityDialogue {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    background-color: #fff;
-    margin-bottom: 10px;
-  }
-  
-  .ActivityDialogue form {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
-    background-color: #fff;
-  }
-  
-  .ActivityDialogue form input {
-    margin: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-  }
-  
-  .ActivityDialogue form button {
-    margin: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    border: none;
-    background-color: var(--thupurple);
-    color: #fff;
-    cursor: pointer;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background-color: #fff;
+  margin-bottom: 10px;
+}
 
-  .ActivityAdmitDialogue {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    width: 300px;
-    background-color: #fff;
-    margin: 20px;
-    padding: 10px;
-  }
+.ActivityDialogue form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
 
-  .ActivityAdmitDialogue button {
-    margin-bottom: 10px;
-    margin-top: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    border: none;
-    background-color: var(--thupurple);
-    color: #fff;
-    cursor: pointer;
-    width: 80%;
-  }
+.ActivityDialogue form input {
+  margin: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
 
-  .ActivityAdmitSubmitButton {
-    margin-bottom: 10px;
-    margin-top: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    border: none;
-    background-color: var(--thupurple);
-    color: #fff;
-    cursor: pointer;
-    width: 100%;
-  }
+.ActivityDialogue form button {
+  margin: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  background-color: var(--thupurple);
+  color: #fff;
+  cursor: pointer;
+}
 
-  .ActivitySeeRemarkButtonDialog {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: #fff;
-    padding: 5px;
-  }
+.ActivityAdmitDialogue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 300px;
+  background-color: #fff;
+  margin: 20px;
+  padding: 10px;
+}
 
-  .ActivitySeeRemarkButtonDialog h3 {
-    text-align: center;
-    margin: 10px;
-  }
+.ActivityAdmitDialogue button {
+  margin-bottom: 10px;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  background-color: var(--thupurple);
+  color: #fff;
+  cursor: pointer;
+  width: 100%;
+}
 
-  .ActivitySeeRemarkButtonDialog label {
-    text-align: center;
-    margin: 6px;
-    margin-left: 15px;
-    margin-right: 15px;
-  }
+.ActivityAdmitDialogue button :hover {
+  background-color: var(--thupurple);
+}
 
-  .ActivityManagerSetButton {
-    background-color: var(--thupurple);
-    color: #fff;
-    width: 100%;
-    padding: 8px;
-    margin-top: 10px;
-  }
+.ActivityAdmitSubmitButton {
+  margin-bottom: 10px;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  background-color: var(--thupurple);
+  color: #fff;
+  cursor: pointer;
+  width: 100%;
+}
+
+.ActivitySeeRemarkButtonDialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  padding: 5px;
+}
+
+.ActivitySeeRemarkButtonDialog h3 {
+  text-align: center;
+  margin: 10px;
+}
+
+.ActivitySeeRemarkButtonDialog label {
+  text-align: center;
+  margin: 6px;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.ActivityManagerSetButton {
+  background-color: var(--thupurple);
+  color: #fff;
+  width: 100%;
+  padding: 8px;
+  margin-top: 10px;
+}

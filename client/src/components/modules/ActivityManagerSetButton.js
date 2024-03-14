@@ -1,7 +1,7 @@
-import React from 'react';
-import Papa from 'papaparse';
+import React from "react";
+import Papa from "papaparse";
 
-import { post , get } from '../../utilities.js';
+import { post, get } from "../../utilities.js";
 import "./ActivityButton.css";
 
 const ActivityManagerSetButton = () => {
@@ -22,12 +22,16 @@ const ActivityManagerSetButton = () => {
             if (managerEmail !== undefined) {
               console.log(activityName, managerEmail);
               const managerEmailArray = managerEmail.split("/");
-              get('/api/activity/search_byname', {activity_name: activityName}).then((res) => {
-                post('/api/activity/admin', {activity_id: res.activity_id, admin_ids: managerEmailArray})
-                .then((res) => console.log(res))
+              get("/api/activity/search_byname", { activity_name: activityName })
+                .then((res) => {
+                  post("/api/activity/admin", {
+                    activity_id: res.activity_id,
+                    admin_ids: managerEmailArray,
+                  })
+                    .then((res) => console.log(res))
+                    .catch((err) => console.log(err));
+                })
                 .catch((err) => console.log(err));
-              })
-              .catch((err) => console.log(err));
             }
           }
         },
@@ -41,16 +45,20 @@ const ActivityManagerSetButton = () => {
       <input
         type="file"
         ref={fileInputRef}
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
         accept=".csv"
         onChange={handleFileChange}
       />
-      <button onClick={handleButtonClick} className='ActivityManagerSetButton'>打开.csv文件以设置或重新设置活动管理员</button>
+      <button onClick={handleButtonClick} className="ActivityManagerSetButton">
+        打开.csv文件以设置或重新设置活动管理员
+      </button>
       <h6>表头中应当按顺序排列这些信息：活动名称、活动管理员邮箱</h6>
       <h6>在文件中千万不要使用英文的逗号，否则会导致解析错误！</h6>
-      <h6>用办公软件把表格转化为.csv文件时不一定是UTF8编码，您可以用记事本打开.csv文件，然后选择用UTF8编码保存。否则在后台处理可能会出现乱码的问题</h6>
+      <h6>
+        用办公软件把表格转化为.csv文件时不一定是UTF8编码，您可以用记事本打开.csv文件，然后选择用UTF8编码保存。否则在后台处理可能会出现乱码的问题
+      </h6>
     </div>
   );
-}
+};
 
 export default ActivityManagerSetButton;

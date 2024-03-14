@@ -7,7 +7,6 @@ import { get } from "../../utilities.js";
 import "./Chatbook.css";
 
 const Chatbook = (props) => {
-
   const [permitted, setPermitted] = useState(null);
   const [page, setPage] = useState(1);
   const [maxPage, setMaxPage] = useState(1);
@@ -15,24 +14,28 @@ const Chatbook = (props) => {
 
   useEffect(() => {
     document.title = "Chatbook";
-    get("/api/story/stories-page-count").then((res) => {
-      setMaxPage(res.pageNum);
-      if (page > maxPage) {
-        setPage(maxPage);
-      }
-    }).catch((error) => {
-      console.log(error);
-    });
+    get("/api/story/stories-page-count")
+      .then((res) => {
+        setMaxPage(res.pageNum);
+        if (page > maxPage) {
+          setPage(maxPage);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, [page]);
 
   useEffect(() => {
-    get("/api/story/stories", { page }).then((storyObjs) => {
-      let reversedStoryObjs = storyObjs.reverse();
-      reversedStoryObjs.sort((a, b) => b.isPinned - a.isPinned);
-      setStories(reversedStoryObjs);
-    }).catch((error) => {
-      console.log(error);
-    });
+    get("/api/story/stories", { page })
+      .then((storyObjs) => {
+        let reversedStoryObjs = storyObjs.reverse();
+        reversedStoryObjs.sort((a, b) => b.isPinned - a.isPinned);
+        setStories(reversedStoryObjs);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, [page]);
 
   const changePage = (newPage) => {
@@ -64,19 +67,22 @@ const Chatbook = (props) => {
   }
 
   const LifeorDeath = () => {
-    axios.put("/api/story/global-settings", { storyPostingEnabled: !permitted })
-      .then(res => {
+    axios
+      .put("/api/story/global-settings", { storyPostingEnabled: !permitted })
+      .then((res) => {
         alert(res.status == 200 ? `已经${permitted ? "关闭" : "开启"}发帖功能` : "失败！");
         setPermitted(!permitted);
       })
-      .catch((error) => console.error('Error:', error));
-  }
+      .catch((error) => console.error("Error:", error));
+  };
 
-  get("/api/story/global-settings").then((res) => {
-    setPermitted(res.settings.storyPostingEnabled);
-  }).catch((error) => {
-    console.log(error);
-  });
+  get("/api/story/global-settings")
+    .then((res) => {
+      setPermitted(res.settings.storyPostingEnabled);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 
   if (!props.user) {
     return <div>登录以发帖</div>;
@@ -86,22 +92,38 @@ const Chatbook = (props) => {
   }
   return (
     <>
-      {permitted && props.user && <NewStory addNewStory={addNewStory} creator_id={props.user.u_id} creator_name={props.user.name} />}
+      {permitted && props.user && (
+        <NewStory
+          addNewStory={addNewStory}
+          creator_id={props.user.u_id}
+          creator_name={props.user.name}
+        />
+      )}
       {storiesList}
-      {props.user.role === 2 && <button className="LifeDeathButton" onClick={LifeorDeath}>{permitted ? "关闭发帖功能" : "开启发帖功能"}</button>}
-      {hasStories ? <div className="page-controls">
-        <button onClick={() => changePage(page - 1)} disabled={page === 1}>上一页</button>
-        <button onClick={() => changePage(page + 1)} disabled={page >= maxPage}>下一页</button>
-        <select value={page} onChange={(e) => changePage(e.target.value)}>
-          {Array.from({ length: maxPage }, (_, i) => i + 1).map((pageNum) => (
-            <option value={pageNum} key={pageNum}>
-              {pageNum}
-            </option>
-          ))}
-        </select>
-      </div> : null}
+      {props.user.role === 2 && (
+        <button className="LifeDeathButton" onClick={LifeorDeath}>
+          {permitted ? "关闭发帖功能" : "开启发帖功能"}
+        </button>
+      )}
+      {hasStories ? (
+        <div className="page-controls">
+          <button onClick={() => changePage(page - 1)} disabled={page === 1}>
+            上一页
+          </button>
+          <button onClick={() => changePage(page + 1)} disabled={page >= maxPage}>
+            下一页
+          </button>
+          <select value={page} onChange={(e) => changePage(e.target.value)}>
+            {Array.from({ length: maxPage }, (_, i) => i + 1).map((pageNum) => (
+              <option value={pageNum} key={pageNum}>
+                {pageNum}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : null}
     </>
   );
-}
+};
 
 export default Chatbook;
