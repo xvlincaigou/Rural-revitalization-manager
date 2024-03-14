@@ -15,8 +15,8 @@
 
 // validator runs some basic checks to make sure you've set everything up correctly
 // this is a tool provided by staff, so you don't need to worry about it
-const validator = require("./validator");
-validator.checkSetup();
+// const validator = require("./validator");
+// validator.checkSetup();
 
 //import libraries needed for the webserver to work!
 const http = require("http");
@@ -34,17 +34,16 @@ const userApi = require("./api/user_api");
 const registerApi = require("./api/register_api");
 const loginApi = require("./api/login_api");
 const logoutApi = require("./api/logout_api");
-const auth = require("./controllers/auth.controller");
+// const auth = require("./controllers/auth.controller");
 
 // socket stuff
-const socketManager = require("./server-socket");
+// const socketManager = require("./server-socket");
 
 // Server configuration below
 // TODO change connection URL after setting up your own database
-const encodedPassword = encodeURIComponent("r%-BBPB:^s.MH8afU4Qq");
-const mongoConnectionURL = `mongodb://test:${encodedPassword}@ydmsk.xyz:12345/`; // 测试用
+const mongoConnectionURL = `mongodb://localhost:27017/`; // 测试用
 // TODO change database name to the name you chose
-const databaseName = "Test";
+const databaseName = "Main";
 
 // connect to mongodb
 mongoose
@@ -59,7 +58,7 @@ mongoose
 
 // create a new express server
 const app = express();
-app.use(validator.checkRoutes);
+// app.use(validator.checkRoutes);
 
 // set up bodyParser, which allows us to process POST requests
 app.use(bodyParser.urlencoded({ extended: false }));
