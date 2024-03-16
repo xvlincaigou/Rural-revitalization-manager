@@ -99,8 +99,9 @@ router.get("/tags", auth.verifyToken, async (req, res) => {
       });
     } else if (role_num === 0) {
       let is_supervisor = 0;
-      for (const activity_id of user.activities) {
-        activity = await Activity.findById(activity_id);
+      let activity_id;
+      for (activity_id of user.activities) {
+        let activity = await Activity.findById(activity_id);
         if (activity.supervisors.some((supervisor) => supervisor.u_id === operator_id)) {
           is_supervisor = 1;
           break;
