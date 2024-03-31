@@ -16,6 +16,9 @@ const ComplaintPage = (props) => {
   //管理员要处理的全部投诉
   const [complaints, setComplaints] = useState([]);
 
+  //管理员已经处理过的投诉
+  const [ansedComplaints, setAnsedComplaints] = useState([]);
+
   useEffect(() => {
     if (props.user && props.user.role == 0) {
       get("/api/complaint/reply/check", { uid: props.user.u_id })
@@ -33,6 +36,16 @@ const ComplaintPage = (props) => {
         .catch((err) => {
           console.log(err);
         });
+      get("/api/complaint/replied/check")
+        .then((res) => {
+          setAnsedComplaints(res.complaints);
+	  console.log("This is ansedcompl");
+	  console.log(res.complaints);
+	  console.log(ansedComplaints);
+        })
+ 	.catch((err) => {
+	  console.log(err);
+	});
     }
   }, [props.user]);
 
@@ -150,9 +163,29 @@ const ComplaintPage = (props) => {
     );
   }
   return complaints.length == 0 ? (
+    <>
     <div>没有待回复的投诉</div>
+    {ansedComplaints.length == 0 ? (
+      <div>没有已回复的投诉</div>
+    ) : (
+      ansedComplaints.map((reply) => (
+        <div className="complaint-box">
+          <div className="reply-section">
+            <p>{"回复者 | " + reply.recipient.name}</p>
+            <p>{"回复时间 | " + convertToBeijingTime(reply.recipient.timestamp)}</p>
+            <p>{"回复内容 | " + reply.reply}</p>
+          </div>
+          <div className="complaint-section">
+            <p>{"投诉内容 | " + reply.content}</p>
+            <p>{"投诉时间 | " + convertToBeijingTime(reply.sender.timestamp)}</p>
+          </div>
+        </div>
+      ))
+    )}
+    </>
   ) : (
-    complaints.map((complaint, index) => (
+    <>
+    {complaints.map((complaint, index) => (
       <div className="complaint-box" key={index}>
         <div className="ComplaintPage">
           <form onSubmit={(event) => handleReplySubmit(event, index)} complaint_id={complaint._id}>
@@ -171,8 +204,25 @@ const ComplaintPage = (props) => {
           <p>{convertToBeijingTime(complaint.sender.timestamp) + "    " + complaint.sender.name}</p>
         </div>
       </div>
-    ))
-  );
+    ))}
+    {ansedComplaints.length == 0 ? (
+      <div>没有已回复的投诉</div>
+    ) : (
+      ansedComplaints.map((reply) => (
+        <div className="complaint-box">
+          <div className="reply-section">
+            <p>{"回复者 | " + reply.recipient.name}</p>
+            <p>{"回复时间 | " + convertToBeijingTime(reply.recipient.timestamp)}</p>
+            <p>{"回复内容 | " + reply.reply}</p>
+          </div>
+          <div className="complaint-section">
+            <p>{"投诉内容 | " + reply.content}</p>
+            <p>{"投诉时间 | " + convertToBeijingTime(reply.sender.timestamp)}</p>
+          </div>
+        </div>
+      ))
+    )}
+    </>  );
 };
 
 export default ComplaintPage;

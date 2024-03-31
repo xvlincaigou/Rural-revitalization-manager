@@ -34,6 +34,7 @@ const userApi = require("./api/user_api");
 const registerApi = require("./api/register_api");
 const loginApi = require("./api/login_api");
 const logoutApi = require("./api/logout_api");
+const Settings = require("./models/settings.js");
 // const auth = require("./controllers/auth.controller");
 
 // socket stuff
@@ -110,6 +111,18 @@ app.use((err, req, res, next) => {
     message: err.message,
   });
 });
+
+// 初始化设置
+async function initializeSettings() {
+  const existingSettings = await Settings.findOne();
+
+  if (!existingSettings) {
+    const defaultSettings = new Settings();
+    await defaultSettings.save();
+  }
+}
+
+initializeSettings().catch(console.error);
 
 // hardcode port to 3000 for now
 const port = 3000;

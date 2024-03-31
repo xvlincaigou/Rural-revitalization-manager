@@ -134,6 +134,34 @@ const Profile = (props) => {
       });
   };
 
+  const cleanAllCode = () => {
+    post("/api/global/clean-registration-code", {})
+      .then((res) => {
+        alert(res.message);
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
+  };
+
+  const printAllInfo = () => {
+    get("/api/user/download-info")
+      .then((res) => {
+        const blob = new Blob([res.data], { type: 'text/csv' });
+	console.log(res.data);
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "user_info.csv");
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
+  };
+
   if (props.user === null) {
     return <div>请先登录</div>;
   }
@@ -263,6 +291,8 @@ const Profile = (props) => {
               />
               <button onClick={getRegisterNumber}>获取</button>
             </div>
+            <button onClick={() => cleanAllCode()}>清除注册码</button>
+            <button onClick={() => printAllInfo()}>打印所有信息</button>
           </div>
         </>
       ) : (

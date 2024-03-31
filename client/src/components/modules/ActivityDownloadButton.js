@@ -5,18 +5,17 @@ import "./ActivityButton.css";
 
 const ActivityDownloadButton = (props) => {
   const handleClick = () => {
-    axios
-      .post("/api/activity/certificate", { uid: props.uid, aid: props.aid })
+    axios.post("/api/activity/certificate", { uid: props.uid, aid: props.aid }, {
+      // This tells Axios to expect a blob response instead of the default JSON
+      responseType: 'blob'
+    })
       .then((response) => {
-        if (!response.ok) {
-          // 请求失败，尝试解析错误信息
-          return response.json().then((error) => Promise.reject(error));
-        }
-        // 请求成功，获取 PDF 文件的数据
-        return response.blob();
+        // No need to check for status === 200, as Axios does that automatically and rejects the promise if it's not 2xx
+        // Directly proceed with the response data, which is now correctly handled as a blob
+        return new Blob([response.data], { type: "application/pdf" });
       })
       .then((blob) => {
-        // 创建一个 Blob URL，并通过一个隐藏的 <a> 元素下载文件
+        // Your blob handling code remains the same
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
@@ -26,9 +25,8 @@ const ActivityDownloadButton = (props) => {
         link.remove();
       })
       .catch((error) => {
-        // 显示错误信息
-        // alert(error.message || 'An error occurred');
-        console.log(error);
+        // Handle any errors here
+        console.error('Error fetching PDF:', error);
       });
   };
 

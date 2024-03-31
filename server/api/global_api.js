@@ -5,6 +5,7 @@ const Story = require("../models/story");
 const User = require("../models/user");
 const Complaint = require("../models/complaint");
 const Activity = require("../models/activity");
+const Settings = require("../models/settings");
 
 // api endpoints: all these paths will be prefixed with "/api/"
 const router = express.Router();
@@ -45,5 +46,16 @@ router.get("/session", async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
+// POST /api/global/clean-registration-code
+router.post("/clean-registration-code", async (req, res) => {
+  try {
+    await Settings.updateOne({}, { availableRegistrationCodes: [] });
+    res.status(200).json({ message: "All registration codes have been cleared." });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 
 module.exports = router;

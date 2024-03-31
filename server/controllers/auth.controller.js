@@ -5,9 +5,10 @@ const Settings = require("../models/settings.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
-const crypto = require("crypto");
+// const crypto = require("crypto");
 const validator = require("validator");
 
+/*
 // 初始化设置
 async function initializeSettings() {
   const existingSettings = await Settings.findOne();
@@ -19,6 +20,7 @@ async function initializeSettings() {
 }
 
 initializeSettings().catch(console.error);
+*/
 
 exports.register = async (req, res) => {
   try {
@@ -81,7 +83,7 @@ exports.register = async (req, res) => {
         const usernamePattern = /^[\u4e00-\u9fa5A-Za-z]+$/;
         const idPattern = /^\d{17}[\dXx]$/;
         const phoneNumberPattern = /^\d{11}$/;
-        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=])[A-Za-z\d@#$%^&+=]{8,20}$/;
+        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@#$%^&+=]{8,20}$/;
 
         if (!validator.isEmail(u_id)) {
           return res.status(400).send({ message: "电子邮件格式无效。" });
@@ -108,7 +110,7 @@ exports.register = async (req, res) => {
           name: name,
           u_id: u_id,
           phone_number: phone_number,
-          id_number: id_number, // TODO: 沟通敏感信息安全性问题
+          id_number: id_number,
           password: bcrypt.hashSync(password, 8),
         });
 

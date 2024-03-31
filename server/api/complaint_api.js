@@ -86,4 +86,18 @@ router.get("/reply/check", auth.verifyToken, async (req, res) => {
   }
 });
 
+//GET /api/complaint/replied/check
+router.get("/replied/check", auth.verifyToken, async (req, res) => {
+  try {
+    const complaints = await Complaint.find({});
+    if (complaints.length === 0) {
+      return res.status(404).json({ message: "还没有被回复的投诉" });
+    }
+    res.status(200).json({ complaints: complaints });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+
 module.exports = router;

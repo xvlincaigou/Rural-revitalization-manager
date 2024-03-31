@@ -22,6 +22,9 @@ const router = express.Router();
 const { StoryComment, ActivityComment, MemberComment } = require("../models/comment");
 const activity = require("../models/activity");
 
+const json2csv = require("json2csv").parse;
+
+/*
 // 初始化设置
 async function initializeSettings() {
   const existingSettings = await Settings.findOne();
@@ -33,6 +36,7 @@ async function initializeSettings() {
 }
 
 initializeSettings().catch(console.error);
+*/
 
 // POST /api/user/tags
 router.post("/tags", auth.verifyToken, async (req, res) => {
@@ -99,8 +103,9 @@ router.get("/tags", auth.verifyToken, async (req, res) => {
       });
     } else if (role_num === 0) {
       let is_supervisor = 0;
-      for (const activity_id of user.activities) {
-        activity = await Activity.findById(activity_id);
+      let activity_id;
+      for (activity_id of user.activities) {
+        let activity = await Activity.findById(activity_id);
         if (activity.supervisors.some((supervisor) => supervisor.u_id === operator_id)) {
           is_supervisor = 1;
           break;
@@ -281,17 +286,20 @@ router.post("/manage_admin", auth.verifyToken, async (req, res) => {
 
 // POST /api/user/delete
 router.post("/delete", auth.verifyToken, async (req, res) => {
-  await User.findOneAndDelete({ u_id: req.body.u_id }, function (err, user) {
-    if (err) {
-      return res.status(400).json({ message: err.message });
-    } else {
-      if (!user) {
-        return res.status(404).json({ message: "User not found." });
+  try {
+    await User.findOneAndDelete({ u_id: req.body.u_id }, function (err, user) {
+      if (err) {
+        return res.status(400).json({ message: err.message });
       } else {
-        res.status(200).json({ message: "User deleted." });
+        if (!user) {
+          return res.status(404).json({ message: "User not found." });
+        } else {
+          res.status(200).json({ message: "User deleted." });
+        }
       }
-    }
-  } catch (err) {
+    });
+  }
+  catch (err) {
     return res.status(400).json({ message: err.message });
   }
 });
@@ -393,6 +401,40 @@ router.post("/information", auth.verifyToken, async (req, res) => {
     }
     await User.findOneAndUpdate({ u_id: u_id }, { $set: update_fields });
     res.status(200).json({ message: "Information updated successfully." });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// GET /api/users/download-info
+router.get("/download-info", auth.verifyToken, async (req, res) => {
+  try {
+    const users = await User.find({});
+    const activities = await Activity.find({});
+
+    const data = users.map(user => {
+      let role = '';
+      switch(user.role) {
+        case 0:
+          role = activities.filter(activity => activity.supervisors.some(supervisor => supervisor.u_id === user.u_id)).map(activity => activity.name).join(', ');
+          break;
+        case 1:
+          role = '常务管理员';
+          break;
+        case 2:
+          role = '系统管理员';
+          break;
+      }
+      return {
+        '名字': user.name,
+        '邮箱': user.u_id,
+        '权限': role
+      };
+    });
+    const csv = json2csv(data, { fields: ['名字', '邮箱', '权限'] });
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=user_info.csv');
+    res.status(200).send(csv);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

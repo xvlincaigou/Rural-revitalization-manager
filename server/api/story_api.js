@@ -7,6 +7,7 @@ const User = require("../models/user");
 const Activity = require("../models/activity");
 const Settings = require("../models/settings");
 
+/*
 // 初始化设置
 // 贴子发布功能默认为开启状态
 async function initializeSettings() {
@@ -19,6 +20,7 @@ async function initializeSettings() {
 }
 
 initializeSettings().catch(console.error);
+*/
 
 // import authentication library
 const auth = require("../middlewares/authJwt");

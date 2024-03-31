@@ -101,7 +101,7 @@ const Register = ({ upload }) => {
     const usernamePattern = /^[\u4e00-\u9fa5A-Za-z]+$/;
     const phoneNumberPattern = /^\d{11}$/;
     const idPattern = /^\d{17}[\dXx]$/;
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=])[A-Za-z\d@#$%^&+=]{8,20}$/;
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@#$%^&+=]{8,20}$/;
     if (password !== confirmPassword) {
       alert("两次输入的密码不一致！");
       return;

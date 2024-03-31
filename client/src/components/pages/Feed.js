@@ -63,21 +63,6 @@ const Feed = () => {
         <div className="Feed-content">{formattedRate}</div>
       </div>
 
-      <div className="link-container">
-        <h4>开发者主页：</h4>
-        <a className="link-item" href="https://github.com/xvlincaigou">
-          许霖
-        </a>
-        <a className="link-item" href="https://github.com/Kulov233">
-          赵畅
-        </a>
-        <a className="link-item" href="https://github.com/bbbpimasheep">
-          刘明轩
-        </a>
-        <a className="link-item" href="https://github.com/gsk-THU">
-          关世开
-        </a>
-      </div>
     </>
   );
 };
